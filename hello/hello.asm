@@ -13,7 +13,7 @@ _start:
     ;; message address
     mov     rsi, msg
     ;; length of message
-    mov     rdx, 15
+    mov     rdx, 13
     ;; call write syscall
     syscall
 
