@@ -1,5 +1,5 @@
 section .data
-    msg db      "hello, world!"
+    msg db      "hello, world!",`\n`
 
 section .text
 
@@ -13,7 +13,7 @@ _start:
     ;; message address
     mov     rsi, msg
     ;; length of message
-    mov     rdx, 13
+    mov     rdx, 14
     ;; call write syscall
     syscall
 
