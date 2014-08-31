@@ -9,7 +9,7 @@
 # Modifications to original code considered trivial and to be
 # public domain.
 #
-# Support intel syntal vs. ATT and don't use % before register names
+# Support intel syntax vs. ATT and don't use % before register names
 .intel_syntax noprefix
 
 .section .data
@@ -20,9 +20,9 @@
 .global _start
 
 _start:
-    # write syscal
+    # write syscall
     mov     rax, 1
-    # file descritor, standard output
+    # file descriptor, standard output
     mov     rdi, 1
     # message address
     mov     rsi, OFFSET FLAT:msg
