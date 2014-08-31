@@ -6,7 +6,7 @@ section .text
 global _start
 
 _start:
-    ;; write syscal
+    ;; write syscall
     mov     rax, 1
     ;; file descriptor, standard output
     mov     rdi, 1
