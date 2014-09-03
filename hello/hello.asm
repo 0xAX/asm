@@ -1,19 +1,19 @@
 section .data
-    msg db      "hello, world!"
+    msg db      "hello, world!",`\n`
 
 section .text
 
 global _start
 
 _start:
-    ;; write syscal
+    ;; write syscall
     mov     rax, 1
-    ;; file descritor, standard output
+    ;; file descriptor, standard output
     mov     rdi, 1
     ;; message address
     mov     rsi, msg
     ;; length of message
-    mov     rdx, 13
+    mov     rdx, 14
     ;; call write syscall
     syscall
 
