@@ -8,9 +8,7 @@ section .data
 	WRONG_ARGC	db "Must be two command line argument", 0xa
 
 section .text
-
-global
-	_start
+	global	_start
 
 _start:
 	;; rcx - argc

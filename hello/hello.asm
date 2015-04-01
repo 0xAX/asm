@@ -1,10 +1,8 @@
 section .data
-	msg db	"hello, world!",`\n`
+	msg	db "hello, world!",`\n`
 
 section .text
-
-global
-	_start
+	global	_start
 
 _start:
 	;; write syscall

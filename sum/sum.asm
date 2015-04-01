@@ -10,9 +10,7 @@ section .data
 ;; program code
 ;;
 section .text
-
-global
-	_start
+	global	_start
 
 ;; entry point
 _start:

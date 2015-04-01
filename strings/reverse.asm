@@ -14,13 +14,13 @@ section .data
 ;; non initialized data
 ;;
 section .bss
-	OUTPUT resb 1
+	OUTPUT	resb 1
 
 ;;
 ;; code
 ;;
 section .text
-	global _start
+	global	_start
 
 ;;
 ;; main routine
