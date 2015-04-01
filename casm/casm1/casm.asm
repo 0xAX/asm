@@ -5,9 +5,9 @@ extern print
 section .text
 
 _start:
-		call print
+	call	print
 
-		;; exit
-		mov rax, 60
-		mov rdi, 0
-		syscall
+	;; exit
+	mov	rax, 60
+	mov	rdi, 0
+	syscall
