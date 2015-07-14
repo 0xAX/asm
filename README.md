@@ -6,13 +6,15 @@ Learning assembly for linux-x64
 Examples
 ==============
 
-  * hello - hello world [Say hello to x86_64 Assembly part 1](http://0xax.blogspot.com/2014/08/say-hello-to-x64-assembly-part-1.html);
-  * sum   - sum of two numbers [Say hello to x86_64 Assembly part 2](http://0xax.blogspot.com/2014/09/say-hello-to-x64-assembly-part-2.html);
-  * stack - sum of command line arguments [Say hello to x86_64 Assembly part 3](http://0xax.blogspot.com/2014/09/say-hello-to-x64-assembly-part-3.html);
-  * reverse - reverse string [Say hello to x86_64 Assembly part 4](http://0xax.blogspot.com/2014/11/say-hello-to-x64-assembly-part-4.html);
-  * casm    - c and assembly interaction [Say hello to x86_64 Assembly part 6](http://0xax.blogspot.com/2014/11/say-hello-to-x64-assembly-part-4.html).
-  * float   - work with floating numbers [http://0xax.blogspot.com/2014/12/say-hello-to-x8664-assembly-part-8.html]
-
+  * [Say hello to x86_64 Assembly part 1](http://0xax.github.io/blog/2014/08/01/say-hello-to-x86_64-assembly-part-1/);
+  * [Say hello to x86_64 Assembly part 2](http://0xax.github.io/blog/2014/08/10/say-hello-to-x86_64-assembly-part-2/);
+  * [Say hello to x86_64 Assembly part 3](http://0xax.github.io/blog/2014/08/15/say-hello-to-x86_64-assembly-part-3/);
+  * [Say hello to x86_64 Assembly part 4](http://0xax.github.io/blog/2014/09/01/say-hello-to-x86_64-assembly-part-4/);
+  * [Say hello to x86_64 Assembly part 5](http://0xax.github.io/blog/2014/09/20/say-hello-to-x86_64-assembly-part-5/)
+  * [Say hello to x86_64 Assembly part 6](http://0xax.github.io/blog/2014/10/01/say-hello-to-x86_64-assembly-part-6/)
+  * [Say hello to x86_64 Assembly part 7](http://0xax.github.io/blog/2014/10/10/say-hello-to-x86_64-assembly-part-7/)
+  * [Say hello to x86_64 Assembly part 8](http://0xax.github.io/blog/2014/12/01/say-hello-to-x86_64-assembly-part-8/)
+  
 Author
 ==============
 
