@@ -1,7 +1,8 @@
 asm
 ==============
 
-Learning assembly for linux-x64
+Learning assembly for linux-x64.<br/>
+You can use [emu86](http://www.emu86.org/main) to try asm online.
 
 Examples
 ==============
