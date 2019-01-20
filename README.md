@@ -6,7 +6,7 @@ X86_64 Assembly'a merhaba deyin !
   * [X86_64 Assembly'a merhaba deyin bölüm 1](https://github.com/furkanonder/asm/blob/master/bolumler/1.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 2](https://github.com/furkanonder/asm/blob/master/bolumler/2.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 3](https://github.com/furkanonder/asm/blob/master/bolumler/3.md)
-  * [X86_64 Assembly'a merhaba deyin bölüm 4]https://github.com/furkanonder/asm/blob/master/bolumler/4.md)
+  * [X86_64 Assembly'a merhaba deyin bölüm 4](https://github.com/furkanonder/asm/blob/master/bolumler/4.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 5](https://github.com/furkanonder/asm/blob/master/bolumler/5.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 6](https://github.com/furkanonder/asm/blob/master/bolumler/6.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 7](https://github.com/furkanonder/asm/blob/master/bolumler/7.md)
