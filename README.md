@@ -1,3 +1,16 @@
+asm 
+=============
+X86_64 Assembly'a merhaba deyin ! 
+
+
+  * [X86_64 Assembly'a merhaba deyin bölüm 1](https://github.com/furkanonder/asm/bolumler/1/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 2](https://github.com/furkanonder/asm/bolumler/2/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 3](https://github.com/furkanonder/asm/bolumler/3/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 4](https://github.com/furkanonder/asm/bolumler/4/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 5](https://github.com/furkanonder/asm/bolumler/5/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 6](https://github.com/furkanonder/asm/bolumler/6/)
+  * [X86_64 Assembly'a merhaba deyin bölüm 7](https://github.com/furkanonder/asm/bolumler/7/)
+
 asm
 ==============
 
