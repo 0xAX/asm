@@ -1,3 +1,8 @@
+https://github.com/furkanonder/asm/blob/master/bolumler/1.md 'da yer alan kodları dosyalar klasöründe bulabilirsiniz.
+
+Kodların bulunduğu dizinde terminale make yazarak build edebilirsiniz.
+
+---------------------------------------------------------------------------------------
 This is "Hello world" with assembly for Linux x86-64
 
 Build it with: `make`
