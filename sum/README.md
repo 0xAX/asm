@@ -1,3 +1,8 @@
+https://github.com/furkanonder/asm/blob/master/bolumler/2.md 'da yer alan kodları kodlar klasöründe bulabilirsiniz.
+
+Kodların bulunduğu dizinde terminale make yazarak build edebilirsiniz
+
+------------------------------------------------------------------------------------
 This is "sum of 2 numbers" with assembly for Linux x86-64
 
 Build it with: `make`
