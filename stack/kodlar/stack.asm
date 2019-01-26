@@ -32,7 +32,7 @@ _start:
     pop rsi
     ; argv[2]'i stringden tamsayıya çevir
     call    str_to_int
-    ; r10'a ikinci sayıyı koy
+    ; r11'e ikinci sayıyı koy
     mov r11, rax
     ; topla
     add r10, r11
