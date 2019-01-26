@@ -37,7 +37,7 @@ _start:
 	pop	rsi
 	;; convert argv[2] str to int
 	call	str_to_int
-	;; put second num to r10
+	;; put second num to r11
 	mov	r11, rax
 	;; sum it
 	add	r10, r11
