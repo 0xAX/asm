@@ -20,7 +20,7 @@ section .text
 _start:
     ; INPUT'un adresini al
     mov rsi, INPUT
-    ;; zeroize rcx for counter
+    ;; sayaç için rcx'i sıfırla
     xor rcx, rcx
     ; df = 0 si++
     cld
@@ -41,7 +41,7 @@ stringUzunluguHesapla:
     cmp byte [rsi], 0
     ; evet ise fonksiyondan çık.
     je  programdanCikis
-    ;; load byte from rsi to al and inc rsi
+    ;; rsi'den al'e bayt yükle ve rsi'ı artır.
     lodsb
     ; sembolü stack'e pushla
     push  rax
