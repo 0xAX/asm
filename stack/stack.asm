@@ -81,7 +81,6 @@ int_to_str:
 	div	rbx
 	;; add \0
 	add	rdx, 48
-	add	rdx, 0x0
 	;; push reminder to stack
 	push	rdx
 	;; go next
