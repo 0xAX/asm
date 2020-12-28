@@ -1,3 +1,8 @@
+https://github.com/furkanonder/asm/blob/master/bolumler/4.md adresinde yer alan kodları kodlar klasöründe bulabilirsiniz.
+
+Kodların bulunduğu dizinde terminale make yazarak build edebilirsiniz.
+
+------------------------------------------------------------------------------------
 This is "reverse string" with assembly for Linux x86-64.
 
 Build it with: `make`

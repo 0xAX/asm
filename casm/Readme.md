@@ -1,3 +1,13 @@
+https://github.com/furkanonder/asm/blob/master/bolumler/6.md adresinde yer alan kodları kodlar klasöründe bulabilirsiniz.
+
+Kodların bulunduğu dizinde terminale `make` yazarak build edebilirsiniz.
+
+  * casm1 - Assembly'den C Çağrısı
+  * casm2 - Inline(satır içi) assembly
+  * casm3 - C'den Assembly çağrısı
+
+-------------------------------------------------------------------------------------
+
 This is "C with assermbly interaction" application.
 
 Build it with: `make`
