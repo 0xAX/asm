@@ -6,7 +6,7 @@ section .text
 
 _start:
 	;; write syscall
-	mov	rax, 1
+	mov	rax, 4
 	;; file descriptor, standard output
 	mov	rdi, 1
 	;; message address
