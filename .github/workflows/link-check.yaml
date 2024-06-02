@@ -13,9 +13,7 @@ concurrency:
 
 jobs:
   link-checker:
-    runs-on:
-      - "self-hosted"
-      - "generic"
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout repository"
         uses: "actions/checkout@v3"
