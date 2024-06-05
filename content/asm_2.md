@@ -12,7 +12,7 @@ Some days ago I wrote the first blog post - introduction to x64 assembly - Say h
 
 It motivates me even more to describe my way of learning. During this days I got many feedback from different people. There were many grateful words, but what is more important for me, there were many advices and adequate critics. Especially I want to say thank you words for great feedback to:
 
-* [Fiennes](http://www.reddit.com/user/Fiennes)
+* [Fiennes](https://www.reddit.com/user/Fiennes/)
 * [Grienders](https://disqus.com/by/Universal178/)
 * [nkurz](https://news.ycombinator.com/user?id=nkurz)
 
