@@ -1,9 +1,3 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-08-15"
-title = "Say hello to x86_64 Assembly [part 3]"
-+++
 
 The stack is special region in memory, which operates on the principle lifo (Last Input, First Output).
 
@@ -50,8 +44,7 @@ int foo(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 
 Then first six arguments will be passed in registers, but 7 argument will be passed in stack.
 
-Stack pointer
------------------------
+## Stack pointer
 
 As i wroute about we have 16 general-purpose registers, and there are two interesting registers - RSP and RBP. RBP is the base pointer register. It points to the base of the current stack frame. RSP is the stack pointer, which points to the top of current stack frame.
 
@@ -87,8 +80,7 @@ Here we can see that we put 1 to rax register and 2 to rdx register. After it we
 
 Then we copy value from stack which has address rsp + 8. It means we get address of top of stack, add 8 to it and copy data by this address to rax. After it rax value will be 1.
 
-Example
---------------
+## Example
 
 Let's see one example. We will write simple program, which will get two command line arguments. Will get sum of this arguments and print result.
 

@@ -1,16 +1,9 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-09-01"
-title = "Say hello to x86_64 Assembly [part 4]"
-+++
 
 Some time ago i started to write series of blog posts about assembly programming for x86_64. You can find it by asm tag. Unfortunately i was busy last time and there were not new post, so today I continue to write posts about assembly, and will try to do it every week.
 
 Today we will look at strings and some strings operations. We still use nasm assembler, and linux x86_64.
 
-Reverse string
------------------------
+## Reverse string
 
 Of course when we talk about assembly programming language we can't talk about string data type, actually we're dealing with array of bytes. Let's try to write simple example, we will define string data and try to reverse and write result to stdout. This tasks seems pretty simple and popular when we start to learn new programming language. Let's look on implementation.
 
@@ -190,8 +183,7 @@ and run it:
 
 ![result](/content/assets/result_asm_4.png)
 
-String operations
-------------------------
+## String operations
 
 Of course there are many other instructions for string/bytes manipulations:
 

@@ -1,9 +1,3 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-12-01"
-title = "Say hello to x86_64 Assembly [part 8]"
-+++
 
 It is eight and final part of Say hello to x86_64 Assembly and here we will take a look on how to work with non-integer numbers in assembler. There are a couple of ways how to work with floating point data:
 
@@ -60,8 +54,7 @@ Extended precision is 80 bit numbers where:
 
 Read more about it - [here](https://en.wikipedia.org/wiki/Extended_precision). Let's look at simple example.
 
-x87 FPU
------------------
+## x87 FPU
 
 The x87 Floating-Point Unit (FPU) provides high-performance floating-point processing. It supports the floating-point, integer, and packed BCD integer data types and the floating-point processing algorithms. x87 provides following instructions set:
 

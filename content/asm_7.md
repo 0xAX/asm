@@ -1,9 +1,3 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-10-10"
-title = "Say hello to x86_64 Assembly [part 7]"
-+++
 
 It is seventh part of Say hello to x86_64 Assembly and here we will look on how we can use C together with assembler.
 
@@ -15,8 +9,7 @@ Actually we have 3 ways to use it together:
 
 Let's write 3 simple Hello world programs which shows us how to use assembly and C together.
 
-Call assembly from C
----------------------------
+## Call assembly from C
 
 First of all let's write simple C program like this:
 
@@ -59,8 +52,7 @@ build:
 	gcc casm.o casm.c -o casm
 ```
 
-Inline assembly
-------------------------
+## Inline assembly
 
 The following method is to write assembly code directly in C code. There is special syntax for this. It has general view:
 
@@ -117,8 +109,7 @@ build:
 	gcc casm.c -o casm
 ```
 
-Call C from assembly
------------------------
+## Call C from assembly
 
 And the last method is to call C function from assembly code. For example we have following simple C code with one function which just prints Hello world:
 
