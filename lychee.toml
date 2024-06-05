@@ -8,7 +8,7 @@ verbose = "info"
 
 # Enable link caching. This can be helpful to avoid checking the same links on
 # multiple runs.
-cache = false
+cache = true
 
 # Discard all cached requests older than this duration.
 max_cache_age = "1d"
@@ -16,10 +16,10 @@ max_cache_age = "1d"
 #############################  Runtime  #############################
 
 # Maximum number of allowed redirects.
-max_redirects = 10
+max_redirects = 50
 
 # Maximum number of allowed retries before a link is declared dead.
-max_retries = 2
+max_retries = 3
 
 #############################  Requests  ############################
 
