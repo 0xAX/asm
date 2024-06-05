@@ -36,13 +36,13 @@ This work is licensed under a
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
-[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
 
 Author
 ==============
 
-[@0xAX](https://x.com/0xAX)
+The technical content is written by [@0xAX](https://x.com/0xAX).
 
-Additinal big thanks to [@klaudiagrz](https://github.com/klaudiagrz) for text improvements.
+Additional big thanks to [@klaudiagrz](https://github.com/klaudiagrz) for text improvements.
