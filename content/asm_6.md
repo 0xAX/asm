@@ -1,9 +1,3 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-10-01"
-title = "Say hello to x86_64 Assembly [part 6]"
-+++
 
 It is sixth part of Say hello to x86_64 Assembly and here we will look on AT&T assembler syntax. Previously we used nasm assembler in all parts, but there are some another assemblers with different syntax, fasm, yasm and others. As i wrote above we will look on gas (GNU assembler) and difference between it's syntax and nasm. GCC uses GNU assembler, so if you see at assembler output for simple hello world:
 
@@ -51,11 +45,9 @@ main:
 
 Looks different then nasm Hello world, let's look on some differences.
 
-AT&T syntax
-======================
+## AT&T syntax
 
-Sections
--------------------
+### Sections
 
 I don't know how about you, but when I start to write assembler program, usually I'm starting from sections definition. Let's look on simple example:
 
@@ -134,8 +126,7 @@ Also you can not here that registers starts with % symbol. If you're using direc
 movb $10, %rax
 ```
 
-Size of operands and operation syntax
----------------------------------------
+### Size of operands and operation syntax
 
 Sometimes when we need to get part of memory, for example first byte of 64 register, we used following syntax:
 
@@ -160,8 +151,7 @@ GNU assembler has 6 postfixes for operations:
 
 This rule is not only mov instruction, but also for all another like addl, xorb, cmpw and etc...
 
-Memory access
---------------------
+### Memory access
 
 You can note that we used () brackets in previous example instead [] in nasm example. To dereference values in parentheses are used GAS: (%rax), for example:
 
@@ -170,8 +160,7 @@ movq -8(%rbp),%rdi
 movq 8(%rbp),%rdi
 ```
 
-Jumps
-----------------------
+### Jumps
 
 GNU assembler supports following operators for far functions call and jumps:
 
@@ -181,8 +170,7 @@ lcall $section, $offset
 
 Far jump - a jump to an instruction located in a different segment than the current code segment but at the same privilege level, sometimes referred to as an intersegment jump.
 
-Comments
------------------
+### Comments
 
 GNU assembler supports 3 types of comments:
 

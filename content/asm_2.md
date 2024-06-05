@@ -1,9 +1,3 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-08-10"
-title = "Say hello to x86_64 Assembly [part 2]"
-+++
 
 Some days ago I wrote the first blog post - introduction to x64 assembly - Say hello to x64 Assembly [part 1] which to my surprise caused great interest:
 
@@ -18,8 +12,7 @@ It motivates me even more to describe my way of learning. During this days I got
 
 And all who took a part in discussion at Reddit and Hacker News. There were many opinions, that first part was a not very clear for absolute beginner, that's why i decided to write more informative posts. So, let's start with second part of Say hello to x86_64 assembly.
 
-Terminology and Concepts
---------------------------
+## Terminology and Concepts
 
 As i wrote above, I got many feedback from different people that some parts of first post are not clear, that's why let's start from description of some terminology that we will see in this and next parts.
 
@@ -57,15 +50,13 @@ Section - every assembly program consists from sections. There are following sec
 
 General-purpose registers - there are 16 general-purpose registers - rax, rbx, rcx, rdx, rbp, rsp, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15. Of course, it is not a full list of terms and concepts which related with assembly programming. If we will meet another strange and unfamiliar words in next blog posts, there will be explanation of this words.
 
-Data Types
-----------------
+## Data Types
 
 The fundamental data types are bytes, words, doublewords, quadwords, and double quadwords. A byte is eight bits, a word is 2 bytes, a doubleword is 4 bytes, a quadword is 8 bytes and a double quadword is 16 bytes (128 bits).
 
 Now we will work only with integer numbers, so let's see to it. There two types of integer: unsigned and signed. Unsigned integers are unsigned binary numbers contained in a byte, word, doubleword, and quadword. Their values range from 0 to 255 for an unsigned byte integer, from 0 to 65,535 for an unsigned word integer, from 0 to 2^32 – 1 for an unsigned doubleword integer, and from 0 to 2^64 – 1 for an unsigned quadword integer. Signed integers are signed binary numbers held as unsigned in a byte, word and etc... The sign bit is set for negative integers and cleared for positive integers and zero. Integer values range from –128 to +127 for a byte integer, from –32,768 to +32,767 for a word integer,from –2^31 to +2^31 – 1 for a doubleword integer, and from –2^63 to +2^63 – 1 for a quadword integer.
 
-Sections
-----------------
+## Sections
 
 As i wrote above, every assembly program consists from sections, it can be data section, text section and bss section. Let's look on data section.It's main point - to declare initialized constants. For example:
 
@@ -100,8 +91,7 @@ one equ 1
 
 * TIMES - Repeating Instructions or Data. (description will be in next posts)
 
-Arithmetic operations
-------------------------
+## Arithmetic operations
 
 There is short list of arithmetic instructions:
 
@@ -117,8 +107,7 @@ There is short list of arithmetic instructions:
 
 Some of it we will see at practice in this post. Other will be covered in next posts.
 
-Control flow
----------------------
+## Control flow
 
 Usually programming languages have ability to change order of evaluation (with if statement, case statement, goto and etc...) and assembly has it too. Here we will see some of it. There is cmp instruction for performing comparison between two values. It is used along with the conditional jump instruction for decision making. For example:
 
@@ -183,8 +172,7 @@ Here we have can have some code which will be after _start label, and all of thi
 
 Often unconditional jump uses in loops. For example we have label and some code after it. This code executes anything, than we have condition and jump to the start of this code if condition is not successfully. Loops will be covered in next parts.
 
-Example
----------------
+## Example
 
 Let's see simple example. It will take two integer numbers, get sum of these numbers and compare it with predefined number. If predefined number is equal to sum, it will print something on the screen, if not - just exit. Here is the source code of our example:
 

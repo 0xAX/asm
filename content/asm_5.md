@@ -1,14 +1,7 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-09-20"
-title = "Say hello to x86_64 Assembly [part 5]"
-+++
 
 It is a fifth part of Say hello to x86_64 Assembly and here we will look at macros. It will not be blog post about x86_64, mainly it will be about nasm assembler and it's preprocessor. If you're interesting in it read next.
 
-Macros
--------------------------
+## Macros
 
 NASM supports two form of macro:
 
@@ -111,13 +104,11 @@ Now we can use it:
 label: PRINT "Hello World!"
 ```
 
-Useful standard macros
----------------------------------
+## Useful standard macros
 
 NASM supports following standard macros:
 
-STRUC
---------
+### STRUC
 
 We can use `STRUC` and `ENDSTRUC` for data structure defintion. For example:
 
@@ -142,7 +133,6 @@ _start:
     mov rax, [p + person.name]
 ```
 
-%include
-----------------
+### %include
 
 We can include other assembly files and jump to there labels or call functions with %include directive.

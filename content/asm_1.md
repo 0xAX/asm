@@ -1,12 +1,4 @@
-+++
-Categories = ["assembler"]
-Tags = ["linux", "x86_64", "assembly"]
-date = "2014-08-01"
-title = "Say hello to x86_64 Assembly [part 1]"
-+++
-
-Introduction
----------------
+## Introduction
 
 There are many developers between us. We write a tons of code every day. Sometime, it is even not a bad code :) Every of us can easily write the simplest code like this:
 
@@ -23,8 +15,7 @@ int main() {
 
 Every of us can understand what's this C code does. But... How this code works at low level? I think that not all of us can answer on this question, and me too. I thought that i can write code on high level programming languages like Haskell, Erlang, Go and etc..., but i absolutely don't know how it works at low level, after compilation. So I decided to take a few deep steps down, to assembly, and to describe my learning way about this. Hope it will be interesting, not only for me. Something about 5 - 6 years ago I already used assembly for writing simple programs, it was in university and i used Turbo assembly and DOS operating system. Now I use Linux-x86-64 operating system. Yes, must be big difference between Linux 64 bit and DOS 16 bit. So let's start.
 
-Preparation
-----------------
+## Preparation
 
 Before we started, we must to prepare some things like As I wrote about, I use Ubuntu (Ubuntu 14.04.1 LTS 64 bit), thus my posts will be for this operating system and architecture. Different CPU supports different set of instructions. I use Intel Core i7 870 processor, and all code will be written processor. Also i will use nasm assembly. You can install it with:
 
@@ -41,8 +32,7 @@ It's version must be 2.0.0 or greater. I use NASM version 2.10.09 compiled on De
 ```
 That's all we need for this moment. Other tools will be describe in next posts.
 
-Syntax of nasm assembly
--------------------------
+## Syntax of nasm assembly
 
 Here I will not describe full assembly syntax, we'll mention only those parts of the syntax, which we will use in this post. Usually NASM program divided into sections. In this post we'll meet 2 following sections:
 
@@ -75,8 +65,7 @@ Fields which are in square brackets are optional. A basic NASM instruction consi
     MOV COUNT, 48 ; Put value 48 in the COUNT variable
 ```
 
-Hello world
-------------------
+## Hello world
 
 Let's write first program with NASM assembly. And of course it will be traditional Hello world program. Here is the code of it:
 
