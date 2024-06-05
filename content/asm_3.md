@@ -30,7 +30,7 @@ incRax:
 		ret
 ```
 
-Here we can see that after application runnning, rax is equal to 1. Then we call a function incRax, which increases rax value to 1, and now rax value must be 2. After this execution continues from 8 line, where we compare rax value with 2. Also as we can read in [System V AMD64 ABI](www.x86-64.org/documentation/abi.pdf), the first six function arguments passed in registers. They are:
+Here we can see that after application runnning, rax is equal to 1. Then we call a function incRax, which increases rax value to 1, and now rax value must be 2. After this execution continues from 8 line, where we compare rax value with 2. Also as we can read in [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the first six function arguments passed in registers. They are:
 
 * `rdi` - first argument
 * `rsi` - second argument
