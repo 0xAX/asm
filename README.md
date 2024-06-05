@@ -29,4 +29,4 @@ Chinese translation:
 Author
 ==============
 
-[@0xAX](https://twitter.com/0xAX)
+[@0xAX](https://x.com/0xAX)
