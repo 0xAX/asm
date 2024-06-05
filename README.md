@@ -6,7 +6,7 @@
 
 This repository contains list of small posts to introduce [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. All the content and examples cover only the [x86_64](https://en.wikipedia.org/wiki/X86-64) processors and GNU Linux operating system. Whether you are an experienced programmer or not, these posts are intended for everyone to learn assembly programming language.
 
-![Magic](./assets/asm-introduction.png)
+![Magic](./content/assets/asm-introduction.png)
 
 The following topics currently covered:
 
