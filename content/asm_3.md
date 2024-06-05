@@ -83,7 +83,7 @@ _start:
 ```
 Here we can see that we put 1 to rax register and 2 to rdx register. After it we push to stack values of these registers. Stack works as LIFO (Last In First Out). So after this stack or our application will have following structure:
 
-![stack diagram](http://3.bp.blogspot.com/-4H9FAAD2duo/VB0VWfdWJrI/AAAAAAAAAHU/E6BAh0LkDV4/s1600/Untitled%2BDiagram.png)
+![stack diagram](/content/assets/stack-diagram.png)
 
 Then we copy value from stack which has address rsp + 8. It means we get address of top of stack, add 8 to it and copy data by this address to rax. After it rax value will be 1.
 

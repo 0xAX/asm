@@ -176,4 +176,4 @@ clean:
 
 And run:
 
-![result](http://1.bp.blogspot.com/-yBn1V2mJ3no/VJgkuudOQRI/AAAAAAAAAIc/rqVNUpX87Og/s1600/Screenshot%2Bfrom%2B2014-12-22%2B20%3A02%3A56.png)
+![result](/content/assets/result_asm_8.png)

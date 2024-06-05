@@ -105,7 +105,7 @@ A central processing unit (CPU) is the hardware within a computer that carries o
 
 Ok, CPU performs some operations, arithmetical and etc... But where can it get data for this operations? The first answer in memory. However, reading data from and storing data into memory slows down the processor, as it involves complicated processes of sending the data request across the control bus. Thus CPU has own internal memory storage locations called registers:
 
-![registers](http://i45.tinypic.com/10wtooh.png)
+![registers](/content/assets/registers.png)
 
 So when we write mov rax, 1, it means to put 1 to the rax register. Now we know what is it rax, rdi, rbx and etc... But need to know when to use rax but when rsi and etc...
 

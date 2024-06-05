@@ -7,8 +7,8 @@ title = "Say hello to x86_64 Assembly [part 2]"
 
 Some days ago I wrote the first blog post - introduction to x64 assembly - Say hello to x64 Assembly [part 1] which to my surprise caused great interest:
 
-![newscombinator](http://2.bp.blogspot.com/-wtVOF9PoT3U/VAXLYjlkbbI/AAAAAAAAAGs/Wo-53TGH0Do/s1600/Screenshot%2Bfrom%2B2014-08-31%2B23%3A58%3A26.png)
-![reddit](http://4.bp.blogspot.com/-__MfY5bYax4/VAXLf8lQmGI/AAAAAAAAAG0/MBdT2vjhcts/s1600/Screenshot%2Bfrom%2B2014-09-01%2B00%3A30%3A32.png)
+![newscombinator](./assets/newscombinator-screenshot.png)
+![reddit](./assets/reddit-screenshot.png)
 
 It motivates me even more to describe my way of learning. During this days I got many feedback from different people. There were many grateful words, but what is more important for me, there were many advices and adequate critics. Especially I want to say thank you words for great feedback to:
 

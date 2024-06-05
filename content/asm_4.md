@@ -188,7 +188,7 @@ clean:
 
 and run it:
 
-![result](http://1.bp.blogspot.com/-PoIXmq_sbmU/VG3x4VvtFiI/AAAAAAAAAH4/z2DiEHcrBxs/s1600/Screenshot%2Bfrom%2B2014-11-20%2B19%3A51%3A15.png)
+![result](/content/assets/result_asm_4.png)
 
 String operations
 ------------------------
