@@ -24,7 +24,7 @@ max_retries = 3
 #############################  Requests  ############################
 
 # User agent to send with each request.
-user_agent = "curl/7.83. 1"
+user_agent = "Mozilla/5.0"
 
 # Website timeout from connect to response finished.
 timeout = 20
