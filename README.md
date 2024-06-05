@@ -2,6 +2,8 @@
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] [![Check Links](https://github.com/0xAX/asm/actions/workflows/link-check.yaml/badge.svg)](https://github.com/0xAX/asm/actions/workflows/link-check.yaml)
 
+![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+
 Learning assembly for linux-x64
 
   * [Say hello to x86_64 Assembly part 1](https://0xax.github.io/asm_1/)
