@@ -1,6 +1,8 @@
 asm
 ==============
 
+[![Check Links](https://github.com/0xAX/asm/actions/workflows/link-check.yaml/badge.svg)](https://github.com/0xAX/asm/actions/workflows/link-check.yaml)
+
 Learning assembly for linux-x64
 
 Examples
