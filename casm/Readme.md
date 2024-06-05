@@ -8,4 +8,4 @@ Build it with: `make`
 
 More details at - [Say hello to x86_64 Assembly part 6](https://0xax.github.io/asm_7/)
 
-[@0xAX](http://twitter.com/0xAX)
+[@0xAX](https://x.com/0xAX)
