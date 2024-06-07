@@ -2,13 +2,24 @@
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] [![Check Links](https://github.com/0xAX/asm/actions/workflows/link-check.yaml/badge.svg)](https://github.com/0xAX/asm/actions/workflows/link-check.yaml) [![star this repo](https://badgen.net/github/stars/0xAX/asm)](https://github.com/0xAX/asm) [![fork this repo](https://badgen.net/github/forks/0xAX/asm)](https://github.com/0xAX/asm/fork) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/0xAX/asm/issues)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com) 
 
-![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+This repository contains list of small posts to introduce [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. For this moment, all the content and examples cover only the [x86_64](https://en.wikipedia.org/wiki/X86-64) processors and GNU Linux operating system. In future it is planned to posts that provides learning materials for the [ARM64](https://en.wikipedia.org/wiki/AArch64) architecture.
 
-This repository contains list of small posts to introduce [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. All the content and examples cover only the [x86_64](https://en.wikipedia.org/wiki/X86-64) processors and GNU Linux operating system. Whether you are an experienced programmer or not, these posts are intended for everyone to learn assembly programming language.
+Whether you are an experienced programmer or not, these posts are intended for everyone to learn assembly programming language. The series of the posts presents following topics:
+
+- Basic description of the [x86_64](https://en.wikipedia.org/wiki/X86-64)
+- How to write, build and run a simple program written in assembly programming language
+- The main parts of which a program for Linux consists
+- Basics of memory allocation, what is stack and heap
+- What is system call and how your program interracts with an operating system
+- How floating point numbers are represented in a computer memory
+- How to call assembly code from a C program
+- And many more...
+
+Have a fun!
 
 ![Magic](./content/assets/asm-introduction.png)
 
-The following topics currently covered:
+The links to the each post:
 
   * [Say hello to x86_64 Assembly part 1](https://0xax.github.io/asm_1/)
   * [Say hello to x86_64 Assembly part 2](https://0xax.github.io/asm_2/)
@@ -18,6 +29,15 @@ The following topics currently covered:
   * [Say hello to x86_64 Assembly part 6](https://0xax.github.io/asm_6/)
   * [Say hello to x86_64 Assembly part 7](https://0xax.github.io/asm_7/)
   * [Say hello to x86_64 Assembly part 8](https://0xax.github.io/asm_8/)
+
+## Requirements
+
+To run code examples you will need following tools:
+
+- [64-bit distribution of Linux](https://en.wikipedia.org/wiki/Linux_distribution)
+- [make](https://www.gnu.org/software/make/)
+- [nasm](https://nasm.us/)
+- [binutils](https://www.gnu.org/software/binutils/)
 
 ## Translations
 
