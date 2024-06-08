@@ -1,6 +1,6 @@
-# Introduction
+# Introduction to assembly
 
-Hello! We are welcome you in our short series of posts about [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. Most probably you are a software developer as me, who is interested in low-level programming. Despite the fact that neither I, nor most likely you using this programming language on our daily basis - the information that is presented in this set of posts still could be highly useful. Yes, we are using high-level programming languages, libraries and frameworks. In most cases we do not write sorting algorithms or a string reverse functions manually. Each of us can easily write the simplest code like this:
+Hello! We are welcome you in our short series of posts about [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. Most probably you are a software developer as me, who is interested in low-level programming. If you are just a beginnier and only start to learn programming, the assembly might be not the best place to start. I assume that you're familar with basic concepts like hexadecimal numbers, a pointer, boolean logic, basic knowledge about command line and experience at least with one high-level programming language. Despite the fact that neither I, nor most likely you using this programming language on our daily basis - the information that is presented in this set of posts still could be highly useful. Yes, we are using high-level programming languages, libraries and frameworks. In most cases we do not write sorting algorithms or a string reverse functions manually. Each of us can easily write the simplest code like this:
 
 ```C
 #include <stdio.h>
@@ -61,7 +61,7 @@ After these tools are installed and configured we finally can start.
 
 Here we will not see the full syntax of assembly programming language. We will see just some parts of it very shortly. The main goal of this chapter is to have ability to build and run our very first example without diving too deep into assembly and `x86_64` CPU architecture. We will start our journey with our favorite and well known [hello world](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program.
 
-All the code usually consists from code and comments. The comments starts with the `;` symbol. The code of an assembly program usually divided into sections (also sometimes called memory segments). To implement the `hello world` program we will meet only the two following sections:
+All the code usually consists from the code and comments. The comments starts with the `;` symbol. The code of an assembly program usually divided into sections (also sometimes called memory segments). To implement the `hello world` program we will meet only the two following sections:
 
 -  `data` section
 -  `text` section
@@ -72,7 +72,7 @@ Each section is used to contain specific data. The `data` section is used to dec
 section .data
 ```
 
-The `text` section is used to store the instructions of our program. This section must begin with the declaration `global _start`, which tells the operating system kernel where the program execution should [start](https://en.wikipedia.org/wiki/Entry_point) after the program is loaded. The code snippet below shows an example of the declaration of the `text` section and entry point of a program defined with the `_start` symbol:
+Each program that is written on any high-level programming language usually consists of code instructions that says to a computer the steps what to do during execution of a program. An assembly program is not an exception. The `text` section is used to store the instructions of our program. This section must begin with the declaration `global _start`, which tells the operating system kernel where the program execution should [start](https://en.wikipedia.org/wiki/Entry_point) after the program is loaded. The code snippet below shows an example of the declaration of the `text` section and entry point of a program defined with the `_start` symbol:
 
 ```assembly
 section .text
