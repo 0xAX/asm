@@ -59,7 +59,7 @@ After these tools are installed and configured we finally can start.
 
 ## Basics of NASM assembly syntax
 
-Here we will not see the full syntax of assembly programming language. We will see just some parts of it very shortly. The main goal of this chapter is to have ability to build and run our very first example without diving too deep into assembly and x86_64 CPU architecture. We will start our journey with our favorite and well known [hello world](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program.
+Here we will not see the full syntax of assembly programming language. We will see just some parts of it very shortly. The main goal of this chapter is to have ability to build and run our very first example without diving too deep into assembly and `x86_64` CPU architecture. We will start our journey with our favorite and well known [hello world](https://en.wikipedia.org/wiki/%22Hello,_World!%22_program) program.
 
 All the code usually consists from code and comments. The comments starts with the `;` symbol. The code of an assembly program usually divided into sections (also sometimes called memory segments). To implement the `hello world` program we will meet only the two following sections:
 
@@ -150,14 +150,14 @@ OK, a CPU performs some operations, arithmetical and etc... That we might know w
 
 Each register could be considered as a very small memory slot which may store a value with a size specified in the table above. For example, the `rax` register may contain a value up to `64` bits, the `ax` register may contain a value up to `16` bits and so on. So when we see `mov rax, 1`, this means to put `1` to the `rax` register. Now we have an approximate understanding of what is these `rax`, `rdi`, `rbx` and etc... In the next posts we will find more information about them, for now it is enough to consider them just a small memory slots that a CPU can access in a very fast way. As described above, the name of these registers is `general purpose registers`. Does it mean that we may use any register for any purpose? The simple answer without any details is - no. The [ABI](https://en.wikipedia.org/wiki/Application_binary_interface) and the [calling conventions](https://en.wikipedia.org/wiki/X86_calling_conventions) of an operating system should describe how a certain register is used and why. 
 
-Since these posts described assembly for the Linux x86_64, the following registers have the following meanings:
+Since these posts described assembly for the Linux `x86_64`, the following registers have the following meanings:
 
 - `rax` - In most cases could be used as a temporary register to store a temporary value. In a case of call of a [system call](https://en.wikipedia.org/wiki/System_call) it must contain the number of the system call.
 - `rdi` - Used to pass `1st` argument to a function.
 - `rsi` - Used to pass `2nd` argument to a function.
 - `rdx` - Used to pass `3rd` argument to a function.
 
-There is more details related to the Linux x86_64 calling conventions but the description above should be enough for now. Knowing the meaning and the way of use of these registers we can return to the code. What do we need to write a `hello world` program? Usually we just pass a `hello world` string to a library function like [printf](https://en.wikipedia.org/wiki/Printf) or so. But these functions usually goes from a [standard library](https://en.wikipedia.org/wiki/Standard_library) of a programming languages we are using. Assembly does not have a standard library. What to do in this case? Well, we have at least the two following approaches:
+There is more details related to the Linux `x86_64` calling conventions but the description above should be enough for now. Knowing the meaning and the way of use of these registers we can return to the code. What do we need to write a `hello world` program? Usually we just pass a `hello world` string to a library function like [printf](https://en.wikipedia.org/wiki/Printf) or so. But these functions usually goes from a [standard library](https://en.wikipedia.org/wiki/Standard_library) of a programming languages we are using. Assembly does not have a standard library. What to do in this case? Well, we have at least the two following approaches:
 
 - Link our assembly program with C standard library and use [printf](https://man7.org/linux/man-pages/man3/printf.3.html) or any other function that may help us to write a text to the [standard output](https://en.wikipedia.org/wiki/Standard_streams).
 - Use the operating system API
