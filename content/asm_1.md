@@ -19,7 +19,7 @@ Every of us can understand what's this C code does. But... How this code works a
 
 Before we started, we must to prepare some things like As I wrote about, I use Ubuntu (Ubuntu 14.04.1 LTS 64 bit), thus my posts will be for this operating system and architecture. Different CPU supports different set of instructions. I use Intel Core i7 870 processor, and all code will be written processor. Also i will use nasm assembly. You can install it with:
 
-```
+```bash
 $ sudo apt-get install nasm
 ```
 

@@ -21,7 +21,7 @@ Have fun!
 
 Here are links to each post:
 
-  * [Say hello to x86_64 Assembly part 1](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
+  * [Part 1. Introduction](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
   * [Say hello to x86_64 Assembly part 2](https://github.com/0xAX/asm/blob/master/content/asm_2.md)
   * [Say hello to x86_64 Assembly part 3](https://github.com/0xAX/asm/blob/master/content/asm_3.md)
   * [Say hello to x86_64 Assembly part 4](https://github.com/0xAX/asm/blob/master/content/asm_4.md)
