@@ -1,7 +1,9 @@
-This is "Hello world" with assembly for Linux x86-64
+This is a basic "Hello world" program written with assembly for Linux `x86_64`.
 
-Build it with: `make`
+Build the program executing: 
 
-More details at - [Say hello to x64 Assembly [part 1]](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
+```bash
+make
+```
 
-[@0xAX](https://x.com/0xAX)
+Read the details in the - [Introduction to assembly programming language](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
