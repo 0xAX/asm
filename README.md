@@ -36,7 +36,7 @@ To run code examples you will need following tools:
 
 - [64-bit distribution of Linux](https://en.wikipedia.org/wiki/Linux_distribution)
 - [make](https://www.gnu.org/software/make/)
-- [nasm](https://nasm.us/)
+- [NASM](https://nasm.us/)
 - [binutils](https://www.gnu.org/software/binutils/)
 
 ## Translations
