@@ -4,7 +4,7 @@
 
 This repository contains blog posts that introduce the [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. For this moment, all the content and examples cover only the [x86_64](https://en.wikipedia.org/wiki/X86-64) processors and the GNU Linux operating system. In the future, I plan to post learning materials for the [ARM64](https://en.wikipedia.org/wiki/AArch64) architecture.
 
-Whether you are an experienced programmer or not, these posts are intended for everyone to learn assembly programming language. The series of the posts presents following topics:
+Whether you are an experienced programmer or not, these posts are intended for everyone to learn the assembly programming language. The posts cover the following topics:
 
 - Basic description of the [x86_64](https://en.wikipedia.org/wiki/X86-64)
 - How to write, build and run a simple program written in assembly programming language
