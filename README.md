@@ -6,20 +6,20 @@ This repository contains blog posts that introduce the [assembly](https://en.wik
 
 Whether you are an experienced programmer or not, these posts are intended for everyone to learn the assembly programming language. The posts cover the following topics:
 
-- Basic description of the [x86_64](https://en.wikipedia.org/wiki/X86-64)
-- How to write, build and run a simple program written in assembly programming language
+- Basic description of the x86_64 processor architecture
+- How to write, build, and run a simple program written in the assembly programming language
 - The main parts of which a program for Linux consists
 - Basics of memory allocation, what is stack and heap
-- What is system call and how your program interracts with an operating system
+- What is a system call and how does your program interact with an operating system
 - How floating point numbers are represented in a computer memory
 - How to call assembly code from a C program
 - And many more...
 
-Have a fun!
+Have fun!
 
 ![Magic](./content/assets/asm-introduction.png)
 
-The links to the each post:
+Here are links to each post:
 
   * [Say hello to x86_64 Assembly part 1](https://0xax.github.io/asm_1/)
   * [Say hello to x86_64 Assembly part 2](https://0xax.github.io/asm_2/)
@@ -32,7 +32,7 @@ The links to the each post:
 
 ## Requirements
 
-To run code examples you will need following tools:
+To run code examples, you need the following tools:
 
 - [64-bit distribution of Linux](https://en.wikipedia.org/wiki/Linux_distribution)
 - [make](https://www.gnu.org/software/make/)
@@ -41,9 +41,9 @@ To run code examples you will need following tools:
 
 ## Translations
 
-Thanks to the volunteers the posts about assembly programming are translated into different languages.
+Thanks to the volunteers, the posts about assembly programming are translated into different languages.
 
-### Chinese translation:
+### Chinese translation
 
   * [译文: Say hello to x64 Assembly [part 1]](https://github.com/time-river/vvl.me/blob/master/source/_posts/translation-Say-hello-to-x64-Assembly-part-1.md)
   * [译文: Say hello to x64 Assembly [part 2]](https://github.com/time-river/vvl.me/blob/master/source/_posts/translation-Say-hello-to-x64-Assembly-part-2.md)
@@ -54,7 +54,7 @@ Thanks to the volunteers the posts about assembly programming are translated int
   * [译文: Say hello to x64 Assembly [part 7]](https://github.com/time-river/vvl.me/blob/master/source/_posts/translation-Say-hello-to-x64-Assembly-part-7.md)
   * [译文: Say hello to x64 Assembly [part 8]](https://github.com/time-river/vvl.me/blob/master/source/_posts/translation-Say-hello-to-x64-Assembly-part-8.md)
 
-### Turkish translation:
+### Turkish translation
 
   * [X86_64 Assembly'a merhaba deyin bölüm 1](https://github.com/furkanonder/asm/blob/master/bolumler/1.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 2](https://github.com/furkanonder/asm/blob/master/bolumler/2.md)
@@ -67,7 +67,7 @@ Thanks to the volunteers the posts about assembly programming are translated int
 
 ## License
 
-Each the markdown file included in the repository is licensed under the
+Each Markdown file in the repository is licensed under the
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
