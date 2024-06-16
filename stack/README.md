@@ -2,7 +2,7 @@ This is simple application which gets two command line arguments, sums it and pr
 
 Build it with: `make`
 
-More details at - [Say hello to x64 Assembly [part 3]](https://0xax.github.io/asm_3/)
+More details at - [Say hello to x64 Assembly [part 3]](https://github.com/0xAX/asm/blob/master/content/asm_3.md)
 
 [@0xAX](https://x.com/0xAX)
 

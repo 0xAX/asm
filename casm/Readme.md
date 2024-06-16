@@ -6,6 +6,6 @@ Build it with: `make`
   * casm2 - gcc inline assembly
   * casm3 - call asm function from C
 
-More details at - [Say hello to x86_64 Assembly part 6](https://0xax.github.io/asm_7/)
+More details at - [Say hello to x86_64 Assembly part 6](https://github.com/0xAX/asm/blob/master/content/asm_7.md)
 
 [@0xAX](https://x.com/0xAX)
