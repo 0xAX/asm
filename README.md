@@ -43,6 +43,9 @@ To run code examples, you need the following tools:
 
 Thanks to the volunteers, the posts about assembly programming are translated into different languages.
 
+> [!NOTE] 
+> The translations may diverge from the original content.
+
 ### Chinese translation
 
   * [译文: Say hello to x64 Assembly [part 1]](https://github.com/time-river/vvl.me/blob/master/source/_posts/translation-Say-hello-to-x64-Assembly-part-1.md)
