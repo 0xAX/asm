@@ -17,7 +17,7 @@ If you are a new open source contributor, here are some resources you may find u
 
 ## Create an issue 
 
-If you have any improvement ideas, notice a missing feature or a bug, create a GitHub issue by clicking **Issues -> New issue** in GitHub. Make sure to fill the issue template with the detailed description of the bug or suggested improvements. Provide proper argumentation and screenshots, if necessary.
+If you have any improvement ideas, notice a missing feature or a bug, create a GitHub issue by clicking **Issues -> New issue** in GitHub. Make sure to fill the issue template with a detailed description of the bug or suggested improvements. Provide proper argumentation and screenshots, if necessary.
 
 If you find any existing issue to work on, you are welcome to open a PR with a fix.
 
