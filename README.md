@@ -65,6 +65,10 @@ Thanks to the volunteers, the posts about assembly programming are translated in
   * [X86_64 Assembly'a merhaba deyin bölüm 7](https://github.com/furkanonder/asm/blob/master/bolumler/7.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 8](https://github.com/furkanonder/asm/blob/master/bolumler/8.md)
 
+## Contribution 
+
+Read the [Contribution guide](./CONTRIBUTING.md) to learn how to contribute to the project. When contributing, make sure to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## License
 
 Each Markdown file in the repository is licensed under the
