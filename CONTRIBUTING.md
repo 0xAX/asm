@@ -17,7 +17,7 @@ If you are a new open source contributor, here are some resources you may find u
 
 ## Create an issue 
 
-If you have any improvement ideas, notice a missing feature or a bug, create a GitHub issue by clicking **Issues -> New issue** in GitHub. Make sure to fill the issue template with the detailed destription of the bug or suggested improvements. Provide proper argumentation and screenshots, if necessary.
+If you have any improvement ideas, notice a missing feature or a bug, create a GitHub issue by clicking **Issues -> New issue** in GitHub. Make sure to fill the issue template with the detailed description of the bug or suggested improvements. Provide proper argumentation and screenshots, if necessary.
 
 If you find any existing issue to work on, you are welcome to open a PR with a fix.
 
@@ -38,7 +38,7 @@ If you want to directly contribute to the project, create a pull reguest with th
 
 ## Review and approval process
 
-After you submitted your PR, wait for the review. The project maintainers will evaluate your changes and provide feedback either using [suggested changes](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/incorporating-feedback-in-your-pull-request) or pull request comments. Address the review suggestions and comments as soon as you can. If your PR looks good, the maintainers approve and merge it. 
+After you submit your PR, wait for the review. The project maintainers will evaluate your changes and provide feedback either using [suggested changes](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/incorporating-feedback-in-your-pull-request) or pull request comments. Address the review suggestions and comments as soon as you can. If your PR looks good, the maintainers approve and merge it. 
 
 ## Contributors 
 

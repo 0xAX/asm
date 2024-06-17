@@ -1,6 +1,6 @@
 # Contributors
 
-Special thanks for all the people who helped to develop this project:
+Special thanks to all the people who helped to develop this project:
 
 - [klaudiagrz](https://github.com/klaudiagrz)
 - [3lushl9301](https://github.com/lushl9301)
