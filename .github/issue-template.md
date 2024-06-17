@@ -1,7 +1,7 @@
 <!-- Thank you for your contribution. Before you submit the issue:
 - Search open and closed issues for duplicates.
-- Read the [Contributing guidelines](../contributing.md).
-- Follow the [Code of Conduct](../CODE_OF_CONDUCT.md).
+- Read the Contributing guidelines.
+- Follow the Code of Conduct.
 -->
 
 **Description**
