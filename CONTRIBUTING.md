@@ -27,26 +27,14 @@ If you want to directly contribute to the project, create a pull reguest with th
 
 1. [Fork the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo#fork-an-example-repository).
 
-2. Clone the forked repository to your local machine:
+2. Make changes on your local copy of the forked repository.
 
-    ```bash
-    git clone git@github.com:{YOUR_GITHUB_USERNAME}/{REPOSITORY_NAME}.git
-    ```
-
-3. Create a new branch:
-
-    ```bash
-    git checkout -b "{BRANCH_NAME}"
-    ```
-
-4. Make changes on your local copy of the forked repository.
-
-5. Commit and push the changes to GitHub. 
+3. Commit and push the changes to GitHub. 
 
 > [!IMPORTANT]  
 > Don't forget to update your fork. Since many contributors may be working on the same content based on the `master` branch, some merge conflicts may occur. Remember to rebase with `master` every time before pushing your changes and make sure your branch doesn't have any conflicts with `master`. If you run into any merge conflicts, read the [Resolve merge conflicts](https://github.com/skills/resolve-merge-conflicts) tutorial to learn how to resolve merge conflicts and other issues.
 
-6. Open a pull request in GitHub. Fill the pull request template with the reason and description for the provided changes. Link your pull request with the existing issue, if applicable. After submitting your PR, wait for the review from the project maintainers.
+4. Open a pull request in GitHub. Fill the pull request template with the reason and description for the provided changes. Link your pull request with the existing issue, if applicable. After submitting your PR, wait for the review from the project maintainers.
 
 ## Review and approval process
 
