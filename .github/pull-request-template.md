@@ -1,6 +1,6 @@
 <!-- Thank you for your contribution. When contributing to the project, remember to:
-- Read the [Contribution guide](../contributing.md).
-- Follow the [Code of Conduct](../CODE_OF_CONDUCT.md).
+- Read the Contribution guide.
+- Follow the Code of Conduct.
 -->
 
 **Description**
