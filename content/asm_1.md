@@ -13,7 +13,8 @@ int main() {
 }
 ```
 
-Every of us can understand what's this C code does. But... How this code works at low level? I think that not all of us can answer on this question, and me too. I thought that i can write code on high level programming languages like Haskell, Erlang, Go and etc..., but i absolutely don't know how it works at low level, after compilation. So I decided to take a few deep steps down, to assembly, and to describe my learning way about this. Hope it will be interesting, not only for me. Something about 5 - 6 years ago I already used assembly for writing simple programs, it was in university and i used Turbo assembly and DOS operating system. Now I use Linux-x86-64 operating system. Yes, must be big difference between Linux 64 bit and DOS 16 bit. So let's start.
+Everyone understands what this C code does. But... How does this code works at low level? I think that not all of us can answer on this question, and me too. I thought that i could write code on high level programming languages like Haskell, Erlang, Go and etc..., but i absolutely don't know how it works at a low level, after compilation. So I decided to take a few deep steps down, to assembly, and to describe my journey of learning. Hope it will be interesting, not only for me.
+Something about 5 - 6 years ago, I already used assembly for writing simple programs. It was in university and I used Turbo assembly and DOS operating system. Now, I use Linux-x86-64 operating system. Yes, must be big difference between Linux 64 bit and DOS 16 bit. So let's start.
 
 ## Preparation
 
