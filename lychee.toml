@@ -54,6 +54,7 @@ glob_ignore_case = false
 
 # Exclude URLs from checking (supports regex).
 exclude = [
+  "https://www.gnu.org/software/emacs"
 ]
 
 # Exclude these filesystem paths from getting checked.
