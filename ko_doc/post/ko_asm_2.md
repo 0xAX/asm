@@ -1,7 +1,7 @@
 며칠 전에 첫 블로그 포스트인 "x64 어셈블리 소개 - x64 어셈블리와 친해지기 [파트 1]"을 작성했는데, 예상외로 큰 관심을 받았습니다:
 
-![newscombinator](./assets/newscombinator-screenshot.png)
-![reddit](./assets/reddit-screenshot.png)
+![newscombinator](/content/assets/newscombinator-screenshot.png)
+![reddit](/content/assets/reddit-screenshot.png)
 
 이것은 저를 더욱 학습하는 데 동기 부여를 해주었습니다. 그동안 많은 사람들로부터 피드백을 받았고, 감사의 말을 많이 들었습니다. 하지만 저에게 더 중요한 것은 많은 조언과 적절한 비판이었습니다. 특히 훌륭한 피드백을 주신 분들에게 감사의 말씀을 전하고 싶습니다:
 
