@@ -99,4 +99,141 @@ one equ 1
 cmp rax, 50
 ```
 
+`cmp` 명령어는 단순히 두 값을 비교할 뿐, 그 값들에 영향을 주거나 비교 결과에 따라 어떤 것도 실행하지 않습니다. 비교 후 어떤 동작을 수행하려면 조건부 점프 명령어를 사용합니다. 다음과 같은 명령어들이 있습니다:
 
+* `JE` - 같으면
+* `JZ` - 0이면
+* `JNE` - 같지 않으면
+* `JNZ` - 0이 아니면
+* `JG` - 첫 번째 피연산자가 두 번째보다 크면
+* `JGE` - 첫 번째 피연산자가 두 번째보다 크거나 같으면
+* `JA` - JG와 동일하지만 부호 없는 비교 수행
+* `JAE` - JGE와 동일하지만 부호 없는 비교 수행
+
+예를 들어, C에서의 if/else 문과 비슷한 것을 구현하고 싶다면:
+
+```C
+if (rax != 50) {
+    exit();
+} else {
+    right();
+}
+```
+
+# 어셈블리 구문 비교와 점프
+
+`cmp` 명령어는 단순히 두 값을 비교할 뿐, 그 값들에 영향을 주거나 비교 결과에 따라 어떤 것도 실행하지 않습니다. 비교 후 어떤 동작을 수행하려면 조건부 점프 명령어를 사용합니다. 다음과 같은 명령어들이 있습니다:
+
+* `JE` - 같으면
+* `JZ` - 0이면
+* `JNE` - 같지 않으면
+* `JNZ` - 0이 아니면
+* `JG` - 첫 번째 피연산자가 두 번째보다 크면
+* `JGE` - 첫 번째 피연산자가 두 번째보다 크거나 같으면
+* `JA` - JG와 동일하지만 부호 없는 비교 수행
+* `JAE` - JGE와 동일하지만 부호 없는 비교 수행
+
+예를 들어, C에서의 if/else 문과 비슷한 것을 구현하고 싶다면 어셈블리에서는 다음과 같이 됩니다:
+
+```assembly
+;; rax를 50과 비교
+cmp rax, 50
+;; rax가 50과 같지 않으면 .exit 수행
+jne .exit
+jmp .right
+```
+
+또한 무조건 점프 구문도 있습니다:
+
+```assembly
+JMP label
+```
+
+예를 들면:
+
+```assembly
+_start:
+    ;; ....
+    ;; do something and jump to .exit label
+    ;; ....
+    jmp .exit
+
+.exit:
+    mov    rax, 60
+    mov    rdi, 0
+    syscall
+```
+
+여기서 우리는 _start 레이블 다음에 일부 코드를 가질 수 있고, 이 모든 코드는 실행될 것입니다. 어셈블리는 제어를 .exit 레이블로 이전하고, .exit: 다음의 코드가 실행되기 시작할 것입니다.
+무조건 점프는 종종 반복문에서 사용됩니다. 예를 들어 우리는 레이블과 그 뒤에 일부 코드를 가집니다. 
+이 코드는 무언가를 실행하고, 그 다음 조건이 있고 조건이 성공적이지 않으면 이 코드의 시작으로 점프합니다. 반복문은 다음 파트에서 다룰 것입니다.
+
+## 예제
+
+간단한 예제를 봅시다. 두 개의 정수를 받아, 이 숫자들의 합을 구하고 미리 정의된 숫자와 비교합니다.
+미리 정의된 숫자가 합과 같으면 화면에 무언가를 출력하고, 그렇지 않으면 그냥 종료합니다. 여기 우리 예제의 소스 코드가 있습니다:
+
+```assembly
+section .data
+    ; Define constants
+    num1:   equ 100
+    num2:   equ 50
+    ; initialize message
+    msg:    db "Sum is correct\n"
+
+section .text
+
+    global _start
+
+;; entry point
+_start:
+    ; set num1's value to rax
+    mov rax, num1
+    ; set num2's value to rbx
+    mov rbx, num2
+    ; get sum of rax and rbx, and store it's value in rax
+    add rax, rbx
+    ; compare rax and 150
+    cmp rax, 150
+    ; go to .exit label if rax and 150 are not equal
+    jne .exit
+    ; go to .rightSum label if rax and 150 are equal
+    jmp .rightSum
+
+; Print message that sum is correct
+.rightSum:
+    ;; write syscall
+    mov     rax, 1
+    ;; file descritor, standard output
+    mov     rdi, 1
+    ;; message address
+    mov     rsi, msg
+    ;; length of message
+    mov     rdx, 15
+    ;; call write syscall
+    syscall
+    ; exit from program
+    jmp .exit
+
+; exit procedure
+.exit:
+    ; exit syscall
+    mov    rax, 60
+    ; exit code
+    mov    rdi, 0
+    ; call exit syscall
+    syscall
+```
+
+소스 코드를 살펴봅시다. 우선 데이터 섹션에 두 개의 상수 num1, num2와 "Sum is correct\n" 값을 가진 변수 msg가 있습니다. 이제 14번째 줄을 보세요. 
+여기서 프로그램의 진입점이 시작됩니다. num1과 num2 값을 범용 레지스터 rax와 rbx로 전송합니다. 
+add 명령어로 이들을 더합니다. add 명령어 실행 후, rax와 rbx의 값을 더하고 그 결과를 rax에 저장합니다. 
+이제 rax 레지스터에 num1과 num2의 합이 있습니다.
+
+좋습니다. num1은 100이고 num2는 50입니다. 우리의 합은 150이 되어야 합니다. 
+cmp 명령어로 이를 확인해 봅시다. rax와 150을 비교한 후 비교 결과를 확인합니다.
+rax와 150이 같지 않으면(jne로 확인) .exit 레이블로 갑니다. 같다면 .rightSum 레이블로 갑니다.
+
+이제 두 개의 레이블이 있습니다: .exit와 .rightSum. 첫 번째는 단순히 rax에 60을 설정합니다.
+이는 exit 시스템 콜 번호이며, rdi에는 0을 설정합니다. 이는 종료 코드입니다. 
+두 번째인 .rightSum은 매우 간단합니다. "Sum is correct"를 출력할 뿐입니다.
