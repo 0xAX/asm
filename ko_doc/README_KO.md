@@ -17,7 +17,7 @@
 
 즐겁게 배우세요!
 
-![Magic](./content/assets/asm-introduction.png)
+![Magic](/content/assets/asm-introduction.png)
 
 각 포스트에 대한 링크는 다음과 같습니다:
 
