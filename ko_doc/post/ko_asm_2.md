@@ -158,7 +158,7 @@ JMP label
 ```assembly
 _start:
     ;; ....
-    ;; do something and jump to .exit label
+    ;; 작업을 수행하고 .exit 레이블로 이동합니다.
     ;; ....
     jmp .exit
 
@@ -179,53 +179,53 @@ _start:
 
 ```assembly
 section .data
-    ; Define constants
+    ; 상수 정의
     num1:   equ 100
     num2:   equ 50
-    ; initialize message
+    ; 메시지 초기화
     msg:    db "Sum is correct\n"
 
 section .text
 
     global _start
 
-;; entry point
+;; 진입점
 _start:
-    ; set num1's value to rax
+    ; num1의 값을 rax에 설정
     mov rax, num1
-    ; set num2's value to rbx
+    ; num2의 값을 rbx에 설정
     mov rbx, num2
-    ; get sum of rax and rbx, and store it's value in rax
+    ; rax와 rbx의 합을 계산하고, 그 값을 rax에 저장
     add rax, rbx
-    ; compare rax and 150
+    ; rax와 150 비교
     cmp rax, 150
-    ; go to .exit label if rax and 150 are not equal
+    ; rax와 150이 같지 않으면 .exit 레이블로 이동
     jne .exit
-    ; go to .rightSum label if rax and 150 are equal
+    ; rax와 150이 같으면 .rightSum 레이블로 이동
     jmp .rightSum
 
-; Print message that sum is correct
+; 합이 맞다는 메시지 출력
 .rightSum:
-    ;; write syscall
+    ;; write 시스템 호출
     mov     rax, 1
-    ;; file descritor, standard output
+    ;; 파일 디스크립터, 표준 출력
     mov     rdi, 1
-    ;; message address
+    ;; 메시지 주소
     mov     rsi, msg
-    ;; length of message
+    ;; 메시지 길이
     mov     rdx, 15
-    ;; call write syscall
+    ;; write 시스템 호출 호출
     syscall
-    ; exit from program
+    ; 프로그램 종료
     jmp .exit
 
-; exit procedure
+; 종료 절차
 .exit:
-    ; exit syscall
+    ; exit 시스템 호출
     mov    rax, 60
-    ; exit code
+    ; 종료 코드
     mov    rdi, 0
-    ; call exit syscall
+    ; exit 시스템 호출 호출
     syscall
 ```
 
