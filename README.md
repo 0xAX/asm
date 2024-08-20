@@ -68,6 +68,17 @@ Thanks to the volunteers, the posts about assembly programming are translated in
   * [X86_64 Assembly'a merhaba deyin bölüm 7](https://github.com/furkanonder/asm/blob/master/bolumler/7.md)
   * [X86_64 Assembly'a merhaba deyin bölüm 8](https://github.com/furkanonder/asm/blob/master/bolumler/8.md)
 
+### Korean translation
+
+  * [X86_64 어셈블리와 친해지기 [파트 1]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_1.md)
+  * [X86_64 어셈블리와 친해지기 [파트 2]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_2.md)
+  * [X86_64 어셈블리와 친해지기 [파트 3]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_3.md)
+  * [X86_64 어셈블리와 친해지기 [파트 4]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_4.md)
+  * [X86_64 어셈블리와 친해지기 [파트 5]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_5.md)
+  * [X86_64 어셈블리와 친해지기 [파트 6]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_6.md)
+  * [X86_64 어셈블리와 친해지기 [파트 7]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_7.md)
+  * [X86_64 어셈블리와 친해지기 [파트 8]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_8.md)
+
 ## Contribution 
 
 Read the [Contribution guide](./CONTRIBUTING.md) to learn how to contribute to the project. When contributing, make sure to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
