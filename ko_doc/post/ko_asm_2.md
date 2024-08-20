@@ -1,4 +1,6 @@
-며칠 전에 첫 블로그 포스트인 "x64 어셈블리 소개 - x64 어셈블리와 친해지기 [파트 1]"을 작성했는데, 예상외로 큰 관심을 받았습니다:
+# X86_64 어셈블리와 친해지기 [파트 2]
+
+며칠 전에 첫 블로그 포스트인 "x86_x64 어셈블리 소개 - x64 어셈블리와 친해지기 [파트 1]"을 작성했는데, 예상외로 큰 관심을 받았습니다:
 
 ![newscombinator](/content/assets/newscombinator-screenshot.png)
 ![reddit](/content/assets/reddit-screenshot.png)
