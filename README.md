@@ -70,14 +70,14 @@ Thanks to the volunteers, the posts about assembly programming are translated in
 
 ### Korean translation
 
-  * [X86_64 어셈블리와 친해지기 [파트 1]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_1.md)
-  * [X86_64 어셈블리와 친해지기 [파트 2]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_2.md)
-  * [X86_64 어셈블리와 친해지기 [파트 3]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_3.md)
-  * [X86_64 어셈블리와 친해지기 [파트 4]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_4.md)
-  * [X86_64 어셈블리와 친해지기 [파트 5]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_5.md)
-  * [X86_64 어셈블리와 친해지기 [파트 6]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_6.md)
-  * [X86_64 어셈블리와 친해지기 [파트 7]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_7.md)
-  * [X86_64 어셈블리와 친해지기 [파트 8]](https://github.com/maldron0309/asm/blob/master/ko_doc/post/ko_asm_8.md)
+  * [X86_64 어셈블리와 친해지기 [파트 1]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_1.md)
+  * [X86_64 어셈블리와 친해지기 [파트 2]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_2.md)
+  * [X86_64 어셈블리와 친해지기 [파트 3]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_3.md)
+  * [X86_64 어셈블리와 친해지기 [파트 4]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_4.md)
+  * [X86_64 어셈블리와 친해지기 [파트 5]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_5.md)
+  * [X86_64 어셈블리와 친해지기 [파트 6]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_6.md)
+  * [X86_64 어셈블리와 친해지기 [파트 7]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_7.md)
+  * [X86_64 어셈블리와 친해지기 [파트 8]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_8.md)
 
 ## Contribution 
 
