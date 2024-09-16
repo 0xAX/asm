@@ -1,4 +1,3 @@
-
 The stack is special region in memory, which operates on the principle lifo (Last Input, First Output).
 
 We have 16 general-purpose registers for temporary data storage. They are RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP and R8-R15. It's too few for serious applications. So we can store data in the stack. Yet another usage of stack is following: When we call a function, return address copied in stack. After end of function execution, address copied in commands counter (RIP) and application continue to executes from next place after function.
@@ -26,12 +25,12 @@ incRax:
 
 Here we can see that after application runnning, rax is equal to 1. Then we call a function incRax, which increases rax value to 1, and now rax value must be 2. After this execution continues from 8 line, where we compare rax value with 2. Also as we can read in [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the first six function arguments passed in registers. They are:
 
-* `rdi` - first argument
-* `rsi` - second argument
-* `rdx` - third argument
-* `rcx` - fourth argument
-* `r8` - fifth argument
-* `r9` - sixth
+- `rdi` - first argument
+- `rsi` - second argument
+- `rdx` - third argument
+- `rcx` - fourth argument
+- `r8` - fifth argument
+- `r9` - sixth
 
 Next arguments will be passed in stack. So if we have function like this:
 
@@ -42,7 +41,7 @@ int foo(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 }
 ```
 
-Then first six arguments will be passed in registers, but 7 argument will be passed in stack.
+Then first six arguments will be passed in registers, but the 7th argument will be passed in stack.
 
 ## Stack pointer
 
@@ -52,8 +51,8 @@ Commands
 
 We have two commands for work with stack:
 
-* `push argument` - increments stack pointer (RSP) and stores argument in location pointed by stack pointer
-* `pop argument` - copied data to argument from location pointed by stack pointer
+- `push argument` - increments stack pointer (RSP) and stores argument in location pointed by stack pointer
+- `pop argument` - copied data to argument from location pointed by stack pointer
 
 Let's look on one simple example:
 
@@ -74,6 +73,7 @@ _start:
 		;; Do something
 		;;
 ```
+
 Here we can see that we put 1 to rax register and 2 to rdx register. After it we push to stack values of these registers. Stack works as LIFO (Last In First Out). So after this stack or our application will have following structure:
 
 ![stack diagram](/content/assets/stack-diagram.png)
@@ -120,7 +120,7 @@ _start:
 		add r10, r11
 ```
 
-Let's try to understand, what is happening here: After _start label first instruction get first value from stack and puts it to rcx register. If we run application with command line arguments, all of their will be in stack after running in following order:
+Let's try to understand, what is happening here: After \_start label first instruction get first value from stack and puts it to rcx register. If we run application with command line arguments, all of their will be in stack after running in following order:
 
 ```
     [rsp] - top of stack will contain arguments count.
@@ -206,7 +206,7 @@ int_to_str:
 		jmp print
 ```
 
-Here we put 0 to rdx and 10 to rbx. Than we exeute div rbx. If we look above at code before str_to_int call. We will see that rax contains integer number - sum of two command line arguments. With this instruction we devide rax value on rbx value and get reminder in rdx and whole part in rax. Next we add to rdx 48 and 0x0. After adding 48 we'll get asci symbol of this number and all strings much be ended with 0x0. After this we save symbol to stack, increment r12 (it's 0 at first iteration, we set it to 0 at the _start) and compare rax with 0, if it is 0 it means that we ended to convert integer to string. Algorithm step by step is following: For example we have number 23
+Here we put 0 to rdx and 10 to rbx. Than we exeute div rbx. If we look above at code before str_to_int call. We will see that rax contains integer number - sum of two command line arguments. With this instruction we devide rax value on rbx value and get reminder in rdx and whole part in rax. Next we add to rdx 48 and 0x0. After adding 48 we'll get asci symbol of this number and all strings much be ended with 0x0. After this we save symbol to stack, increment r12 (it's 0 at first iteration, we set it to 0 at the \_start) and compare rax with 0, if it is 0 it means that we ended to convert integer to string. Algorithm step by step is following: For example we have number 23
 
 ```
     123 / 10. rax = 12; rdx = 3
