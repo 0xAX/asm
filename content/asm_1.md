@@ -174,7 +174,7 @@ We will go through the second way. Each operating system provides an interface t
 1	common	write			sys_write
 ```
 
-The information about the given system call could be found in manual pages. To get information about the `sys_write` system_call we can execute the following command in terminal:
+You can find information about the given system call in [manual pages](https://man7.org/linux/man-pages/man2/syscalls.2.html). To get information about the `sys_write` system call, run the following command in the terminal:
 
 ```bash
 man 2 write
@@ -186,39 +186,40 @@ The manual page shows the following function:
 ssize_t write(int fd, const void buf[.count], size_t count);
 ```
 
-which is basically a wrapper around the `sys_write` system call provided by the standard C library. Usually the set of arguments of the system call and the wrapper function is the same. So we safely may assume that the `sys_write` system call is defined like that:
+This function is a wrapper around the `sys_write` system call provided by the standard C library. Usually, the set of arguments of the system call and the wrapper function are the same. So we safely may assume that the `sys_write` system call is defined like this:
 
 ```C
 size_t sys_write(unsigned int fd, const char *buf, size_t count);
 ```
 
-The function expects the following three arguments:
+The function expects three arguments:
 
-*  `fd` - The file descriptor where to write data.
-*  `buf` - The pointer to the buffer from which data will be send to the output.
-*  `count` - The number of bytes to be written from the buffer to the file specified by the file descriptor from the first argument.
+*  `fd` - The file descriptor that specifies where to write data.
+*  `buf` - The pointer to the buffer from which data is sent to the output.
+*  `count` - The number of bytes written from the buffer to the file specified by the file descriptor from the first argument.
 
-Now we can understand that the first four lines of the assembly code basically do the two following things:
+Now we can understand that the first four lines of the assembly code do two things:
 
-- Specify the number of the system call (the `sys_write` in our example) that we are going to call.
+- Specify the number of the system call (the `sys_write` in our example) that we will call.
 - Specify the arguments of the `sys_write` system call.
 
-Check the system call table we can know that the `sys_write` system call has the number - `1`. Since the `rax` register should contain the number of the system call that we are going to call, we put `1` into it. After this we put `1` to the `rdi` register. That will be the first argument of the `sys_write`. In our case we want to write the `hello world` string in the terminal, so we put `1` which specifies [standard output](https://en.wikipedia.org/wiki/Standard_streams). The next step is to prepare the second argument of the `sys_write` system call. In our case we pass the address of the `msg` constant to the `rsi` register. At the last but not least step we should specify the length of data we want to write. The length of the `hello, world!` string is `13` bytes, so we pass it to the `rdx` register.
+By checking the system call table, we know the `sys_write` system call has the number `1`. Since the `rax` register should contain the system call number, we put `1` into it. Then, we put `1` in the `rdi` register. That will be the first argument of `sys_write`. We want to write the `hello world` string in the terminal, so we put `1` which specifies [standard output](https://en.wikipedia.org/wiki/Standard_streams). The next step is to prepare the second argument of the `sys_write` system call. In our case, we pass the address of the `msg` constant to the `rsi` register. Last but not least, we should specify the length of data we want to write. The length of the `hello, world!` string is `13` bytes, so we pass it to the `rdx` register.
 
-As all parameters of the `sys_write` system call is ready, now we can to call the system call itself. It could be done with the `syscall` instruction. That already should print the `hello, world!` string in our terminal. But if you will build and run only these instructions, you will see the [segmentation fault](https://en.wikipedia.org/wiki/Segmentation_fault) error. The problem is that we need to exit properly from the program. To do that, we have to call the `sys_exit` system call. We need to do the same - fill the `rax` with the number of the `sys_exit` system call and fill the respective registers with the parameters needed for this system call. Let's take a look at the system call [table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl):
+As all parameters of the `sys_write` system call are ready, we can now call the system itself. We can do it with the `syscall` instruction that should already print the `hello, world!` string in our terminal. However, if you build and run the program having only the call of the `sys_write` system call, you will see the [segmentation fault](https://en.wikipedia.org/wiki/Segmentation_fault) error. The problem is that we need to exit properly from the program. To do that, we have to call the `sys_exit` system call. We need to do the same - fill the `rax` with the number of the `sys_exit` system call and fill the respective registers with the parameters for this system call. Let's take a look at the [system call table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl):
 
 ```
 60	common	exit			sys_exit
 ```
 
-We may see that the number of this system call is `60`, so we put this value into the `rax` register. According to the [exit](https://www.man7.org/linux/man-pages/man2/exit.2.html) documentation, this system call expects to get a single argument which is a exit status code. We expect that our program terminates successfully let's just put `0` to the `rdi` register. Our program is ready. Now let's build our program with the following commands:
+The system call number is `60`, so we load it into the `rax` register. The [exit](https://www.man7.org/linux/man-pages/man2/exit.2.html) docs say it needs one argument: an exit status code. To indicate success, we put `0` in the `rdi` register. That’s it — our program is ready! Let’s build it with these commands:
+
 
 ```bash
 nasm -f elf64 -o hello.o hello.asm
 ld -o hello hello.o
 ```
 
-After this we should have an executable file named `hello`. Let's execute it:
+Now we should have an executable file named `hello`. Let's run it:
 
 ```bash
 ./hello
