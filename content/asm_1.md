@@ -108,7 +108,8 @@ global _start
 _start:
 ```
 
-> [!NOTE] You don't have to name the entry point `_start`. You can overwrite it using the `-e <symbol-name>` option of the [GNU ld linker](https://sourceware.org/binutils/docs/ld/), but we will not use this option in our programs.
+> [!NOTE]
+> You don't have to name the entry point `_start`. You can overwrite it using the `-e <symbol-name>` option of the [GNU ld linker](https://sourceware.org/binutils/docs/ld/), but we will not use this option in our programs.
 
 Now that we know how to define the basic sections of our first assembly program, we can look at the first instructions.
 
