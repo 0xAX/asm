@@ -1,6 +1,6 @@
 ;; Definition of the `data` section
 section .data
-    ;; String `msg` constant with the value `hello world!`
+    ;; String `msg` variable with the value `hello world!`
     msg db      "hello, world!"
 
 ;; Definition of the text section
@@ -10,19 +10,19 @@ section .text
 
 ;; Entry point
 _start:
-    ;; Number of the system call. The system call number 1 is `sys_write`.
+    ;; Specify the number of the system call (1 is `sys_write`).
     mov     rax, 1
-    ;; The first argument of the `sys_write` system call. Argument number 1 is `stdout`.
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
     mov     rdi, 1
-    ;; The second argument of the `sys_write` system call that contains a reference to the message.
+    ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
     mov     rsi, msg
-    ;; The third argument of the `sys_write` system call that contains the length of the message.
+    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
     mov     rdx, 13
     ;; Call the `sys_write` system call.
     syscall
-    ;; Number of the system call. The system call number 60 is `sys_exit`.
+    ;; Specify the number of the system call (60 is `sys_exit`).
     mov    rax, 60
-    ;; The first argument of the `sys_exit` system call. Argument 0 is successful.
+    ;; Set the first argument of `sys_exit` to `0`. The `0` status code is success.
     mov    rdi, 0
     ;; Call the `sys_exit` system call.
     syscall

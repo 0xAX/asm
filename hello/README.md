@@ -1,9 +1,11 @@
+# Hello, World!
+
 This is a basic "Hello world" program written with assembly for Linux `x86_64`.
 
-Build the program executing: 
+To build the program, run:
 
 ```bash
 make
 ```
 
-Read the details in the - [Introduction to assembly programming language](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
+For more details, read [Part 1. Introduction](https://github.com/0xAX/asm/blob/master/content/asm_1.md).
