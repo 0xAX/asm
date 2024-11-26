@@ -173,13 +173,13 @@ _start:
 
 This may look quite long compared to the "Hello, World!" program written using a high-level programming language. Let’s break it down and understand how it works.
 
-### Program's sections definition
+### Defining sections
 
 Have a look at the first four lines of the program. At the beginning we defined the `data` section and specified the `msg` variable with the `hello, world!` value. Now we can use it in the program's code.
 
 Next is the declaration of the `text` section and the `_start` entry point of the program. After running the program, it starts from the `_start` line.
 
-### Basics of CPU registers and System Call
+### CPU registers and system calls
 
 After defining the program's sections, we can move to the actual code of the program. The first four lines after section definitions start from the `mov` instruction to place specific values into registers. This instruction expects two operands and puts the value of the second operand in the first one. But what are these `rax`, `rdi`, and `rsi`? We can read in the Wikipedia:
 
@@ -252,7 +252,7 @@ Let's take a look at the [system call table](https://github.com/torvalds/linux/b
 
 The system call number for `sys_exit` is `60`, so we load `60` into the `rax` register. The [exit](https://www.man7.org/linux/man-pages/man2/exit.2.html) docs say it needs a single argument: the exit status code. To indicate that the program executed successfully, we put `0` into the `rdi` register (exit status `0` means success). That’s it — our program is now ready to exit.
 
-### Building and running our first assembly program
+### Building and running the program
 
 Now, let’s build the program and create an executable with these commands:
 
