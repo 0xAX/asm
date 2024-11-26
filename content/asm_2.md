@@ -85,8 +85,8 @@ In a case of the big-endian order, the bytes are stored in the opposite order to
 
 We can not dive into assembly programming without knowing one of the crucial concept of the `x86_64` (and not only) architecture - the stack. The stack is a storage mechanism. Usually a process has a very restricted count of registers. As we already know, an `x86_64` processor gives us access to the `16` general purpose registers. This number is very limited. We may need more or even much more. The one of the way to solve this issue is using the program's stack. Basically we can look at the stack as at the usual concept of memory, but with the single significant difference - the access pattern. With the usual [RAM](https://en.wikipedia.org/wiki/Random-access_memory) model we can access any byte of the memory which is accessible to our user-level application. The stack is accessed as [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern. There are two special instructions that are used to push a value on the stack and pop a value from it:
 
-- `push`
-- `pop`
+- `push` - push the operand on the stack.
+- `pop` - pop the top value from the stack.
 
 The stack grows downwards from the high addresses to low. So, basically when we hear `top of the stack`, it means the lowest address. The general purpose registers `rsp` always should point to the top of the stack. In the [system call](#system-call) section, we have seen that first six arguments of a system call are passed in the general purpose registers. Accordiing to the calling convertions document:
 
@@ -144,9 +144,9 @@ bar:
 > [!NOTE]
 > The C program should be compiled without any optimization flags. You can use tools like [godbolt](https://godbolt.org/) to see the assembly output of these functions.
 
-We may see that the eighth and seventh parameters of the `foo` function are pushed on the stack with the `push` instructions and the first sixth parameters are passed in the general purpose registers in the order we have listed above. Please note that the eight and seventh arguments of the function `foo` are pushed to the stack especially in this order. Above we already mentioned that the stack has the access pattern - `last in, first out`. So if we'd use `pop` instruction right after we pushed these both parameters, we'd get at first seventh and after it eighths.
+For now let's skup the first two lines of the function `bar`. We may see that the eighth and seventh parameters of the `foo` function are pushed on the stack with the `push` instructions and the first sixth parameters are passed in the general purpose registers in the order we have listed above. Please note that the eight and seventh arguments of the function `foo` are pushed to the stack especially in this order - first pushed the value `8` and only after the `7`. Above we already mentioned that the stack has the access pattern - `last in, first out`. So if we'd use `pop` instruction right after we pushed these both parameters, we'd get at first seventh and after it eighths argument.
 
-Another interesting moment in the example above is the first two lines:
+Now we can return to the very first two lines of the function `bar`:
 
 ```assembly
 push    rbp
