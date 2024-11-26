@@ -1,6 +1,6 @@
 # Hello, World!
 
-This is a basic "Hello world" program written with assembly for Linux `x86_64`.
+This is a basic "Hello, World!" program written with assembly for Linux `x86_64`.
 
 To build the program, run:
 
