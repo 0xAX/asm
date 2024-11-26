@@ -14,7 +14,9 @@ In our daily work, we don’t usually write sorting algorithms or string reversa
 int main() {
   int x = 10;
   int y = 100;
+
   printf("x + y = %d\n", x + y);
+
   return 0;
 }
 ```
@@ -158,6 +160,7 @@ _start:
     mov     rsi, msg
     ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
     mov     rdx, 13
+
     ;; Call the `sys_write` system call.
     syscall
     ;; Specify the number of the system call (60 is `sys_exit`).
@@ -170,9 +173,13 @@ _start:
 
 This may look quite long compared to the "Hello, World!" program written using a high-level programming language. Let’s break it down and understand how it works.
 
+### Program's sections definition
+
 Have a look at the first four lines of the program. At the beginning we defined the `data` section and specified the `msg` variable with the `hello, world!` value. Now we can use it in the program's code.
 
 Next is the declaration of the `text` section and the `_start` entry point of the program. After running the program, it starts from the `_start` line.
+
+### Basics of CPU registers and System Call
 
 After defining the program's sections, we can move to the actual code of the program. The first four lines after section definitions start from the `mov` instruction to place specific values into registers. This instruction expects two operands and puts the value of the second operand in the first one. But what are these `rax`, `rdi`, and `rsi`? We can read in the Wikipedia:
 
@@ -184,7 +191,7 @@ Each register has a specific size and purpose. For `x86_64` CPUs, general-purpos
 
 ![registers](/content/assets/registers.png)
 
-We can consider each register as a very small memory slot that can store a value with a size specified in the table above. For example, the `rax` register can contain a value of up to `64` bits, the `ax` register may contain a value of up to `16` bits, and so on. In the next posts, we will learn more about `rax`, `rdi`, `rbx`, and other registers. For now, it is enough to consider them just as small memory slots that a CPU can access fast. Despite these registers are called **general-purpose registers**, does it mean that we may use any register for any purpose? The simple answer is yes. However, there are specific cases when you should use these registers as specified in the [Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) and the [calling conventions](https://en.wikipedia.org/wiki/X86_calling_conventions) documents. Since these posts are focused on assembly for Linux `x86_64`, the registers have the following meanings:
+We can consider each register as a very small memory slot that can store a value with a size specified in the table above. For example, the `rax` register can contain a value of up to `64` bits, the `ax` register may contain a value of up to `16` bits, and so on. In the next posts, we will learn more about `rax`, `rdi`, `rbx`, and other registers. For now, it is enough to consider them just as small memory slots that a CPU can access fast. Despite these registers are called **general-purpose registers**, does it mean that we may use any register for any purpose? The simple answer is yes. We can use them to perform arithmetic, logical, data transfer and other basic operations. However, there are specific cases when you should use these registers as specified in the [Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) and the [calling conventions](https://en.wikipedia.org/wiki/X86_calling_conventions) documents. Since these posts are focused on assembly for Linux `x86_64`, the registers have the following meanings:
 
 - `rax` - used to store temporary values. In the case of a [system call](https://en.wikipedia.org/wiki/System_call), it should store the system call number.
 - `rdi` - used to pass the first argument to a function.
@@ -244,6 +251,8 @@ Let's take a look at the [system call table](https://github.com/torvalds/linux/b
 ```
 
 The system call number for `sys_exit` is `60`, so we load `60` into the `rax` register. The [exit](https://www.man7.org/linux/man-pages/man2/exit.2.html) docs say it needs a single argument: the exit status code. To indicate that the program executed successfully, we put `0` into the `rdi` register (exit status `0` means success). That’s it — our program is now ready to exit.
+
+### Building and running our first assembly program
 
 Now, let’s build the program and create an executable with these commands:
 
