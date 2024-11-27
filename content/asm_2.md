@@ -17,7 +17,7 @@ Despite these people I want to say thank you to all who took a part in the discu
 
 As I wrote above, I got many comments from the different people that some parts of first post are not clear. Despite I tried to rework the first part to make some things more clear, the main goal of it was just an introduction without diving very deeply. We got our first assembly program that we can run on our computers. Now it is time to start with the basics. Let's start from the description of some terminology that we will see and use in this and in the next parts.
 
-### Processor register
+### Processor registers
 
 One of the first concept that we have met in the previous part was - `register`. In the previous chapter we agreed that we can consider a `register` as a small memory slot. If we'll read the definition at [wikipedia](https://en.wikipedia.org/wiki/Processor_register), we will see that it is not so far from the reality:
 
@@ -26,6 +26,8 @@ One of the first concept that we have met in the previous part was - `register`.
 The main goal of a processor is data processing. To process data, a processor should be able to access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is "slow" operation. If we will take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we will see the following picture:
 
 > L1 cache reference = 1ns
+> ...
+> ...
 > ...
 > Main memory reference = 100ns
 
@@ -43,6 +45,7 @@ There are different types of registers on the `x86_64` processors:
 - MMX registers
 - XMM registers
 - YMM registers
+- ZMM registers
 - Bounds registers
 - Memory management registers
 
@@ -54,7 +57,7 @@ We have `16` registers with size of 64 bits, from `rax` to `r15`. Some parts of 
 
 ![rax](/content/assets/rax.svg)
 
-The general purpose registers are used in many different cases like performing of arithmetic and logical operations, transfering of data, memory address calculation operations, passing parameters to the functions and system calls and many more. During goigin through this and other posts we will see how the general purpose registers could be used to perform different operations.
+The general purpose registers are used in many different cases like performing of arithmetic and logical operations, transferring of data, memory address calculation operations, passing parameters to the functions and system calls and many more. During going through this and other posts we will see how the general purpose registers could be used to perform different operations.
 
 ### Endianness
 
@@ -72,7 +75,7 @@ We can imagine memory as one large array of bytes. Each byte has own address. Fo
 | 0x0000000000000002 | 0x56 |
 | 0x0000000000000003 | 0xAA |
 
-In a case of the big-endian order, the bytes are stored in the opposite order to the `little-endian`. So if have a look at the same set of bytes - `AA 56 AB FF`, it will be:
+In a case of the `big-endian` order, the bytes are stored in the opposite order to the `little-endian`. So if have a look at the same set of bytes - `AA 56 AB FF`, it will be:
 
 | Address            | Byte |
 |--------------------|------|
@@ -81,160 +84,15 @@ In a case of the big-endian order, the bytes are stored in the opposite order to
 | 0x0000000000000002 | 0xAB |
 | 0x0000000000000003 | 0xFF |
 
-### Stack
-
-We can not dive into assembly programming without knowing one of the crucial concept of the `x86_64` (and not only) architecture - the stack. The stack is a storage mechanism. Usually a process has a very restricted count of registers. As we already know, an `x86_64` processor gives us access to the `16` general purpose registers. This number is very limited. We may need more or even much more. The one of the way to solve this issue is using the program's stack. Basically we can look at the stack as at the usual concept of memory, but with the single significant difference - the access pattern. With the usual [RAM](https://en.wikipedia.org/wiki/Random-access_memory) model we can access any byte of the memory which is accessible to our user-level application. The stack is accessed as [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern. There are two special instructions that are used to push a value on the stack and pop a value from it:
-
-- `push` - push the operand on the stack.
-- `pop` - pop the top value from the stack.
-
-The stack grows downwards from the high addresses to low. So, basically when we hear `top of the stack`, it means the lowest address. The general purpose registers `rsp` always should point to the top of the stack. In the [system call](#system-call) section, we have seen that first six arguments of a system call are passed in the general purpose registers. Accordiing to the calling convertions document:
-
-> System-calls are limited to six arguments, no argument is passed directly on the stack.
-
-But what about other functions? What if one has more than six arguments? In this case the first six parameters are also passed in the general purpose registers and the all the next parameters are passed on the stack. The set of the general purpose registers to call a library function is slightly different from the set of registers used for a system call:
-
-- `rdi` - used to pass the first argument to a function.
-- `rsi` - used to pass the second argument to a function.
-- `rdx` - used to pass the third argument to a function.
-- `rcx` - used to pass the fourth argument to a function.
-- `r8` - used to pass the fifth argument to a function.
-- `r9` - used to pass the sixth argument to a function.
-
-Let's take a look at the assembly variant of the a bit artificial functions:
-
-```C
-int foo(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8) {
-    return arg1 + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8;
-}
-
-int bar() {
-    return foo(1, 2, 3, 4, 5, 6, 7, 8);
-}
-```
-
-If we will compile it and have a look at the assembly code, we will see something like that:
-
-```assembly
-bar:
-        ;; preserve the base pointer
-        push    rbp
-        ;; preserve the stack pointer
-        mov     rbp, rsp
-        ;; Push the eight argument on the stack
-        push    8
-        ;; Push the seventh argument on the stack
-        push    7
-        ;; Push the sixth argument on the stack
-        mov     r9d, 6
-        ;; Push the fifth argument on the stack
-        mov     r8d, 5
-        ;; Push the fourth argument on the stack
-        mov     ecx, 4
-        ;; Push the third argument on the stack
-        mov     edx, 3
-        ;; Push the second argument on the stack
-        mov     esi, 2
-        ;; Push the first argument on the stack
-        mov     edi, 1
-        ;; Call the function `foo`
-        call    foo
-```
-
-> [!NOTE]
-> The C program should be compiled without any optimization flags. You can use tools like [godbolt](https://godbolt.org/) to see the assembly output of these functions.
-
-For now let's skup the first two lines of the function `bar`. We may see that the eighth and seventh parameters of the `foo` function are pushed on the stack with the `push` instructions and the first sixth parameters are passed in the general purpose registers in the order we have listed above. Please note that the eight and seventh arguments of the function `foo` are pushed to the stack especially in this order - first pushed the value `8` and only after the `7`. Above we already mentioned that the stack has the access pattern - `last in, first out`. So if we'd use `pop` instruction right after we pushed these both parameters, we'd get at first seventh and after it eighths argument.
-
-Now we can return to the very first two lines of the function `bar`:
-
-```assembly
-push    rbp
-mov     rbp, rsp
-```
-
-This is so called [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). To manage stack CPU is using by the several general purpose registers:
-
-- `rip`
-- `rsp`
-- `rbp`
-
-The general purpose register `rip` is the so-called `instruction pointer`. This register store the address of the next instruction CPU is going to execute. When CPU meets the `call` instruction in order to call a function, it pushes the address of the next instruction after the function call to the stack. This is done in order to know where to return from the called function.
-
-The `rsp` register is always points to the `top` of the stack and called - `stack pointer`. After we push something on the stack using the `push` instruction, the stack pointer is decreased. After we pop something from the stack using the `pop` instruction, the stack pointer is increased.
-
-The general purpose register `rbp` is the so-called `frame pointer` or `base pointer`. Each function has own `stack frame` - is a memory area where function stores [local variables](https://en.wikipedia.org/wiki/Local_variable) and other data. The stack frame is basically the memory area between adresses stored in the `rbp` and `rsp` registers.  Right in the beginning of the new function we have to preserve `rbp` value pushing it onto the stack. The value of the `rbp` in the beginning of each function represents the adress of the bottom of the stack of the caller. We have to preseve it for an easier manipulation of the function parameters and local variables, independend how the stack pointer (`rsp`) is changed (because of `push` and `pop` operations for example).
-
-To understand it better let's take a look at the assembly code of the `bar` and the `foo` functions:
-
-```assembly
-bar:
-        ;; preserve the base pointer
-        push    rbp
-        ;; preserve the stack pointer
-        mov     rbp, rsp
-        ;; Push the eight argument on the stack
-        push    8
-        ;; Push the seventh argument on the stack
-        push    7
-        ;; Push the sixth argument on the stack
-        mov     r9d, 6
-        ;; Push the fifth argument on the stack
-        mov     r8d, 5
-        ;; Push the fourth argument on the stack
-        mov     ecx, 4
-        ;; Push the third argument on the stack
-        mov     edx, 3
-        ;; Push the second argument on the stack
-        mov     esi, 2
-        ;; Push the first argument on the stack
-        mov     edi, 1
-        ;; Call the function `foo`
-        call    foo
-
-foo:
-        ;; preserve the base pointer
-        push    rbp
-        ;; preserve the stack pointer
-        mov     rbp, rsp
-        ;; 
-        mov     DWORD PTR [rbp-4], edi
-        mov     DWORD PTR [rbp-8], esi
-        mov     DWORD PTR [rbp-12], edx
-        mov     DWORD PTR [rbp-16], ecx
-        mov     DWORD PTR [rbp-20], r8d
-        mov     DWORD PTR [rbp-24], r9d
-        ...
-        ... skip arithmetic operations for now
-        ...
-        pop     rbp
-        ret
-```
-
-Starting from the `bar` function we may see the following operations on the stack:
-
-- Save the current value of the `rbp` which has base pointer of the `bar` caller on the stack and move the address of the current top of the stack to `rbp`.
-- Push eighths argument on the stack. So our stack pointer was decreased.
-- Push seventh argument on the stack. So our stack pointer was decreased.
-- Call the function - `foo`. The `call` instruction will store on the stack the address where we should return from the `foo`.
-- Save the current value of the `rbp` which has the base pointer of the `foo` caller on the stack and move the address of the current top of the stack to `rbp`.
-- Move the value stored in the `edi` register (the first argument of the `foo` function) to the `-4` (the offset is negative because you should remember that stack grows down) bytes offset from frame pointer.
-- Move the value stored in the `esi` register (the second argument of the `foo` function) to the `-8` bytes offset from frame pointer.
-- Repeat for rest of the function arguments.
-
-So after the last `mov` instruction in the function `foo`, our stack will look like:
-
-![stack](/content/assets/stack.svg)
-
-In the end of the `foo` function, we remove `rbp` from the stack. The last `ret` instruction pops the return address from the stack and then continue execution from this address.
-
 ### System call
 
-A [system call](https://en.wikipedia.org/wiki/System_call) - is a set of APIs provided by an operating system. A user level program can use this API to achieve different functionality that an operating system kernel can provide. As it was mention in the previous [chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here]((https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl)).
+A [system calls](https://en.wikipedia.org/wiki/System_call) - is a set of APIs provided by an operating system. A user level program can use this API to achieve different functionality that an operating system kernel can provide. As it was mention in the previous [chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
 
-There are two ways to execute a system call - direct and indirect. We can call a [C](https://en.wikipedia.org/wiki/C_(programming_language)) function provided by the C standard library or we can call a system call directly using the `syscall` instruction. In order execute a system call directly, we need to prepare the parameters of this function. As we have seen in the previous part, some general purpose registers were used for this goal. How the system calls and functions are called and how their parameters are passed is called - `calling conventions`. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) document. 
+There are two ways to execute a system call. We can call a library function like [printf](https://man7.org/linux/man-pages/man3/fprintf.3.html) for example which in its order will use OS level API or we can call a system call directly using the `syscall` instruction. In order execute a system call directly, we need to prepare the parameters of this function. As we have seen in the previous part, some general purpose registers were used for this goal. How the system calls and functions are called and how their parameters are passed is called - `calling conventions`. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) document.
 
-Let's take a closer look how arguments are passed to a system call via the interface provided by the Linux kernel. The first six parameters are passed in the following general purpose registers:
+Let's take a closer look how arguments are passed to a system call if we are going to trigger one using `syscall` instruction.
+
+The first six parameters are passed in the following general purpose registers:
 
 - `rdi` - used to pass the first argument to a function.
 - `rsi` - used to pass the second argument to a function.
@@ -247,7 +105,7 @@ If we are using user-level wrapper instead of calling a system call directly, th
 
 ### Program sections
 
-As we have seen in the first post, an each program consists from program sections (or segments). Each executable file on Linux x86_64 is represented in [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) format. Each ELF file has table of sections that is a program consists from. We may see the list of sections of our `hello` program from the previous post using the [readelf](https://man7.org/linux/man-pages/man1/readelf.1.html) utility:
+As we have seen in the first post, each program consists from program sections (or segments). Each executable file on Linux x86_64 is represented in [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) format. Each ELF file has table of sections that is a program consists from. We may see the list of sections of our `hello` program from the previous post using the [readelf](https://man7.org/linux/man-pages/man1/readelf.1.html) utility:
 
 ```
 ~$ strip hello && readelf -S hello
@@ -274,9 +132,9 @@ Key to Flags:
 
 As we may see, there are four sections. Two of them we added by ourselves during writing the assembly code. The additional two sections added by the compiler. Technically we can define any section in our program. But there are well known sections:
 
--  `data` - section is used for declaring initialized data or constants.
--  `bss` - section is used for declaring non initialized variables.
--  `text` - section is used for code of the program.
+- `data` - section is used for declaring initialized data or constants.
+- `bss` - section is used for declaring non initialized variables.
+- `text` - section is used for code of the program.
 - `shstrtab` - section that stores references to the existing sections.
 
 ### Data Types
@@ -289,14 +147,18 @@ Obviously assembly is not a [statically typed programming language](https://en.w
 - `quadword`
 - `double quadword`
 
-A byte is eight bits, a word is two bytes, a doubleword is four bytes, a quadword is eight bytes and a double quadword is `sixteen bytes. In the section above, we already have seen an example:
+A byte is eight bits, a word is two bytes, a doubleword is four bytes, a quadword is eight bytes and a double quadword is sixteen bytes. NASM provides pseudo-instructions to help us to define data with the given size:
 
-```assembly
-;; move 4 bytes value from the edi register to the address stored in the RBP register minus 4 bytes offset
-mov     DWORD PTR [rbp-4], edi
-```
+- `DB`
+- `DW`
+- `DD`
+- `DQ`
+- `DT`
+- `DO`
+- `DY`
+- `DZ`
 
-NASM provides pseudo-instructions to help us to define data with the given size - `DB`, `DW`, `DD`, `DQ`, `DT`, `DO`, `DY` and `DZ`. The pseudo-instructions from `DB` to `DQ` are used to define data with the size from byte to double quadword. The `DT` is used to define `10` bytes. The `DO` is used to define `16` bytes. The `DY` is used to define `32` bytes. The `DZ` is used to define `64` bytes. In addition there are alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY` and `RESZ`.
+The pseudo-instructions from `DB` to `DQ` are used to define data with the size from byte to double quadword. The `DT` is used to define `10` bytes. The `DO` is used to define `16` bytes. The `DY` is used to define `32` bytes. The `DZ` is used to define `64` bytes. In addition there are alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY` and `RESZ`.
 
 For example:
 
@@ -317,12 +179,157 @@ If we will access a variable, that is defined in this way we will get the addres
 mov al, [num1]
 ```
 
+The size of pointers have the special notation:
+
+```assembly
+;; move 4 bytes value from the edi register to the address stored in the rbp register minus 4 bytes offset
+mov     DWORD PTR [rbp-4], edi
+```
+
 Most of the time we are working with numbers. There two types of integer numbers:
 
 - `unsigned`
 - `signed`
 
 The difference between these two types of numbers is that first can not accept negative numbers. Negative numbers represented with the [Two's complement](https://en.wikipedia.org/wiki/Two%27s_complement) method. In the next posts we will see how floating point numbers are represented.
+
+### Stack
+
+We can not dive into assembly programming without knowing one of the crucial concept of the `x86_64` (and not only) architecture - the stack. The stack is a storage mechanism or in other words is a memory area of a program that is accessed in a [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern.
+
+A processor has a very restricted count of registers. As we already know, an `x86_64` processor gives us access to the `16` general purpose registers. This number is very limited. We may need more or even much more space to store our data. The one of the way to solve this issue is using the program's stack. Basically we can look at the stack as at the usual concept of memory area, but with the single significant difference - the access pattern. With the usual [RAM](https://en.wikipedia.org/wiki/Random-access_memory) model we can access any byte of the memory which is accessible to our user-level application. The stack is accessed as [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern. There are two special instructions that are used to push a value on the stack and pop a value from it:
+
+- `push` - push the operand on the stack.
+- `pop` - pop the top value from the stack.
+
+The stack grows downwards from the high addresses to low. So, basically when we hear `top of the stack`, it means the lowest address. The general purpose registers `rsp` always should point to the top of the stack. In the [system call](#system-call) section, we have seen that first six arguments of a system call are passed in the general purpose registers. According to the calling conventions document:
+
+> System-calls are limited to six arguments, no argument is passed directly on the stack.
+
+So the avialable number of the general purpose registers should be enough to execute any system call. But what about other functions? What if one has more than six arguments? In this case the first six parameters are also passed in the general purpose registers and the all the next parameters are passed on the stack. The set of the general purpose registers to call a library function is slightly different from the set of registers used for a system call:
+
+- `rdi` - used to pass the first argument to a function.
+- `rsi` - used to pass the second argument to a function.
+- `rdx` - used to pass the third argument to a function.
+- `rcx` - used to pass the fourth argument to a function.
+- `r8` - used to pass the fifth argument to a function.
+- `r9` - used to pass the sixth argument to a function.
+
+Let's take a look at the assembly code of the a bit artificial functions written in C programming language:
+
+```C
+int foo(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8) {
+    return arg1 + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8;
+}
+
+int bar() {
+    return foo(1, 2, 3, 4, 5, 6, 7, 8);
+}
+```
+
+If we will compile it and have a look at the assembly code, we will see something like that:
+
+```assembly
+bar:
+        ;; Preserve the base pointer
+        push    rbp
+        ;; Preserve the stack pointer
+        mov     rbp, rsp
+        ;; Push the eight argument on the stack
+        push    8
+        ;; Push the seventh argument on the stack
+        push    7
+        ;; Push the sixth argument on the stack
+        mov     r9d, 6
+        ;; Push the fifth argument on the stack
+        mov     r8d, 5
+        ;; Push the fourth argument on the stack
+        mov     ecx, 4
+        ;; Push the third argument on the stack
+        mov     edx, 3
+        ;; Push the second argument on the stack
+        mov     esi, 2
+        ;; Push the first argument on the stack
+        mov     edi, 1
+        ;; Call the function `foo`
+        call    foo
+
+foo:
+        ;; Preserve the base pointer
+        push    rbp
+        ;; Preserve the stack pointer
+        mov     rbp, rsp
+        ;; Move 4 bytes value from the edi register to the address stored in the rbp register minus 4 bytes offset
+        mov     DWORD PTR [rbp-4], edi
+        ;; Move 4 bytes value from the esi register to the address stored in the rbp register minus 8 bytes offset
+        mov     DWORD PTR [rbp-8], esi
+        ;; Move 4 bytes value from the edx register to the address stored in the rbp register minus 12 bytes offset
+        mov     DWORD PTR [rbp-12], edx
+        ;; Move 4 bytes value from the ecx register to the address stored in the rbp register minus 16 bytes offset
+        mov     DWORD PTR [rbp-16], ecx
+        ;; Move 4 bytes value from the r8d register to the address stored in the rbp register minus 20 bytes offset
+        mov     DWORD PTR [rbp-20], r8d
+        ;; Move 4 bytes value from the r9d register to the address stored in the rbp register minus 24 bytes offset
+        mov     DWORD PTR [rbp-24], r9d
+        ...
+        ... # skip arithmetic operations for now
+        ...
+        pop     rbp
+        ret
+```
+
+> [!NOTE]
+> The C program should be compiled without any optimization flags. You can use `-O0 -masm=intel` flags for compiler to avoid optimization. You can use tools like [godbolt](https://godbolt.org/) to see the assembly output of these functions.
+
+First of all let's take a look at the first two lines of code in the function `bar`:
+
+```assembly
+push    rbp
+mov     rbp, rsp
+```
+
+These two instructions in the beginning of each function are called - [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Prologue). Each function usually operates with a part of the stack. Such part is called a [stack frame](https://en.wikipedia.org/wiki/Call_stack). To manage stack CPU is using the several general purpose registers:
+
+- `rip`
+- `rsp`
+- `rbp`
+
+The general purpose register `rip` is the so-called `instruction pointer`. This register store the address of the next instruction CPU is going to execute. When CPU meets the `call` instruction in order to call a function, it pushes the address of the next instruction after the function call to the stack. This is done in order to know where to return from the called function.
+
+The `rsp` register is always points to the `top` of the stack and called - `stack pointer`. After we push something on the stack using the `push` instruction, the stack pointer address is decreased. After we pop something from the stack using the `pop` instruction, the stack pointer address is increased.
+
+The general purpose register `rbp` is the so-called `frame pointer` or `base pointer`. As we mentioned above, each function has own `stack frame` - is a memory area where function stores [local variables](https://en.wikipedia.org/wiki/Local_variable) and other data.
+
+Now as we know the rough meaning of the stack frame term and the usage of the `rbp`, `rsp` and `rip` registers let's try to understand what happens when we call a function. Let's take a look at the stack right before the `call foo` is executed. Our stack looks like this:
+
+![stack-before-call](./assets/stack-before-call.svg)
+
+After the execution of the `call` instruction, the return address (or address of the next instruction) is pushed to the stack. So our stack layout will look like this:
+
+![stack-during-call](./assets/stack-during-call.svg)
+
+Right in the beginning of the new function we have to preserve `rbp` value pushing it onto the stack. At this time the `rbp` register contains base pointer of the previous function.
+The value of the `rbp` in the beginning of each function represents the address of the bottom (or the base) of the stack of the caller. Since we are in the new function - it needs a new stack frame and as a result the new base. After this point we have the following stack layout:
+
+![stack-preserve-bp](./assets/stack-preserve-bp.svg)
+
+The next step is to put the value of the current stack pointer in the `rbp`. Starting from this point we have new stack frame for our function `foo`. Since the stack frame is ready we can start to manage function parameters and local variables.
+
+The first sixth parameters of the `foo` function were passed using the general purpose registers in the function `bar`. We may see that the eighth and seventh parameters of the `foo` function are pushed on the stack with the `push` instructions in the function `bar` as well. Please note that the eight and seventh arguments of the function `foo` are pushed to the stack especially in this order - first pushed the value `8` and only after the `7`. Above we already mentioned that the stack has the access pattern - `last in, first out`. So if we'd use `pop` instruction right after we pushed these both parameters, we'd get at first seventh and after it eighths argument.
+
+To do the calculation we need to access the input parameters. As you may see it is done using the address stored in the `rbp` register and negative offsets from it. The offsets are negative as you may remember the stack grows down towards lower addresses. At first we move the value stored in the `edi` register (the first argument of the `foo` function) to address stored in the `rbp` register with the `-4` (the offset is negative because you should remember that stack grows down) bytes offset. After that we move the value stored in the `esi` register (the second argument of the `foo` function) to the address stored in the `rbp` register with the `-8` bytes offset. We repeat these operations for the all six input arguments.
+
+Now take a look one more time very carefully:
+
+> to the address stored in the `rbp` register with the `N` byte offset
+
+What was the address stored in the `rbp`? Our stack pointer! So after the last `mov` instruction in the function `foo`, our stack frame will look like this:
+
+![stack](/content/assets/stack.svg)
+
+That is the whole sense of the `rbp`. It plays role of an anchor in the function or a base point. Using the positive offsets we may access the return address and the parameters pushed on stack and using the negative offsets we may access local variables.
+
+Right before the return from the `foo` function we may see so called [function epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Epilogue) we restore the initial value of the `rbp` by removing it from the stack. The last `ret` instruction pops the return address from the stack and the execution continues from this address.
 
 ## Example
 
@@ -434,7 +441,7 @@ _start:
 
 ; Print message that the sum is correct
 .correctSum:
-    ;; Number of the sytem call. 1 - `sys_write`.
+    ;; Number of the system call. 1 - `sys_write`.
     mov rax, 1
     ;; The first argument of the `sys_write` system call. 1 is `stdout`.
     mov rdi, 1
