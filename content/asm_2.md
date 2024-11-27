@@ -137,7 +137,7 @@ As we may see, there are four sections. Two of them we added by ourselves during
 - `text` - section is used for code of the program.
 - `shstrtab` - section that stores references to the existing sections.
 
-### Data Types
+### Data types
 
 Obviously assembly is not a [statically typed programming language](https://en.wikipedia.org/wiki/Category:Statically_typed_programming_languages). Usually we operate with set of bytes. Despite this, [NASM](https://nasm.us/) gives us some helpers at least to define the size of data that we are operating. The fundamental data types are:
 
@@ -195,7 +195,7 @@ The difference between these two types of numbers is that first can not accept n
 
 ### Stack
 
-We can not dive into assembly programming without knowing one of the crucial concept of the `x86_64` (and not only) architecture - the stack. The stack is a storage mechanism or in other words is a memory area of a program that is accessed in a [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern.
+We can not dive into assembly programming without knowing one of the crucial concept of the `x86_64` (and not only) architecture - the stack. The stack is a memory area of a program that is accessed in a [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern.
 
 A processor has a very restricted count of registers. As we already know, an `x86_64` processor gives us access to the `16` general purpose registers. This number is very limited. We may need more or even much more space to store our data. The one of the way to solve this issue is using the program's stack. Basically we can look at the stack as at the usual concept of memory area, but with the single significant difference - the access pattern. With the usual [RAM](https://en.wikipedia.org/wiki/Random-access_memory) model we can access any byte of the memory which is accessible to our user-level application. The stack is accessed as [last in, first out](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) pattern. There are two special instructions that are used to push a value on the stack and pop a value from it:
 
@@ -253,7 +253,12 @@ bar:
         mov     edi, 1
         ;; Call the function `foo`
         call    foo
-
+        ;; Clean-up the stack from the 8th and 7th arguments
+        add     rsp, 16
+        ;; Restore the old rbp
+        leave
+        ;; Return from the function
+        ret
 foo:
         ;; Preserve the base pointer
         push    rbp
@@ -274,7 +279,9 @@ foo:
         ...
         ... # skip arithmetic operations for now
         ...
+        ;; Restore the old rbp
         pop     rbp
+        ;; Return from the function
         ret
 ```
 
@@ -288,7 +295,7 @@ push    rbp
 mov     rbp, rsp
 ```
 
-These two instructions in the beginning of each function are called - [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Prologue). Each function usually operates with a part of the stack. Such part is called a [stack frame](https://en.wikipedia.org/wiki/Call_stack). To manage stack CPU is using the several general purpose registers:
+The names of these two instructions in the beginning of each function is - [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Prologue). Each function usually operates with a part of the stack. Such part is called a [stack frame](https://en.wikipedia.org/wiki/Call_stack). To manage stack CPU is using the several general purpose registers:
 
 - `rip`
 - `rsp`
@@ -308,8 +315,7 @@ After the execution of the `call` instruction, the return address (or address of
 
 ![stack-during-call](./assets/stack-during-call.svg)
 
-Right in the beginning of the new function we have to preserve `rbp` value pushing it onto the stack. At this time the `rbp` register contains base pointer of the previous function.
-The value of the `rbp` in the beginning of each function represents the address of the bottom (or the base) of the stack of the caller. Since we are in the new function - it needs a new stack frame and as a result the new base. After this point we have the following stack layout:
+Right in the beginning of the new function we have to preserve `rbp` value pushing it onto the stack. At this time the `rbp` register contains base pointer of the previous function or in other words we may say that the value of the `rbp` in the beginning of each function represents the address of the bottom (or the base) of the stack of the caller. Since we are in the new function - it needs a new stack frame and as a result the new base. After this point we have the following stack layout:
 
 ![stack-preserve-bp](./assets/stack-preserve-bp.svg)
 
@@ -317,7 +323,7 @@ The next step is to put the value of the current stack pointer in the `rbp`. Sta
 
 The first sixth parameters of the `foo` function were passed using the general purpose registers in the function `bar`. We may see that the eighth and seventh parameters of the `foo` function are pushed on the stack with the `push` instructions in the function `bar` as well. Please note that the eight and seventh arguments of the function `foo` are pushed to the stack especially in this order - first pushed the value `8` and only after the `7`. Above we already mentioned that the stack has the access pattern - `last in, first out`. So if we'd use `pop` instruction right after we pushed these both parameters, we'd get at first seventh and after it eighths argument.
 
-To do the calculation we need to access the input parameters. As you may see it is done using the address stored in the `rbp` register and negative offsets from it. The offsets are negative as you may remember the stack grows down towards lower addresses. At first we move the value stored in the `edi` register (the first argument of the `foo` function) to address stored in the `rbp` register with the `-4` (the offset is negative because you should remember that stack grows down) bytes offset. After that we move the value stored in the `esi` register (the second argument of the `foo` function) to the address stored in the `rbp` register with the `-8` bytes offset. We repeat these operations for the all six input arguments.
+To do the calculation we need to access the input parameters. As you may see it is done using the address stored in the `rbp` register and offsets from it. The offsets are negative as you may remember the stack grows down towards lower addresses. At first we move the value stored in the `edi` register (the first argument of the `foo` function) to address stored in the `rbp` register with the `-4` (the offset is negative because you should remember that stack grows down) bytes offset. After that we move the value stored in the `esi` register (the second argument of the `foo` function) to the address stored in the `rbp` register with the `-8` bytes offset. We repeat these operations for the all six input arguments.
 
 Now take a look one more time very carefully:
 
@@ -327,7 +333,7 @@ What was the address stored in the `rbp`? Our stack pointer! So after the last `
 
 ![stack](/content/assets/stack.svg)
 
-That is the whole sense of the `rbp`. It plays role of an anchor in the function or a base point. Using the positive offsets we may access the return address and the parameters pushed on stack and using the negative offsets we may access local variables.
+That is the whole sense of the `rbp`. It plays role of an anchor in the function or a base point. Using the positive offsets we may access the return address and the parameters pushed on the stack by the caller and using the negative offsets we may access local variables.
 
 Right before the return from the `foo` function we may see so called [function epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Epilogue) we restore the initial value of the `rbp` by removing it from the stack. The last `ret` instruction pops the return address from the stack and the execution continues from this address.
 
