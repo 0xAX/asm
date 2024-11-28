@@ -1,23 +1,28 @@
+;; Definition of the `data` section
 section .data
-	msg	db "hello, world!",`\n`
+    ;; String `msg` variable with the value `hello world!`
+    msg db      "hello, world!"
 
+;; Definition of the text section
 section .text
-	global	_start
+    ;; Reference to the entry point of our program
+    global _start
 
+;; Entry point
 _start:
-	;; write syscall
-	mov	rax, 1
-	;; file descriptor, standard output
-	mov	rdi, 1
-	;; message address
-	mov	rsi, msg
-	;; length of message
-	mov	rdx, 14
-	;; call write syscall
-	syscall
-
-	;; exit
-	mov	rax, 60
-	mov	rdi, 0
-
-	syscall
+    ;; Specify the number of the system call (1 is `sys_write`).
+    mov     rax, 1
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+    mov     rdi, 1
+    ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
+    mov     rsi, msg
+    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
+    mov     rdx, 13
+    ;; Call the `sys_write` system call.
+    syscall
+    ;; Specify the number of the system call (60 is `sys_exit`).
+    mov    rax, 60
+    ;; Set the first argument of `sys_exit` to `0`. The `0` status code is success.
+    mov    rdi, 0
+    ;; Call the `sys_exit` system call.
+    syscall
