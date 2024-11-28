@@ -26,10 +26,10 @@ One of the first concept that we have met in the previous part was - `register`.
 The main goal of a processor is data processing. To process data, a processor should be able to access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is "slow" operation. If we will take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we will see the following picture:
 
 > L1 cache reference = 1ns
-> ...
-> ...
-> ...
-> Main memory reference = 100ns
+  ...
+  ...
+  ...
+  Main memory reference = 100ns
 
 Access to the [L1 cache](https://en.wikipedia.org/wiki/CPU_cache) is `100x` times faster than access to the main memory. The processor registers are 'closer' to the processor. For example you can take a look at the list of latencies for different instructions by [Agner Fog](https://www.agner.org/optimize/#manual_instr_tab).
 
@@ -206,7 +206,7 @@ The stack grows downwards from the high addresses to low. So, basically when we 
 
 > System-calls are limited to six arguments, no argument is passed directly on the stack.
 
-So the avialable number of the general purpose registers should be enough to execute any system call. But what about other functions? What if one has more than six arguments? In this case the first six parameters are also passed in the general purpose registers and the all the next parameters are passed on the stack. The set of the general purpose registers to call a library function is slightly different from the set of registers used for a system call:
+So the available number of the general purpose registers should be enough to execute any system call. But what about other functions? What if one has more than six arguments? In this case the first six parameters are also passed in the general purpose registers and the all the next parameters are passed on the stack. The set of the general purpose registers to call a library function is slightly different from the set of registers used for a system call:
 
 - `rdi` - used to pass the first argument to a function.
 - `rsi` - used to pass the second argument to a function.
@@ -361,7 +361,7 @@ All the details related to the instructions listed above will be described in th
 
 ### Basic control flow
 
-Now let's take a look at the our first [control flow](https://en.wikipedia.org/wiki/Control_flow) instructions. Usually programming languages have ability to change order of evaluation (for example with `if` or `case` statements, goto and so on). Assembly programming language also provides the very basic ability to change the flow of our programs. The first such instruction is `cmp`. This instruction takes two values and performs comparison between them. Usually it is used along with the conditional jump instruction. For example:
+Now let's take a look at the our first [control flow](https://en.wikipedia.org/wiki/Control_flow) instructions. Usually programming languages have ability to change order of evaluation (for example with `if` or `case` statements, `goto` and so on). Assembly programming language also provides the very basic ability to change the flow of our programs. The first such instruction is `cmp`. This instruction takes two values and performs comparison between them. Usually it is used along with the conditional jump instruction. For example:
 
 ```assembly
 ;; compare value of the rax register with 50
