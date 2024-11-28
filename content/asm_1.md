@@ -103,7 +103,7 @@ See the example:
 ;; Definition of the text section
 section .text
 
-;; Mark the `_start` symbol as global so it is visible to the linker
+;; Mark the `_start` symbol as global so that it is visible to the linker
 global _start
 
 ;; Definition of the program entry point
@@ -126,11 +126,11 @@ Fields specified in square brackets are optional. A basic `instruction` usually 
 - Name of the instruction
 - Optional operands of the instruction
 
-If you already have experience with one of the high-level programming languages, you can compare instruction and operands to a function and its parameters. For example, let's take a look at the following assembly line. Here we can see the instruction `mov` and the operands `count` and `48` used by the instruction:
+If you already have experience with one of the high-level programming languages, you can compare instruction and operands to a function and its parameters. For example, let's take a look at the following assembly line. Here we can see the instruction `mov` and the operands `rax` and `48` used by the instruction:
 
 ```assembly
-; Put value 48 in the count variable
-mov count, 48
+; Put value 48 in the register `rax`
+mov rax, 48
 ```
 
 Now that you understand the basics of assembly syntax and structure, it’s time to write our first program.
@@ -185,7 +185,7 @@ After defining the program's sections, we can move to the actual code of the pro
 
 > A central processing unit (CPU) is the hardware within a computer that carries out the instructions of a computer program by performing the basic arithmetical, logical, and input/output operations of the system.
 
-A CPU executes different operations on data. But where does it store data? While the [main memory](https://en.wikipedia.org/wiki/Computer_memory) is an obvious choice, accessing it is relatively slow. Reading and storing data in main memory slows down the operations because it involves complicated steps to send data requests through the control bus. To speed things up, the CPU uses small, fast storage locations called **general-purpose registers**.
+A CPU executes different operations on data. But where is data stored? While the [main memory](https://en.wikipedia.org/wiki/Computer_memory) is an obvious choice, accessing it is relatively slow. Reading and storing data in the main memory slows down the operations because it involves complicated steps to send data requests through the control bus. To speed things up, the CPU uses small, fast storage locations called **general-purpose registers**.
 
 Each register has a specific size and purpose. For `x86_64` CPUs, general-purpose registers include:
 
@@ -198,7 +198,7 @@ We can consider each register as a very small memory slot that can store a value
 - `rsi` - used to pass the second argument to a function.
 - `rdx` - used to pass the third argument to a function.
 
-There are more details related to the Linux `x86_64` calling conventions, but the description above should be enough for now. Knowing how these registers work, we can return to the code. What do we need to write a "Hello, World!" program? Usually, we just pass a `hello world` string to a library function like [printf](https://en.wikipedia.org/wiki/Printf). But these functions typically come from the [standard library](https://en.wikipedia.org/wiki/Standard_library) of the programming language we are using. Assembly doesn’t have a standard library. What should we do in this case? Well, we have at least two options:
+There are more details related to the Linux `x86_64` calling conventions, but the description above should be enough for now. Knowing how these registers are used, we can return to the code. What do we need to write a "Hello, World!" program? Usually, we just pass a `hello world` string to a library function like [printf](https://en.wikipedia.org/wiki/Printf). But these functions typically come from the [standard library](https://en.wikipedia.org/wiki/Standard_library) of the programming language we are using. Assembly doesn’t have a standard library. What should we do in this case? Well, we have at least two options:
 
 - Link our assembly program with the C standard library and use [printf](https://man7.org/linux/man-pages/man3/printf.3.html) or any other function that can help us to write a text to the [standard output](https://en.wikipedia.org/wiki/Standard_streams).
 - Use the operating system's API directly.
@@ -230,8 +230,8 @@ ssize_t sys_write(unsigned int fd, const char *buf, size_t count);
 The function expects three arguments:
 
 -  `fd` - The file descriptor that specifies where to write data.
--  `buf` - The pointer to the buffer from which data is sent to the output.
--  `count` - The number of bytes to write from the buffer to the file specified by the file descriptor in the first argument.
+-  `buf` - The pointer to the buffer from which data will be written to the file specified by `fd`.
+-  `count` - The number of bytes that will be written from the buffer to the file specified by `fd`.
 
 Now we can understand that the first four lines of the assembly code do two things:
 
@@ -242,7 +242,7 @@ By checking the system call table, we know the `sys_write` system call has the n
 
 The next step is to prepare the second argument of the `sys_write` system call. In our case, we pass the address of the `msg` variable to the `rsi` register. Last but not least, we should specify the length of data we want to write. The length of the `hello, world!` string is `13` bytes, so we pass it to the `rdx` register.
 
-As we already prepared all the parameters of the `sys_write` system call, we can now call the system call itself. We can do it with the `syscall` instruction which will print the `"hello, world!"` string in our terminal. However, if you build and run the program having only the `sys_write` system call, you will see the [segmentation fault](https://en.wikipedia.org/wiki/Segmentation_fault) error. The problem is that we need to exit properly from the program. To do that, we have to call the `sys_exit` system call and fill the registers with the needed values. Fill the `rax` with the number of the `sys_exit` system call and the respective registers with the parameters for this system call.
+As we already prepared all the parameters of the `sys_write` system call, we can now execute the system call itself. We can do it with the `syscall` instruction which will print the `"hello, world!"` string in our terminal. However, if you build and run the program having only the `sys_write` system call, you will see the [segmentation fault](https://en.wikipedia.org/wiki/Segmentation_fault) error. The problem is that we need to exit properly from the program. To do that, we have to execute the `sys_exit` system call and fill the registers with the needed values. Fill the `rax` with the number of the `sys_exit` system call and the respective registers with the parameters for this system call.
 
 Let's take a look at the [system call table](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl):
 
@@ -250,7 +250,7 @@ Let's take a look at the [system call table](https://github.com/torvalds/linux/b
 60	common	exit			sys_exit
 ```
 
-The system call number for `sys_exit` is `60`, so we load `60` into the `rax` register. The [exit](https://www.man7.org/linux/man-pages/man2/exit.2.html) docs say it needs a single argument: the exit status code. To indicate that the program executed successfully, we put `0` into the `rdi` register (exit status `0` means success). That’s it — our program is now ready to exit.
+The system call number for `sys_exit` is `60`, so we put `60` into the `rax` register. The `exit` function [manual page](https://www.man7.org/linux/man-pages/man2/exit.2.html) states that the `exit` function expects a single argument: the exit status code. To indicate that the program executed successfully, we put `0` into the `rdi` register (exit status `0` means success). That’s it — our program is now ready to exit.
 
 ### Building and running the program
 
