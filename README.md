@@ -1,6 +1,6 @@
 # Assembly programming
 
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] [![Check Links](https://github.com/0xAX/asm/actions/workflows/link-check.yaml/badge.svg)](https://github.com/0xAX/asm/actions/workflows/link-check.yaml) [![star this repo](https://badgen.net/github/stars/0xAX/asm)](https://github.com/0xAX/asm) [![fork this repo](https://badgen.net/github/forks/0xAX/asm)](https://github.com/0xAX/asm/fork) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/0xAX/asm/issues)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com) 
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] [![Check Links](https://github.com/0xAX/asm/actions/workflows/link-check.yaml/badge.svg)](https://github.com/0xAX/asm/actions/workflows/link-check.yaml) [![star this repo](https://badgen.net/github/stars/0xAX/asm)](https://github.com/0xAX/asm) [![fork this repo](https://badgen.net/github/forks/0xAX/asm)](https://github.com/0xAX/asm/fork) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/0xAX/asm/issues)  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 This repository contains blog posts that introduce the [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming language. For this moment, all the content and examples cover only the [x86_64](https://en.wikipedia.org/wiki/X86-64) processors and the GNU Linux operating system. In the future, I plan to post learning materials for the [ARM64](https://en.wikipedia.org/wiki/AArch64) architecture.
 
@@ -43,7 +43,7 @@ To run code examples, you need the following tools:
 
 Thanks to the volunteers, the posts about assembly programming are translated into different languages.
 
-> [!NOTE] 
+> [!NOTE]
 > The translations may diverge from the original content.
 
 ### Chinese translation
@@ -79,7 +79,10 @@ Thanks to the volunteers, the posts about assembly programming are translated in
   * [X86_64 어셈블리와 친해지기 [파트 7]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_7.md)
   * [X86_64 어셈블리와 친해지기 [파트 8]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_8.md)
 
-## Contribution 
+### Russian tranlation
+  * [Github repository](https://github.com/develoopeer/asm-ru)
+
+## Contribution
 
 Read the [Contribution guide](./CONTRIBUTING.md) to learn how to contribute to the project. When contributing, make sure to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
