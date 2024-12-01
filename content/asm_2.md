@@ -1,4 +1,3 @@
-
 Some days ago I wrote the first blog post - introduction to x64 assembly - Say hello to x64 Assembly [part 1] which to my surprise caused great interest:
 
 ![newscombinator](./assets/newscombinator-screenshot.png)
@@ -6,9 +5,9 @@ Some days ago I wrote the first blog post - introduction to x64 assembly - Say h
 
 It motivates me even more to describe my way of learning. During this days I got many feedback from different people. There were many grateful words, but what is more important for me, there were many advices and adequate critics. Especially I want to say thank you words for great feedback to:
 
-* [Fiennes](https://reddit.com/user/Fiennes)
-* [Grienders](https://disqus.com/by/Universal178/)
-* [nkurz](https://news.ycombinator.com/user?id=nkurz)
+- [Fiennes](https://reddit.com/user/Fiennes)
+- [Grienders](https://disqus.com/by/Universal178/)
+- [nkurz](https://news.ycombinator.com/user?id=nkurz)
 
 And all who took a part in discussion at Reddit and Hacker News. There were many opinions, that first part was a not very clear for absolute beginner, that's why i decided to write more informative posts. So, let's start with second part of Say hello to x86_64 assembly.
 
@@ -40,13 +39,13 @@ Big-endian - big-endian stores bytes in opposite order than little-endian. So if
 
 Syscall - is the way a user level program asks the operating system to do something for it. You can find syscall table - [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
 
-Stack - processor has a very restricted count of registers. So stack is a continuous area of ​​memory addressable special registers `RSP`,`SS`,`RIP` and etc. We will take a closer look on stack in next parts.
+Stack - processor has a very restricted count of registers. So stack is a continuous area of ​​memory addressable by special registers `RSP`,`SS`,`RIP` and etc. We will take a closer look on stack in next parts.
 
-Section - every assembly program consists from sections. There are following sections:
+Section - every assembly program consists of sections. There are following sections:
 
-*  `data` - section is used for declaring initialized data or constants
-*  `bss` - section is used for declaring non initialized variables
-*  `text` - section is used for code
+- `data` - section is used for declaring initialized data or constants
+- `bss` - section is used for declaring non initialized variables
+- `text` - section is used for code
 
 General-purpose registers - there are 16 general-purpose registers - rax, rbx, rcx, rdx, rbp, rsp, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15. Of course, it is not a full list of terms and concepts which related with assembly programming. If we will meet another strange and unfamiliar words in next blog posts, there will be explanation of this words.
 
@@ -58,7 +57,7 @@ Now we will work only with integer numbers, so let's see to it. There two types 
 
 ## Sections
 
-As i wrote above, every assembly program consists from sections, it can be data section, text section and bss section. Let's look on data section.It's main point - to declare initialized constants. For example:
+As i wrote above, every assembly program consists of sections, it can be data section, text section and bss section. Let's look on data section.It's main point - to declare initialized constants. For example:
 
 ```assembly
 section .data
@@ -67,10 +66,9 @@ section .data
     msg:    db "Sum is correct", 10
 ```
 
-
 Ok, it is almost all clear here. 3 constants with name num1, num2, msg and with values 100, 50 and "Sum is correct", 10. But what is it db, equ? Actual NASM supports a number of pseudo-instructions:
 
-* DB, DW, DD, DQ, DT, DO, DY and DZ - are used for declaring initialized data. For example:
+- DB, DW, DD, DQ, DT, DO, DY and DZ - are used for declaring initialized data. For example:
 
 ```assembly
 ;; Initialize 4 bytes 1h, 2h, 3h, 4h
@@ -80,30 +78,30 @@ db 0x01,0x02,0x03,0x04
 dw    0x1234
 ```
 
-* RESB, RESW, RESD, RESQ, REST, RESO, RESY and RESZ - are used for declaring non initialized variables
-* INCBIN - includes External Binary Files
-* EQU - defines constant. For example:
+- RESB, RESW, RESD, RESQ, REST, RESO, RESY and RESZ - are used for declaring non initialized variables
+- INCBIN - includes External Binary Files
+- EQU - defines constant. For example:
 
 ```assembly
 ;; now one is 1
 one equ 1
 ```
 
-* TIMES - Repeating Instructions or Data. (description will be in next posts)
+- TIMES - Repeating Instructions or Data. (description will be in next posts)
 
 ## Arithmetic operations
 
 There is short list of arithmetic instructions:
 
-* `ADD` - integer add
-* `SUB` - substract
-* `MUL` - unsigned multiply
-* `IMUL` - signed multiply
-* `DIV` - unsigned divide
-* `IDIV` - signed divide
-* `INC` - increment
-* `DEC` - decrement
-* `NEG` - negate
+- `ADD` - integer add
+- `SUB` - substract
+- `MUL` - unsigned multiply
+- `IMUL` - signed multiply
+- `DIV` - unsigned divide
+- `IDIV` - signed divide
+- `INC` - increment
+- `DEC` - decrement
+- `NEG` - negate
 
 Some of it we will see at practice in this post. Other will be covered in next posts.
 
@@ -118,14 +116,14 @@ cmp rax, 50
 
 The `cmp` instruction just compares 2 values, but doesn't affect them and doesn't execute anything depend on result of comparison. For performing any actions after comparison there is conditional jump instructions. It can be one of it:
 
-*  `JE` - if equal
-*  `JZ` - if zero
-*  `JNE` - if not equal
-*  `JNZ` - if not zero
-*  `JG` - if first operand is greater than second
-*  `JGE` - if first operand is greater or equal to second
-*  `JA` - the same that JG, but performs unsigned comparison
-*  `JAE` - the same that JGE, but performs unsigned comparison
+- `JE` - if equal
+- `JZ` - if zero
+- `JNE` - if not equal
+- `JNZ` - if not zero
+- `JG` - if first operand is greater than second
+- `JGE` - if first operand is greater or equal to second
+- `JA` - the same that JG, but performs unsigned comparison
+- `JAE` - the same that JGE, but performs unsigned comparison
 
 For example if we want to make something like if/else statement in C:
 
@@ -168,7 +166,7 @@ _start:
     syscall
 ```
 
-Here we have can have some code which will be after _start label, and all of this code will be executed, assembly transfer control to .exit label, and code after .exit: will start to execute.
+Here we have can have some code which will be after \_start label, and all of this code will be executed, assembly transfer control to .exit label, and code after .exit: will start to execute.
 
 Often unconditional jump uses in loops. For example we have label and some code after it. This code executes anything, than we have condition and jump to the start of this code if condition is not successfully. Loops will be covered in next parts.
 
@@ -232,4 +230,4 @@ Let's go through the source code. First of all there is data section with two co
 
 Ok we have num1 which is 100 and num2 which is 50. Our sum must be 150. Let's check it with cmp instruction. After comparison rax and 150 we check result of comparison, if rax and 150 are not equal (checking it with jne) we go to .exit label, if they are equal we go to .rightSum label.
 
-Now we have two labels: .exit and .rightSum. First is just sets 60 to rax, it is exit system call number, and 0 to rdi, it is a exit code. Second is .rightSum is pretty easy, it just prints Sum is correct.
+Now we have two labels: .exit and .rightSum. First is just sets 60 to rax, it is exit system call number, and 0 to rdi, it is an exit code. Second is .rightSum is pretty easy, it just prints Sum is correct.
