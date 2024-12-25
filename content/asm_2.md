@@ -164,7 +164,7 @@ A byte is eight bits, a word is two bytes, a doubleword is four bytes, and a qua
 - `DY` - 32 bytes
 - `DZ` - 64 bytes
 
-The pseudo-instructions from `DB` to `DQ` are used to define data with the size from byte to double quadword. The `DT` is used to define `10` bytes. The `DO` is used to define `16` bytes. The `DY` is used to define `32` bytes. The `DZ` is used to define `64` bytes. In addition there are alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY` and `RESZ`.
+The pseudo-instructions from `DB` to `DQ` are used to define data with the size from `byte` to `quadword`. Additionally, `DT` is used to define 10 bytes, `DO` is used to define 16 bytes, `DY` is used to define 32 bytes, and `DZ` is used to define 64 bytes. 
 
 For example:
 
@@ -178,26 +178,29 @@ section .data
     msg    db "Sum is correct", 10
 ```
 
-If we will access a variable, that is defined in this way we will get the address of it but not the actual value. If we want to get the actual value that is located by the given address we need to specify the variable name in square brackets:
+There are also alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY`, and `RESZ`. They are used in a similar way to the `DB`, `DW` and so on but we do not provide an initial value for the defined variable.
 
+For example:
+
+```assembly
+section .bss
+    ;; Define a buffer with the size 64 bytes
+    buffer resb 64
 ```
+
+After variables are defined we can start to use them in the code of our program. To use a variable we can refer it by name. Although there is a small thing to remember in the NASM assembly syntax. If we will access a variable just by a name, we will get the address of it but not the actual value this variable stores:
+
+```assembly
+;; Move the address of the `num1` variable to the al register
+move al, num1
+```
+
+If we want to get the actual value that is located by the given address we need to specify the variable name in square brackets:
+
+```assembly
 ;; Move the value of num1 to the al register
 mov al, [num1]
 ```
-
-The size of pointers have the special notation:
-
-```assembly
-;; move 4 bytes value from the edi register to the address stored in the rbp register minus 4 bytes offset
-mov     DWORD PTR [rbp-4], edi
-```
-
-Most of the time we are working with numbers. There two types of integer numbers:
-
-- `unsigned`
-- `signed`
-
-The difference between these two types of numbers is that first can not accept negative numbers. Negative numbers represented with the [Two's complement](https://en.wikipedia.org/wiki/Two%27s_complement) method. In the next posts we will see how floating point numbers are represented.
 
 ### Stack
 
