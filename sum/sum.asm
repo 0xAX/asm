@@ -14,29 +14,29 @@ section .text
 
 ;; Entry point
 _start:
-    ;; Set the value of the num1 to the rax
+    ;; Set the value of num1 to rax
     mov rax, [num1]
     ;; Set the value of the num2 to the rbx
     mov rbx, [num2]
     ;; Get sum of the rax and rbx. The result is stored in the rax.
     add rax, rbx
 .compare:
-    ;; Compare the value of the rax with `150`
+    ;; Compare the rax value with 150
     cmp rax, 150
-    ;; Go to the .exit label if the values of the rax and 150 are not equal
+    ;; Go to the .exit label if the rax value is not 150
     jne .exit
-    ;; Go to the .correctSum label if the values of the rax and 150 are equal
+    ;; Go to the .correctSum label if the rax value is 150
     jmp .correctSum
 
 ; Print message that the sum is correct
 .correctSum:
-    ;; Number of the sytem call. 1 - `sys_write`.
+    ;; Specify the system call number (1 is `sys_write`).
     mov rax, 1
-    ;; The first argument of the `sys_write` system call. 1 is `stdout`.
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
     mov rdi, 1
-    ;; The second argument of the `sys_write` system call. Reference to the message.
+    ;; Set the second argument of `sys_write` to the reference of the `msg` variable.        
     mov rsi, msg
-    ;; The third argument of the `sys_write` system call. Length of the message.
+    ;; Set the third argument to the length of the `msg` variable's value (20 bytes).
     mov rdx, 20
     ;; Call the `sys_write` system call.
     syscall
@@ -45,9 +45,9 @@ _start:
 
 ; exit procedure
 .exit:
-    ;; Number of the system call. 60 - `sys_exit`.
+    ;; Specify the number of the system call (60 is `sys_exit`).
     mov rax, 60
-    ;; The first argument of the `sys_exit` system call.
+    ;; Set the first argument of `sys_exit` to `0`. The `0` status code is success.
     mov rdi, 0
     ;; Call the `sys_exit` system call.
     syscall
