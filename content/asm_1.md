@@ -165,7 +165,7 @@ _start:
     syscall
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov    rax, 60
-    ;; Set the first argument of `sys_exit` to `0`. The `0` status code is success.
+    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
     mov    rdi, 0
     ;; Call the `sys_exit` system call.
     syscall

@@ -16,9 +16,9 @@ section .text
 _start:
     ;; Set the value of num1 to rax
     mov rax, [num1]
-    ;; Set the value of the num2 to the rbx
+    ;; Set the value of num2 to rbx
     mov rbx, [num2]
-    ;; Get sum of the rax and rbx. The result is stored in the rax.
+    ;; Get the sum of rax and rbx. The result is stored in rax.
     add rax, rbx
 .compare:
     ;; Compare the rax value with 150
@@ -47,7 +47,7 @@ _start:
 .exit:
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov rax, 60
-    ;; Set the first argument of `sys_exit` to `0`. The `0` status code is success.
+    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
     mov rdi, 0
     ;; Call the `sys_exit` system call.
     syscall
