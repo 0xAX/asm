@@ -1,37 +1,39 @@
 # The `x86_64` concepts
 
-Some days ago I wrote the first post - [Introduction to assembly](https://github.com/0xAX/asm/blob/master/content/asm_1.md) which to my surprise caused great interest:
+Some days ago I wrote the first post about [Introduction to assembly](https://github.com/0xAX/asm/blob/master/content/asm_1.md) which, to my surprise, caused great interest:
 
 ![newscombinator](./assets/newscombinator-screenshot.png)
 ![reddit](./assets/reddit-screenshot.png)
 
-It motivated me even more to continue to describe my way of learning assembly programming for Linux x86_64. During these days I got the great feedback from the different people around internet. There were many grateful words, but what is more important to me, there were many advice and much of adequate and very useful critics. Especially I want to say thank you words for the great feedback to:
+It motivated me to continue describing my journey through learning assembly programming for Linux x86_64. During these days I got great feedback from people all over the Internet. There were many words of gratitude, but, what is more important to me, there was also much adequate advice and very useful criticism. Especially, I want to say thank you for the great feedback to:
 
 - [Fiennes](https://reddit.com/user/Fiennes)
 - [Grienders](https://disqus.com/by/Universal178/)
 - [nkurz](https://news.ycombinator.com/user?id=nkurz)
 
-Despite these people I want to say thank you to all who took a part in the discussion on [reddit](https://www.reddit.com/r/programming/comments/2exmpu/say_hello_to_assembly_part_1_linux_x8464/). There were many different opinions, that first part was a not very clear for an absolute beginner. That is why I decided to write more informative posts. So, let's start with the second part of learning assembly programming.
+I also want to say thank you to all who took part in the discussion on [reddit](https://www.reddit.com/r/programming/comments/2exmpu/say_hello_to_assembly_part_1_linux_x8464/). There were many different opinions, some of them saying that the first post was not so clear for an absolute beginner. These comments inspired me to rework the first blog post and make some things more clear, keeping in mind that the main goal was just an introduction without diving too deep. For the future, I will try my best to write more informative posts.
 
-## Terminology and Concepts
+So, let's start with the second part of learning assembly programming where I will try to bring closer the basic `x86_64` concepts.
 
-As I wrote above, I got many comments from the different people that some parts of first post are not clear. Despite I tried to rework the first part to make some things more clear, the main goal of it was just an introduction without diving very deeply. We got our first assembly program that we can run on our computers. Now it is time to start with the basics. Let's start from the description of some terminology that we will see and use in this and in the next parts.
+## Terminology and concepts
+
+Now that we've successfully written and run our first assembly program, it's time to learn the basics. Let's start with some terminology and concepts that we will see and use from now on.
 
 ### Processor registers
 
-One of the first concept that we have met in the previous part was - `register`. In the previous chapter we agreed that we can consider a `register` as a small memory slot. If we'll read the definition at [wikipedia](https://en.wikipedia.org/wiki/Processor_register), we will see that it is not so far from the reality:
+One of the first concepts we met in the previous post was a **register**. We agreed that we can consider a register as a small memory slot. Following the definition on [Wikipedia](https://en.wikipedia.org/wiki/Processor_register), we can see that it's not so far from truth:
 
 > A processor register is a quickly accessible location available to a computer's processor.
 
-The main goal of a processor is data processing. To process data, a processor should be able to access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is "slow" operation. If we will take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we will see the following picture:
+The main goal of a processor is data processing. To process data, a processor must access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is a very slow operation. If we take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we can see the following picture:
 
 > L1 cache reference = 1ns
-  ...
-  ...
-  ...
-  Main memory reference = 100ns
+> ...
+> ...
+> ...
+> Main memory reference = 100ns
 
-Access to the [L1 cache](https://en.wikipedia.org/wiki/CPU_cache) is `100x` times faster than access to the main memory. The processor registers are 'closer' to the processor. For example you can take a look at the list of latencies for different instructions by [Agner Fog](https://www.agner.org/optimize/#manual_instr_tab).
+Access to the [L1 CPU cache](https://en.wikipedia.org/wiki/CPU_cache) is `100x` times faster than access to the main memory. The processor registers are even "closer" to the processor. For comparison, you can take a look at the list of latencies for different instructions by [Agner Fog](https://www.agner.org/optimize/#manual_instr_tab).
 
 There are different types of registers on the `x86_64` processors:
 
@@ -49,24 +51,24 @@ There are different types of registers on the `x86_64` processors:
 - Bounds registers
 - Memory management registers
 
-The detailed description of any type of registers you can find in the [Intel software developer manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). For this moment we will stop only at the description of the general purpose registers as in most of our examples we will use mostly them. If we will use other types of registers, this will be mentioned in the respective example. We already have seen the set of the general purpose registers in the [previous chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md):
+You can find a detailed description of registers in the [Intel software developer manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). For now, we will focus only on the **general purpose registers** as we will use them in most examples. If we will use other registers, I will mention it beforehand. We already saw a table with general purpose registers in the [previous chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md#cpu-registers-and-system-calls):
 
 ![registers](/content/assets/registers.png)
 
-We have `16` registers with size of 64 bits, from `rax` to `r15`. Some parts of each `64-bit` register has own name. For example, as we may see in the table above, the lower `32-bits` of the `rax` register is called `eax`. In the same way, the lower `16 bits` of the `eax` register is called `ax`. In the end, the lower `8 bits` if the `ax` register is called `al` and the higher `8 bits` is called `ah`. Schematically we can look at this as:
+There are 16 registers of 64 bits size, from `rax` to `r15`. Each register also has smaller parts with their own names. For example, as we may see in the table above, the lower 32 bits of the `rax` register are called `eax`. Similarly, the lower 16 bits of the `eax` register are called `ax`. Finally, the lower 8 bits of the `ax` register are called `al`, while the higher 8 bits are called `ah`. We can visualize this as:
 
 ![rax](/content/assets/rax.svg)
 
-The general purpose registers are used in many different cases like performing of arithmetic and logical operations, transferring of data, memory address calculation operations, passing parameters to the functions and system calls and many more. During going through this and other posts we will see how the general purpose registers could be used to perform different operations.
+The general purpose registers are used in many different cases, like performing arithmetic and logical operations, transferring data, memory address calculation operations, passing parameters to functions and system calls, and many more. When going through these chapters, we will see how to use the general purpose registers to perform different operations.
 
 ### Endianness
 
-A computer operates with bytes. The bytes could be stored in memory in different order. This order in which a computer stores a sequence of bytes called - `endianness`. There are two types of endianness:
+A computer operates with bytes of data. The bytes can be stored in memory in different order. The order in which a computer stores a sequence of bytes is called **endianness**. There are two types of endianness:
 
 - `big`
 - `little`
 
-We can imagine memory as one large array of bytes. Each byte has own address. For example let's consider we have the following four bytes in memory: `AA 56 AB FF`. In the `little-endian` order the least significant byte has the smallest address:
+We can imagine memory as one large array of bytes, where each byte has its own unique address. For example, let's say we have the following four bytes in memory: `AA 56 AB FF`. In the `little-endian` order, the least significant byte is stored at the smallest memory address:
 
 | Address            | Byte |
 |--------------------|------|
@@ -75,7 +77,7 @@ We can imagine memory as one large array of bytes. Each byte has own address. Fo
 | 0x0000000000000002 | 0x56 |
 | 0x0000000000000003 | 0xAA |
 
-In a case of the `big-endian` order, the bytes are stored in the opposite order to the `little-endian`. So if have a look at the same set of bytes - `AA 56 AB FF`, it will be:
+In the case of the `big-endian` order, the bytes are stored in the opposite order, so the most significant byte is stored at the smallest memory address:
 
 | Address            | Byte |
 |--------------------|------|
@@ -84,13 +86,18 @@ In a case of the `big-endian` order, the bytes are stored in the opposite order 
 | 0x0000000000000002 | 0xAB |
 | 0x0000000000000003 | 0xFF |
 
-### System call
+### System calls
 
-A [system calls](https://en.wikipedia.org/wiki/System_call) - is a set of APIs provided by an operating system. A user level program can use this API to achieve different functionality that an operating system kernel can provide. As it was mention in the previous [chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
+A [system call](https://en.wikipedia.org/wiki/System_call) is a set of APIs provided by an operating system. A user-level program can use these APIs to achieve different functionalities that an operating system kernel provides. As mentioned in the previous [chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md#cpu-registers-and-system-calls), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
 
-There are two ways to execute a system call. We can call a library function like [printf](https://man7.org/linux/man-pages/man3/fprintf.3.html) for example which in its order will use OS level API or we can call a system call directly using the `syscall` instruction. In order execute a system call directly, we need to prepare the parameters of this function. As we have seen in the previous part, some general purpose registers were used for this goal. How the system calls and functions are called and how their parameters are passed is called - `calling conventions`. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) document.
+There are two ways to execute a system call:
 
-Let's take a closer look how arguments are passed to a system call if we are going to trigger one using `syscall` instruction.
+- Using a library function like [printf](https://man7.org/linux/man-pages/man3/fprintf.3.html), which internally calls the OS-level API 
+- Making a system call directly using the `syscall` instruction
+
+To call a system call directly, we must prepare the parameters of this function. As we saw in the previous blog post, some general purpose registers were used for that. The rules that define how the system calls and functions are called and how their parameters are passed are called **calling conventions**. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) PDF document.
+
+Let's take a closer look at how arguments are passed to a system call if we trigger a system call using the `syscall` instruction.
 
 The first six parameters are passed in the following general purpose registers:
 
@@ -101,11 +108,11 @@ The first six parameters are passed in the following general purpose registers:
 - `r8` - used to pass the fifth argument to a function.
 - `r9` - used to pass the sixth argument to a function.
 
-If we are using user-level wrapper instead of calling a system call directly, the order of registers and parameters will be different. For this moment, let's focus only on the calling conventions of the system calls using the Linux kernel interface. The number of a system call is passed in the `rax` register. After all the parameters are prepared, the system call is called with the instruction `syscall`. After the system call is finished to work, the result is returned in the `rax` register.
+If we use a user-level wrapper instead of calling a system call directly, the order of registers and parameters will be different. For now, let's focus only on the calling conventions of the system calls using the Linux kernel interface. The system call number is passed in the `rax` register. Once we set up all the parameters in their respective registers, we can call the system call with the instruction `syscall`. After the system call is finished, the result is returned in the `rax` register.
 
 ### Program sections
 
-As we have seen in the first post, each program consists from program sections (or segments). Each executable file on Linux x86_64 is represented in [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) format. Each ELF file has table of sections that is a program consists from. We may see the list of sections of our `hello` program from the previous post using the [readelf](https://man7.org/linux/man-pages/man1/readelf.1.html) utility:
+As we saw in the first post, each program consists of program sections (or segments). Each executable file on Linux x86_64 is represented in the [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) format. An ELF file has a table of sections that a program consists of. We can see a list of sections in our `hello` program from the previous post using the [readelf](https://man7.org/linux/man-pages/man1/readelf.1.html) utility:
 
 ```
 ~$ strip hello && readelf -S hello
@@ -130,33 +137,32 @@ Key to Flags:
   D (mbind), l (large), p (processor specific)
 ```
 
-As we may see, there are four sections. Two of them we added by ourselves during writing the assembly code. The additional two sections added by the compiler. Technically we can define any section in our program. But there are well known sections:
+As we can see, there are four sections. Two of them (`text` and `data`) were defined by us while writing the assembly code. The remaining two sections were added automatically by the compiler. While we can technically define any section in our program, there are some well-known, commonly used sections:
 
-- `data` - section is used for declaring initialized data or constants.
-- `bss` - section is used for declaring non initialized variables.
-- `text` - section is used for code of the program.
-- `shstrtab` - section that stores references to the existing sections.
+- `data` - used for declaring initialized data or constants.
+- `bss` - used for declaring non-initialized variables.
+- `text` - used for the code of the program.
+- `shstrtab` - stores references to the existing sections.
 
 ### Data types
 
-Obviously assembly is not a [statically typed programming language](https://en.wikipedia.org/wiki/Category:Statically_typed_programming_languages). Usually we operate with set of bytes. Despite this, [NASM](https://nasm.us/) gives us some helpers at least to define the size of data that we are operating. The fundamental data types are:
+Assembly is not a [statically typed programming language](https://en.wikipedia.org/wiki/Category:Statically_typed_programming_languages). Usually, we work directly with a raw set of bytes. However, [NASM](https://nasm.us/) provides us with some helpers to define the size of data we are operating. The fundamental data types are:
 
-- `byte`
-- `word`
-- `doubleword`
-- `quadword`
-- `double quadword`
+- `byte` - 8 bits
+- `word` - 2 bytes
+- `doubleword` - 4 bytes
+- `quadword` - 8 bytes
 
-A byte is eight bits, a word is two bytes, a doubleword is four bytes, a quadword is eight bytes and a double quadword is sixteen bytes. NASM provides pseudo-instructions to help us to define data with the given size:
+A byte is eight bits, a word is two bytes, a doubleword is four bytes, and a quadword is eight bytes. NASM provides pseudo-instructions to help us define the size:
 
-- `DB`
-- `DW`
-- `DD`
-- `DQ`
-- `DT`
-- `DO`
-- `DY`
-- `DZ`
+- `DB` - `byte` - 8 bits
+- `DW` - `word` - 2 bytes
+- `DD` - `doubleword` - 4 bytes
+- `DQ` - `quadword` - 8 bytes
+- `DT` - 10 bytes
+- `DO` - 16 bytes
+- `DY` - 32 bytes
+- `DZ` - 64 bytes
 
 The pseudo-instructions from `DB` to `DQ` are used to define data with the size from byte to double quadword. The `DT` is used to define `10` bytes. The `DO` is used to define `16` bytes. The `DY` is used to define `32` bytes. The `DZ` is used to define `64` bytes. In addition there are alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY` and `RESZ`.
 
@@ -164,18 +170,18 @@ For example:
 
 ```assembly
 section .data
-    ;; Define byte with the value 100
+    ;; Define a byte with the value 100
     num1   db 100
     ;; Define 2 bytes with the value 1024
     num2   dw 1024
-    ;; Define set of characters (10 is ASCII \n)
+    ;; Define a set of characters (10 is a new line symbol in ASCII \n)
     msg    db "Sum is correct", 10
 ```
 
 If we will access a variable, that is defined in this way we will get the address of it but not the actual value. If we want to get the actual value that is located by the given address we need to specify the variable name in square brackets:
 
 ```
-;; Move the value of the num1 to the al register
+;; Move the value of num1 to the al register
 mov al, [num1]
 ```
 
