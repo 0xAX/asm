@@ -11,7 +11,7 @@ It motivated me to continue describing my journey through learning assembly prog
 - [Grienders](https://disqus.com/by/Universal178/)
 - [nkurz](https://news.ycombinator.com/user?id=nkurz)
 
-I also want to say thank you to all who took part in the discussion on [reddit](https://www.reddit.com/r/programming/comments/2exmpu/say_hello_to_assembly_part_1_linux_x8464/). There were many different opinions, some of them saying that the first post was not so clear for an absolute beginner. These comments inspired me to rework the first blog post and make some things more clear, keeping in mind that the main goal was just an introduction without diving too deep. For the future, I will try my best to write more informative posts.
+I also want to say thank you to all who took part in the discussion on [reddit](https://www.reddit.com/r/programming/comments/2exmpu/say_hello_to_assembly_part_1_linux_x8464/). There were many different opinions, some of them saying that the first post was not so clear for an absolute beginner. These comments inspired me to rework the first post and make some things more clear, keeping in mind that the main goal was just an introduction without diving too deep. For the future, I will try my best to write more informative posts.
 
 So, let's start with the second part of learning assembly programming where I will try to bring closer the basic `x86_64` concepts.
 
@@ -27,11 +27,13 @@ One of the first concepts we met in the previous post was a **register**. We agr
 
 The main goal of a processor is data processing. To process data, a processor must access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is a very slow operation. If we take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we can see the following picture:
 
-> L1 cache reference = 1ns
-> ...
-> ...
-> ...
-> Main memory reference = 100ns
+```
+L1 cache reference = 1ns
+...
+...
+...
+Main memory reference = 100ns
+```
 
 Access to the [L1 CPU cache](https://en.wikipedia.org/wiki/CPU_cache) is `100x` times faster than access to the main memory. The processor registers are even "closer" to the processor. For comparison, you can take a look at the list of latencies for different instructions by [Agner Fog](https://www.agner.org/optimize/#manual_instr_tab).
 
@@ -95,7 +97,7 @@ There are two ways to execute a system call:
 - Using a library function like [printf](https://man7.org/linux/man-pages/man3/fprintf.3.html), which internally calls the OS-level API 
 - Making a system call directly using the `syscall` instruction
 
-To call a system call directly, we must prepare the parameters of this function. As we saw in the previous blog post, some general purpose registers were used for that. The rules that define how the system calls and functions are called and how their parameters are passed are called **calling conventions**. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) PDF document.
+To call a system call directly, we must prepare the parameters of this function. As we saw in the previous post, some general purpose registers were used for that. The rules that define how the system calls and functions are called and how their parameters are passed are called **calling conventions**. For the Linux `x86_64`, the calling conventions are specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) PDF document.
 
 Let's take a closer look at how arguments are passed to a system call if we trigger a system call using the `syscall` instruction.
 
@@ -178,7 +180,7 @@ section .data
     msg    db "Sum is correct", 10
 ```
 
-There are also alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY`, and `RESZ`. They are used in a similar way to the `DB`, `DW` and so on but we do not provide an initial value for the defined variable.
+There are also alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY`, and `RESZ`. These are used similarly to `DB` - `DZ`, but in this case, we do not provide an initial value for the defined variable.
 
 For example:
 
@@ -188,14 +190,14 @@ section .bss
     buffer resb 64
 ```
 
-After variables are defined we can start to use them in the code of our program. To use a variable we can refer it by name. Although there is a small thing to remember in the NASM assembly syntax. If we will access a variable just by a name, we will get the address of it but not the actual value this variable stores:
+After defining variables, we can start using them in our program's code. To use a variable, we can refer it by name. However, there is a small thing to remember in the NASM assembly syntax: accessing a variable by name gets us its address, not the actual value it stores:
 
 ```assembly
 ;; Move the address of the `num1` variable to the al register
 move al, num1
 ```
 
-If we want to get the actual value that is located by the given address we need to specify the variable name in square brackets:
+To get the actual value that located in the given address, we need to specify the variable name in square brackets:
 
 ```assembly
 ;; Move the value of num1 to the al register
