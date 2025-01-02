@@ -59,7 +59,7 @@ You can find a detailed description of registers in the [Intel software develope
 
 There are 16 registers of 64 bits size, from `rax` to `r15`. Each register also has smaller parts with their own names. For example, as we may see in the table above, the lower 32 bits of the `rax` register are called `eax`. Similarly, the lower 16 bits of the `eax` register are called `ax`. Finally, the lower 8 bits of the `ax` register are called `al`, while the higher 8 bits are called `ah`. We can visualize this as:
 
-![rax](/content/assets/rax.svg)
+![rax](./assets/rax.svg)
 
 The general purpose registers are used in many different cases, like performing arithmetic and logical operations, transferring data, memory address calculation operations, passing parameters to functions and system calls, and many more. When going through these chapters, we will see how to use the general purpose registers to perform different operations.
 
@@ -342,7 +342,7 @@ Now take a look one more time very carefully:
 
 What was the address stored in the `rbp`? Our stack pointer! So after the last `mov` instruction in the function `foo`, our stack frame will look like this:
 
-![stack](/content/assets/stack.svg)
+![stack](./assets/stack.svg)
 
 That is the whole sense of the `rbp`. It plays role of an anchor in the function or a base point. Using the positive offsets we may access the return address and the parameters pushed on the stack by the caller and using the negative offsets we may access local variables.
 
