@@ -312,9 +312,9 @@ mov     rbp, rsp
 
 These two instructions at the beginning of each function are called [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Prologue). Each function usually operates with a part of the stack. Such a part is called a [stack frame](https://en.wikipedia.org/wiki/Call_stack). To manage the stack, the CPU uses these general purpose registers:
 
-- `rip` - this register `rip` is the so-called `instruction pointer`. This register stores the address of the next instruction the CPU is going to execute. When the CPU meets the `call` instruction to call a function, it pushes the address of the next instruction to run after the function call to the stack. This is done so the CPU knows where to continue the program's execution after the function call.
+- `rip` - this register is the so-called `instruction pointer`. It stores the address of the next instruction the CPU is going to execute. When the CPU meets the `call` instruction to call a function, it pushes the address of the next instruction to run after the function call to the stack. This is done so the CPU knows where to continue the program's execution after the function call.
 - `rsp` - this register is called a `stack pointer` and should point to the top of the stack. After we push something to the stack using the `push` instruction, the stack pointer address decreases. After we pop something from the stack using the `pop` instruction, the stack pointer address increases.
-- `rbp` - this register `rbp` is the so-called `frame pointer` or `base pointer` that points to the stack frame. As mentioned above, each function has its own stack frame, which is a memory area where the function stores [local variables](https://en.wikipedia.org/wiki/Local_variable) and other data.
+- `rbp` - this register is the so-called `frame pointer` or `base pointer` that points to the stack frame. As mentioned above, each function has its own stack frame, which is a memory area where the function stores [local variables](https://en.wikipedia.org/wiki/Local_variable) and other data.
 
 Now that we know the rough meaning of the stack frame and the usage of the `rbp`, `rsp`, and `rip` registers, let's try to understand what happens when we call a function. Let's look at the stack before the `call foo` is executed. Our stack looks like this:
 
