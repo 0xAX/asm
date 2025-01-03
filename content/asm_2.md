@@ -230,7 +230,7 @@ So the available number of general purpose registers should be enough to execute
 - `r8` - used to pass the fifth argument to a function.
 - `r9` - used to pass the sixth argument to a function.
 
-Let’s take a look at the assembly code of a simple example written in the C programming language to better illustrate the topic:
+Let’s take a look at the simple code example written in the C programming language to better illustrate the topic:
 
 ```C
 int foo(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8) {
