@@ -364,7 +364,7 @@ Here is the list of common assembly instructions used for arithmetic operations:
 - `IDIV` - Signed division
 - `INC`  - Increment
 - `DEC`  - Decrement
-- `NEG`  - Negate
+- `NEG`  - Negateation
 
 We will use these instructions and explain the details in the following example.
 
