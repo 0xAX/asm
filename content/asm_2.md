@@ -248,7 +248,7 @@ If we compile it and look at the assembly code, we will see such an output of th
 bar:
         ;; Preserve the base pointer
         push    rbp
-        ;; Preserve the stack pointer
+        ;; Set the new frame base pointer
         mov     rbp, rsp
         ;; Push the eight argument on the stack
         push    8
@@ -277,7 +277,7 @@ bar:
 foo:
         ;; Preserve the base pointer
         push    rbp
-        ;; Preserve the stack pointer
+        ;; Set the new frame base pointer
         mov     rbp, rsp
         ;; Move 4 bytes value from the edi register to the address stored in the rbp register minus 4 bytes offset
         mov     DWORD PTR [rbp-4], edi
@@ -364,7 +364,7 @@ Here is the list of common assembly instructions used for arithmetic operations:
 - `IDIV` - Signed division
 - `INC`  - Increment
 - `DEC`  - Decrement
-- `NEG`  - Negateation
+- `NEG`  - Negation.
 
 We will use these instructions and explain the details in the following example.
 
