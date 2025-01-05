@@ -62,7 +62,7 @@ If we will compile this function and take a look at the assembly output, we will
 __double(int):
         ;; Preserve the base pointer
         push    rbp
-        ;; Set the new stack pointer
+        ;; Set the new frame base pointer
         mov     rbp, rsp
         ;; Put the value of the first parameter of the function from the edi register on the stack with the location rbp - 20 bytes.
         mov     DWORD PTR [rbp-20], edi
@@ -78,43 +78,21 @@ __double(int):
         ret
 ```
 
-TODO diagram + explanation
+After the first two lines of the `__double` function the stack frame for this function is set and looks like:
 
-## Stack pointer
+TODO diagram
 
-As i wroute about we have 16 general-purpose registers, and there are two interesting registers - RSP and RBP. RBP is the base pointer register. It points to the base of the current stack frame. RSP is the stack pointer, which points to the top of current stack frame.
+The third instruction of the function `__double` puts the first parameter of this function to the stack with offset `-20`. After this we may see that the value `2` which is the value of the local variable `two` is also put onto the stack with the offset `-4`. The stack frame of our function for this moment should look like this: 
 
-Commands
+TODO diagram
 
-We have two commands for work with stack:
+After this we put the value from the stack with the offset `-20` (the value of the functions' parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
 
-* `push argument` - increments stack pointer (RSP) and stores argument in location pointed by stack pointer
-* `pop argument` - copied data to argument from location pointed by stack pointer
+TODO: example of vulnerabilities and protection
 
-Let's look on one simple example:
+## Stack operations
 
-```assembly
-global _start
-
-section .text
-
-_start:
-		mov rax, 1
-		mov rdx, 2
-		push rax
-		push rdx
-
-		mov rax, [rsp + 8]
-
-		;;
-		;; Do something
-		;;
-```
-Here we can see that we put 1 to rax register and 2 to rdx register. After it we push to stack values of these registers. Stack works as LIFO (Last In First Out). So after this stack or our application will have following structure:
-
-![stack diagram](/content/assets/stack-diagram.png)
-
-Then we copy value from stack which has address rsp + 8. It means we get address of top of stack, add 8 to it and copy data by this address to rax. After it rax value will be 1.
+TODO
 
 ## Example
 
