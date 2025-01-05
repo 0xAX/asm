@@ -348,47 +348,46 @@ Right before returning from the `foo` function, we encounter the so-called [func
 
 ## Example
 
-After we went thought the most important concepts, it is time to return to the most interesting part - writing the programs. Let's take a look at our second simple assembly program. The program will take two integer numbers, get the sum of these numbers and compare it with the third predefined number. If the predefined number is equal to sum, the program will print something on the screen, if not - the program will just exit.
+Now that we've covered the key concepts, it's time to move on to the most interesting part — writing our second simple assembly program. The program will take two integer numbers, calculate their sum, and compare the result with a third predefined number. If the predefined number is equal to the sum, the program will print a message on the screen; otherwise, it will just exit.
 
-Before writing the code we need to know how to execute basic arithmetic expressions and compare the things.
+Before diving into the code, we must understand how to execute basic arithmetic and comparison instructions.
 
 ### Basic arithmetic instructions
 
-Here is the list of some assembly instructions to execute arithmetic operations:
+Here is the list of common assembly instructions used for arithmetic operations:
 
-- `ADD`  - Addition.
-- `SUB`  - Substraction.
-- `MUL`  - Unsigned multiplication.
-- `IMUL` - Signed multiplication.
-- `DIV`  - Unsigned division.
-- `IDIV` - Signed division.
-- `INC`  - Increment.
-- `DEC`  - Decrement.
-- `NEG`  - Negate.
+- `ADD`  - Addition
+- `SUB`  - Subtraction
+- `MUL`  - Unsigned multiplication
+- `IMUL` - Signed multiplication
+- `DIV`  - Unsigned division
+- `IDIV` - Signed division
+- `INC`  - Increment
+- `DEC`  - Decrement
+- `NEG`  - Negate
 
-All the details related to the instructions listed above will be described in the example.
+We will use these instructions and explain the details in the following example.
 
 ### Basic control flow
 
-Now let's take a look at the our first [control flow](https://en.wikipedia.org/wiki/Control_flow) instructions. Usually programming languages have ability to change order of evaluation (for example with `if` or `case` statements, `goto` and so on). Assembly programming language also provides the very basic ability to change the flow of our programs. The first such instruction is `cmp`. This instruction takes two values and performs comparison between them. Usually it is used along with the conditional jump instruction. For example:
+Now let's take a look at our first [control flow](https://en.wikipedia.org/wiki/Control_flow) instructions. Usually, programming languages allow you to change the order of evaluation (for example with `if`, `case`, or `goto` statements). The assembly programming language also provides the basic ability to change the flow of our programs. The first such instruction is `cmp`. This instruction takes two values and compares them. Usually, it is used along with the conditional jump instruction. For example:
 
 ```assembly
-;; compare value of the rax register with 50
+;; Compare the value of the rax register with 50
 cmp rax, 50
 ```
 
-The `cmp` instruction executes only comparison of its parameters without affecting values of the parameters themselves. To perform any actions after the comparison, there is conditional jump instructions. The list of these instructions:
+The `cmp` instruction only compares the parameters without affecting their values. To perform any actions after the comparison, you can use **conditional jump instructions**:
 
--  `JE`  - Jump if the values are equal.
+-  `JE/JZ`  - Jump if the values are equal.
 -  `JNE` - Jump if the values are not equal.
--  `JZ`  - Jump if the difference between the two values is zero.
--  `JNZ` - Jump if the difference between the two values is not zero.
+-  `JNZ` - Jump if the difference between two values is not zero.
 -  `JG`  - Jump if the first value is greater than the second.
--  `JGE` - Jump if the first is greater or equal to the second.
--  `JA`  - The same that JG, but performs unsigned comparison.
--  `JAE` - The same that JGE, but performs unsigned comparison.
+-  `JGE` - Jump if the first value is greater or equal to the second.
+-  `JA`  - The same as `JG`, but performs the unsigned comparison.
+-  `JAE` - The same as `JGE`, but performs the unsigned comparison.
 
-For example if we want translate something like this if/else statement written in C:
+For example, let's take the following `if/else` statement written in C:
 
 ```C
 if (rax != 50) {
@@ -398,28 +397,28 @@ if (rax != 50) {
 }
 ```
 
-to assembly, it will something like this:
+When translated to assembly, this statement looks like this:
 
 ```assembly
-;; compare rax with 50
+;; Compare rax with 50
 cmp rax, 50
-;; jump to the label `.foo` if the value of the `rax` register is not equal to 50
+;; Jump to the label `.foo` if the value of the `rax` register is not equal to 50
 jne .foo
-;; jump to the label `.bar` otherwise
+;; Jump to the label `.bar` otherwise
 jmp .bar
 ```
 
-In addition we can jump on a label without any conditions with the `jmp` instruction:
+In addition, we can jump to a label without any conditions using the `jmp` instruction:
 
 ```assembly
 jmp .label
 ```
 
-Often the unconditional jumps are used to simulate a loop. For example we have label and some code after it. This code executes anything, than we have condition and jump to the start of this code if condition is not successfully. The loops will be covered in next parts.
+Unconditional jumps are often used to simulate loops in assembly programming. For example, a label is placed at the beginning of a code block. The code runs, and then a condition is checked. If the condition isn't met, the program jumps back to the label and repeats the code. The topic of loops will be covered in more detail in the next posts.
 
 ### Program example
 
-Since we learned some basic arithmetic and control flow instructions, we can write our example. Before we will take a look at the program source code, I will remind that we are going to write a simple program that will calculate the sum of two integer numbers and if the sum equal to the third predefined number we will print a string. Otherwise just exist.
+Now that we've covered basic arithmetic and control flow instructions, we can write a simple program. As a reminder, this program will calculate the sum of two integers and compare it to a predefined third number. If the sum equals the third number, a string will be printed; otherwise, the program will just exit.
 
 Here is the source code of our example:
 
@@ -454,7 +453,7 @@ _start:
     ;; Go to the .correctSum label if the rax value is 150
     jmp .correctSum
 
-; Print message that the sum is correct
+;; Print a message that the sum is correct
 .correctSum:
     ;; Specify the system call number (1 is `sys_write`).
     mov rax, 1
@@ -466,10 +465,10 @@ _start:
     mov rdx, 20
     ;; Call the `sys_write` system call.
     syscall
-    ; Go to the exit of the program.
+    ;; Go to the exit of the program.
     jmp .exit
 
-; exit procedure
+;; Exit procedure
 .exit:
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov rax, 60
@@ -479,30 +478,33 @@ _start:
     syscall
 ```
 
-First of all let's try to build, run our program with the similar commands that we have seen in the previous chapter and see the result:
+First, let's build our program using the commands we learned in the previous chapter to see the result:
 
 ```bash
 $ nasm -f elf64 -o program.o program.asm
 $ ld -o program program.o
 ```
 
-After we built our program, we can run it with:
+After building the program, we can run it with:
 
 ```bash
 ~$ ./program
 Sum is correct
 ```
 
-Now let's go through the source code of our program. First of all there is the `.data` section with three variables:
+Now let's go through the source code of our program. First of all, there is the `.data` section with three variables:
 
 - `num1`
 - `num2`
 - `msg`
 
-The entry point of our program is the `_start` symbol. In the beginning of the source code of our program we put the values of the `num1` and `num2` to the general purpose registers `rax` and `rbx`. After this we can use the `add` instruction to get the sum of these two values. The result of the sum will be stored in the `rax` register.
+The entry point of our program is the `_start` symbol. At the beginning of the source code, we put the values of `num1` and `num2` to the general purpose registers `rax` and `rbx`. Then, we use the `add` instruction to calculate their sum, which will be stored in the `rax` register.
 
-According to the description of our program, now we have to compare the sum of two numbers with the predefined number. We do it with the `cmp` instruction. At this point we have two ways to go. The first one - we jump to the `.exit` label if the value of the `rax` (that stores sum of the `num1` and `num2` values) is not equal to `150`. If the sum is equal to `150`, we jump to the `.correctSum` label.
+Based on our program's description, the next step is to compare the sum of the two numbers with the predefined value. We use the `cmp` instruction for this. At this point, there are two possible outcomes:
 
-The source code of the both `.correctSum` and `.exit` sub-routines should be familiar to us. They both do very similar what we already have seen in the previous chapter. The `.correctSum` sub-routine prints the string from the `msg` to the screen. The `.exit` sub-routine provides us graceful exit from our program.
+- If the value in the `rax` register (which stores the sum of `num1` and `num2`) is not equal to 150, we jump to the `.exit` label.
+- If the sum is equal to 150, we jump to the `.correctSum` label.
 
-That is it for this post. In the next post we will continue to dive into assembly programming.
+The source code of both `.correctSum` and `.exit` sub-routines should look familiar, as they are similar to what we covered in the previous chapter. The `.correctSum` sub-routine prints the string from `msg` to the screen, while the `.exit` sub-routine ensures a graceful exit from the program.
+
+We’ve just written our second program — great job 🎉 In the next post, we’ll continue exploring assembly programming and dive deeper into the stack topic. If you have any questions or thoughts, feel free to reach out. See you in the next post!

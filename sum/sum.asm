@@ -28,7 +28,7 @@ _start:
     ;; Go to the .correctSum label if the rax value is 150
     jmp .correctSum
 
-; Print message that the sum is correct
+;; Print a message that the sum is correct
 .correctSum:
     ;; Specify the system call number (1 is `sys_write`).
     mov rax, 1
@@ -40,10 +40,10 @@ _start:
     mov rdx, 20
     ;; Call the `sys_write` system call.
     syscall
-    ; Go to the exit of the program.
+    ;; Go to the exit of the program.
     jmp .exit
 
-; exit procedure
+;; Exit procedure
 .exit:
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov rax, 60
