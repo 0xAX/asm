@@ -2,9 +2,9 @@
 
 In the [previous chapter](TODO) we started to learn the basics of the x86_64 architecture. Amonth others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
 
-Let's start with a little reminder - the stack is special region in memory, which operates on the principle lifo (Last Input, First Output). We have sixtheen general-purpose registers which we can use as for the temporary data storage. They are RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP and R8-R15. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
+Let's start with a little reminder - the stack is special region in memory, which operates on the principle lifo (Last Input, First Output). We have sixtheen general-purpose registers which we can use as for the temporary data storage. They are `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp` and from `r8` to `r15`. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
 
-Besides the temporary storage for data, the another crucial usage of the stack is ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, return address copied in stack. After end of function execution, address copied in commands counter (RIP) and application continue to executes from next place after function.
+Besides the temporary storage for data, the another crucial usage of the stack is ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, return address stored on the stack. After end of the function execution, the return address copied back into the `rip` register and execution continues from the address behind the called function.
 
 For example:
 
@@ -14,38 +14,71 @@ global _start
 section .text
 
 _start:
+        ;; Put 1 to the rax register
 		mov rax, 1
+        ;; Call the incRax subroutine
 		call incRax
+        ;; Compare the value in the rax register with 2
 		cmp rax, 2
+        ;; Jump to the 'exit' label if not equal
 		jne exit
 		;;
-		;; Do something
+		;; Otherwise, do something else
 		;;
 
 incRax:
+        ;; Increment the value of the rax register
 		inc rax
+        ;; Return from the incRax subroutine
 		ret
 ```
 
-Here we can see that after application runnning, rax is equal to 1. Then we call a function incRax, which increases rax value to 1, and now rax value must be 2. After this execution continues from 8 line, where we compare rax value with 2. Also as we can read in [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the first six function arguments passed in registers. They are:
+In the small example above, we can see that after the program start, the value `1` is stored in the of the rax registerer. Then we call the subroutine `incRax`, which increases values of the rax register by 1. As soon as the value of the rax register is increased, the sobrutine is ended with the `ret` instruction and execution continues from the instructions that are located right behind the call of the `incRax` subroutine.
 
-* `rdi` - first argument
-* `rsi` - second argument
-* `rdx` - third argument
-* `rcx` - fourth argument
-* `r8` - fifth argument
-* `r9` - sixth
+Besides the preserving of the return address, stack is used to access parameters of the function and local variables. From the previous chapter, you can remember that according to the [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) document, the first six parameters of a function passed in registers. 
 
-Next arguments will be passed in stack. So if we have function like this:
+These registers are:
+
+- `rdi` - used to pass the first argument to a function.
+- `rsi` - used to pass the second argument to a function.
+- `rdx` - used to pass the third argument to a function.
+- `r10` - used to pass the fourth argument to a function.
+- `r8` - used to pass the fifth argument to a function.
+- `r9` - used to pass the sixth argument to a function.
+
+Local variables are also accessed using the stack. For example let's take a look at the following trivial function written in C that doubles its parameter:
 
 ```C
-int foo(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
-{
-    return (a1 + a2 - a3 - a4 + a5 - a6) * a7;
+int __double(int a) {
+    int two = 2;
+
+    return a * two;
 }
 ```
 
-Then first six arguments will be passed in registers, but 7 argument will be passed in stack.
+If we will compile this function and take a look at the assembly output, we will see something like this:
+
+```asssembly
+__double(int):
+        ;; Preserve the base pointer
+        push    rbp
+        ;; Set the new stack pointer
+        mov     rbp, rsp
+        ;; Put the value of the first parameter of the function from the edi register on the stack with the location rbp - 20 bytes.
+        mov     DWORD PTR [rbp-20], edi
+        ;; Put the 2 to on the stack with the location rbo - 4 bytes.
+        mov     DWORD PTR [rbp-4], 2
+        ;; Put the values of the first parameter of the function to the eax register.
+        mov     eax, DWORD PTR [rbp-20]
+        ;; Multiple the value of the eax register to 2 and store the result in the eax register.
+        imul    eax, DWORD PTR [rbp-4]
+        ;; Restore base pointer.
+        pop     rbp
+        ;; Exit from the __dobule function.
+        ret
+```
+
+TODO diagram + explanation
 
 ## Stack pointer
 
