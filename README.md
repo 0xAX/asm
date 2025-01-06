@@ -79,8 +79,8 @@ Thanks to the volunteers, the posts about assembly programming are translated in
   * [X86_64 어셈블리와 친해지기 [파트 7]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_7.md)
   * [X86_64 어셈블리와 친해지기 [파트 8]](https://github.com/maldron0309/asm/blob/korean/content/ko_asm_8.md)
 
-### Russian tranlation
-  * [Github repository](https://github.com/develoopeer/asm-ru)
+### Russian translation
+  * [GitHub repository](https://github.com/develoopeer/asm-ru)
 
 ## Contribution
 
