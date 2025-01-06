@@ -1,6 +1,6 @@
 # The `x86_64` concepts
 
-Some days ago I wrote the first post about [Introduction to assembly](https://github.com/0xAX/asm/blob/master/content/asm_1.md) which, to my surprise, caused great interest:
+Some days ago I wrote the first post about [Introduction to assembly](asm_1.md) which, to my surprise, caused great interest:
 
 ![newscombinator](./assets/newscombinator-screenshot.png)
 ![reddit](./assets/reddit-screenshot.png)
@@ -53,7 +53,7 @@ There are different types of registers on the `x86_64` processors:
 - Bounds registers
 - Memory management registers
 
-You can find a detailed description of registers in the [Intel software developer manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). For now, we will focus only on the **general purpose registers** as we will use them in most examples. If we will use other registers, I will mention it beforehand. We already saw a table with general purpose registers in the [previous chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md#cpu-registers-and-system-calls):
+You can find a detailed description of registers in the [Intel software developer manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). For now, we will focus only on the **general purpose registers** as we will use them in most examples. If we will use other registers, I will mention it beforehand. We already saw a table with general purpose registers in the [previous chapter](asm_1.md#cpu-registers-and-system-calls):
 
 ![registers](/content/assets/registers.png)
 
@@ -90,7 +90,7 @@ In the case of the `big-endian` order, the bytes are stored in the opposite orde
 
 ### System calls
 
-A [system call](https://en.wikipedia.org/wiki/System_call) is a set of APIs provided by an operating system. A user-level program can use these APIs to achieve different functionalities that an operating system kernel provides. As mentioned in the previous [chapter](https://github.com/0xAX/asm/blob/master/content/asm_1.md#cpu-registers-and-system-calls), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
+A [system call](https://en.wikipedia.org/wiki/System_call) is a set of APIs provided by an operating system. A user-level program can use these APIs to achieve different functionalities that an operating system kernel provides. As mentioned in the previous [chapter](asm_1.md#cpu-registers-and-system-calls), you can find all the system calls of the Linux kernel for the `x86_64` architecture [here](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl).
 
 There are two ways to execute a system call:
 
