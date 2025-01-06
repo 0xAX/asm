@@ -88,11 +88,6 @@ TODO diagram
 
 After this we put the value from the stack with the offset `-20` (the value of the functions' parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
 
-## Security considerations
-
-TODO: example of vulnerabilities and protection
-https://github.com/colmmacc/CVE-2022-3602
-
 ## Stack operations
 
 We already have seen two assembly instructions that affects the current state of the stack:
@@ -575,7 +570,48 @@ $ ./stack 5 10
 
 Works as expected 🎉🎉🎉
 
+
+## Security considerations
+
+As we have seen in this and in the previois posts, the stack is a crucial concept that is used to manage function calls in our programs. Despite we have seen "useful" application of this concept, you should remember about another site - security. One of the most common problems is the stack overflow. Let's take a look at the simple C function (the function is written on C for simplicity):
+
+```C
+#include <stdio.h>
+#include <string.h>
+
+void foo() {
+    char buffer[8];
+
+    printf("Enter text: ");
+
+    gets(buffer);
+}
+
+int main() {
+    foo();
+    printf("Program exited successfully\n");
+    return 0;
+}
+```
+
+If we will try to build this program and run it, we'll see the following error instead of the *Program exited successfully* string:
+
+```bash
+$ ./test
+Enter text: 123456789
+*** stack smashing detected ***: terminated
+Aborted (core dumped)
+```
+
+The reason for this is that we put on the stack the value which is bigger than our 8 bytes buffer. Happily instead of overwriting of return address or segmentation fault error we have got "stack smashing detected" error. This check is done by the modern compiler to prevent overwriting of critical data. There are other techniques in modern compilers and operating system kernels to mitigate vulnerabilities related to stack, like:
+
+- [Stack canaries](https://en.wikipedia.org/wiki/Buffer_overflow_protection#Canaries)
+- [ASLR](https://en.wikipedia.org/wiki/Address_space_layout_randomization)
+- [Non-executable stack](https://en.wikipedia.org/wiki/Executable-space_protection)
+- And others...
+
+In any cases, despite all of these techiques may help you to protect your programs from stack related errors, you should be careful, especially with the data that your program receives from outside.
+
 ## Conclusion
 
 We’ve just written our third program using assembly — great job 🎉 In the next post, we’ll continue exploring assembly programming and see more details how to work with strings. If you have any questions or thoughts, feel free to reach out. See you in the next post!
-
