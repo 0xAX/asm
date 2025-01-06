@@ -88,7 +88,10 @@ TODO diagram
 
 After this we put the value from the stack with the offset `-20` (the value of the functions' parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
 
+## Security considerations
+
 TODO: example of vulnerabilities and protection
+https://github.com/colmmacc/CVE-2022-3602
 
 ## Stack operations
 
