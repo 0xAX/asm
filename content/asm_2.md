@@ -364,7 +364,7 @@ Here is the list of common assembly instructions used for arithmetic operations:
 - `IDIV` - Signed division
 - `INC`  - Increment
 - `DEC`  - Decrement
-- `NEG`  - Negation.
+- `NEG`  - Negation
 
 We will use these instructions and explain the details in the following example.
 
@@ -380,8 +380,7 @@ cmp rax, 50
 The `cmp` instruction only compares the parameters without affecting their values. To perform any actions after the comparison, you can use **conditional jump instructions**:
 
 -  `JE/JZ`  - Jump if the values are equal.
--  `JNE` - Jump if the values are not equal.
--  `JNZ` - Jump if the difference between two values is not zero.
+-  `JNE/JNZ` - Jump if the values are not equal.
 -  `JG`  - Jump if the first value is greater than the second.
 -  `JGE` - Jump if the first value is greater or equal to the second.
 -  `JA`  - The same as `JG`, but performs the unsigned comparison.
