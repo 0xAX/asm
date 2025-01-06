@@ -1,6 +1,6 @@
 # Journey through the stack
 
-In the [previous chapter](TODO) we started to learn the basics of the x86_64 architecture. Amonth others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
+In the [previous post](asm_2.md) we started to learn the basics of the x86_64 architecture. Amonth others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
 
 Let's start with a little reminder - the stack is special region in memory, which operates on the principle lifo (Last Input, First Output). We have sixtheen general-purpose registers which we can use as for the temporary data storage. They are `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp` and from `r8` to `r15`. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
 
