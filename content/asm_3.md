@@ -92,176 +92,487 @@ TODO: example of vulnerabilities and protection
 
 ## Stack operations
 
-TODO
+We already have seen two assembly instructions that affects the current state of the stack:
+
+- `push` - pushes the operand into the stack.
+- `pop` - pops the top value from the stack.
+
+x86_64 processors provide additional instruction that brings affect on the stack. Besides those instruction we also have seen familar to us:
+
+- `call`
+- `ret`
+
+The first one instruction calls the given procedure. It affects stack by saving the return address on the stack before call. The second instruction is an "exit" from the given procedure. It affects the stack by removing the return address from the stack and transfering the execution flow to it. 
+
+In the [previous post](asm_2.md) we got familar with the with such a concepts as [function prologue and eplogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions that we usually can meet in the beginning and in the end of the function:
+
+```assembly
+foo:
+        ;; Function prologue
+        push %rbp
+        mov     rbp, rsp
+
+        ;;
+        ;; Function body
+        ;;
+
+        ;; Function epilogue
+        mov rsp, rbp
+        pop
+```
+
+These two could be replcaed with special instructions: `enter N, 0` and `leave`. The first isntruction has two operands: 
+
+- Number of bytes that needs to be substracted from the `rsp` register to allocate space on stack.
+- Number of levels of stack frames in nested calls.
+
+These both instructions are considered "outdated" but still will work because of backward compatibility.
+
+The next already familar to us instruction that affects the stack is the `syscall` instruction. In some aspects it is similar to the `call` instruction with the one of the most significant difference is that the function that is going to be called is located in the kernel space. The return from a system call and the stack clean-up is executed with the help of the `sysret` instruction.
+
+In the previous post, we mentioned that besides the general purpose registers, the other types of registers exists. One of such type of registers is `rflags`. In basic words it is a register where CPU stores its current state. In the next posts we will know more details about this type of register but for now we must know that an x86_64 process provide the two following command that affect the stack:
+
+- `pushf` - pushes the `rflags` register into the stack.
+- `popf` - pops the top value from the stack and stores the value in the `rflags` register.
 
 ## Example
 
-Let's see one example. We will write simple program, which will get two command line arguments. Will get sum of this arguments and print result.
+After we went through some theory it is time to write some code! Let's see another one example that should make us more confident with the assembly programming. This time we will write a simple program, which will get [two command line arguments](https://en.wikipedia.org/wiki/Command-line_interface#Arguments), try to calculate sum of the given values and print the result.
+
+> [!NOTE]
+> For the sake of simplification we will skip the check that numeric values are given in the command line arguments and do not do any checks for overflow. You may do it as your homework.
+
+Before any explanation, first of all let's take a look at the whole code:
+
+```assembly
+;; Definition of the .data section
+section .data
+    ;; Number of `sys_write` system call
+	SYS_WRITE equ 1
+    ;; Number of `sys_exit` system call
+	SYS_EXIT equ 60
+    ;; Number of the standard output file descriptor
+	STD_OUT	equ 1
+    ;; Exit code from the program. The 0 status code is success
+	EXIT_CODE equ 0
+    ;; ASCII code of the new line symbol ('\n')
+	NEW_LINE db 0xa
+    ;; Error message that is printed in a case of not enough command line arguments
+	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
+    ;; Length of the WRONG_ARGC_MSG message
+    WRONG_ARGC_MSG_LEN equ 42
+
+;; Definition of the .text section
+section .text
+    ;; Reference to the entry point of our program
+	global	_start
+
+;; Entry point
+_start:
+	;; Fetch the number of arguments from the stack and store it in the rcx register
+	pop rcx
+    ;; Check the number of the given command line arguments.
+	cmp rcx, 3
+    ;; If not enough, jump to error subroutine.
+	jne argcError
+
+	;; Skip the first command line argument which is usually the program name.
+	add rsp, 8
+
+	;; Fetch the first command line argument from the stack and store it in the rsi register.
+	pop rsi
+	;; Convert the first command line argument to an integer number.
+	call str_to_int
+	;; Store the result in the r10 register.
+	mov r10, rax
+
+	;; Fetch the second command line argument from the stack and store it in the rsi register.
+	pop rsi
+	;; Convert the second command line argument to an integer number.
+	call str_to_int
+	;; Store the result in the r11 register.
+	mov r11, rax
+
+	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
+	add r10, r11
+
+    ;; Move sum value to the rax register.
+	mov rax, r10
+	;; Initialize counter by resetting it to 0. It will store the length of the result string.
+	xor rcx, rcx
+	;; Convert the sum from number to string to print the result on the screen.
+	jmp int_to_str
+
+;; Print the error message if not enough command line arguments.
+argcError:
+	;; Specify the system call number (1 is `sys_write`).
+	mov rax, SYS_WRITE
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+	;; Set the second argument of `sys_write` to the reference of the `WRONG_ARGC_MSG` variable.
+	mov rsi, WRONG_ARGC_MSG
+	;; Set the third argument to the length of the `WRONG_ARGC_MSG` variable's value.
+	mov rdx, WRONG_ARGC_MSG_LEN
+	;; Call the `sys_write` system call.
+	syscall
+	;; Go to the exit of the program.
+	jmp exit
+
+;; Convert the command line argument to the integer number.
+str_to_int:
+	;; Set the value of the rax register to 0. It will store the result.
+	xor rax, rax
+	;; base for multiplication
+	mov	rcx,  10
+__repeat:
+	;; Check the first element in the given string by comparison it with the NUL terminator (end of string).
+	cmp [rsi], byte 0
+	;; If we reached the end of the string return from the procedure. The result is stored in the rax register.
+	je __return
+	;; Move the current character from the command line argument to the bl register.
+	mov bl, [rsi]
+	;; Substract the value 48 from the ASCII code of the current character.
+    ;; This will give us numberic value of the character.
+	sub bl, 48
+	;; Multiple our result number by 10 to get the place for the next digit.
+	mul rcx
+	;; Add the next digit to our result number.
+	add	rax, rbx
+	;; Move to the next character in the command line argument string.
+	inc	rsi
+	;; Repeat while we did not reach the end of string.
+	jmp	__repeat
+__return:
+    ;; Return from the str_to_int procedure.
+	ret
+
+;; Convert the sum to string and print on the screen.
+int_to_str:
+	;; High part of dividend. The low part is in the rax register.
+	mov rdx, 0
+	;; Set the divisor to 10.
+	mov rbx, 10
+	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
+	div rbx
+	;; Add 48 to the reminder to get string ASCII representation of the number value.
+	add rdx, 48
+	;; Store reminder on the stack.
+	push rdx
+	;; Increase the counter.
+	inc rcx
+	;; Compare the rest of the sum with zero.
+	cmp rax, 0x0
+	;; If it is not zero yet, continue to convert it to string.
+	jne int_to_str
+	;; Otherwise print the result.
+	jmp printResult
+
+;; Print result to the standard output.
+printResult:
+	;; Put the number of symbols within the string to the rax register.
+    mov rax, rcx
+    ;; Put the value 8 to the rcx register.
+    mov rcx, 8
+    ;; Calculate the number of bytes in the given string by multiplication rax to 8.
+    ;; The result will be stored in the rax register.
+    mul rcx
+
+    ;; Set the third argument to the length of the result string to print.
+	mov rdx, rax
+    ;; Specify the system call number (1 is `sys_write`).
+	mov rax, SYS_WRITE
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+    ;; Set the second argument of `sys_write` to the reference of the result string to print.
+	mov rsi, rsp
+	;; Call the `sys_write` system call.
+	syscall
+
+    ;; Specify the system call number (1 is `sys_write`).
+	mov rax, SYS_WRITE
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+    ;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
+	mov rsi, NEW_LINE
+    ;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
+	mov rdx, 1
+    ;; Call the `sys_write` system call.
+    syscall
+
+exit:
+	;; Specify the number of the system call (60 is `sys_exit`).
+	mov rax, SYS_EXIT
+	;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+	mov rdi, EXIT_CODE
+	;; Call the `sys_exit` system call.
+	syscall
+```
+
+Yes I know, this example looks quite big for a such simple problem 😨. But do not worry. The code itself should be documented pretty well with the comments. But let's go through its parts and try to understand how it works.
+
+### Definition of variables
+
+In the beginning of our program we may see already traditional definition of the `.data` section:
 
 ```assembly
 section .data
-		SYS_WRITE equ 1
-		STD_IN    equ 1
-		SYS_EXIT  equ 60
-		EXIT_CODE equ 0
-
-		NEW_LINE   db 0xa
-		WRONG_ARGC db "Must be two command line argument", 0xa
+    ;; Number of `sys_write` system call
+	SYS_WRITE equ 1
+    ;; Number of `sys_exit` system call
+	SYS_EXIT equ 60
+    ;; Number of the standard output file descriptor
+	STD_OUT	equ 1
+    ;; Exit code from the program. The 0 status code is success
+	EXIT_CODE equ 0
+    ;; ASCII code of the new line symbol ('\n')
+	NEW_LINE db 0xa
+    ;; Error message that is printed in a case of not enough command line arguments
+	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
+    ;; Length of the WRONG_ARGC_MSG message
+    WRONG_ARGC_MSG_LEN equ 42
 ```
 
-First of all we define `.data` section with some values. Here we have four constants for linux syscalls, for sys_write, sys_exit and etc... And also we have two strings: First is just new line symbol and second is error message.
+As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is not an exception. We may see the definition of the system call numbers variables, string error messages and so on. This part is very well commented and everything should be clear in general. If you feel that you do not understand something it is better to return to the previous posts and clarify before you will proceed with the rest of explanation.
 
-Let's look on the `.text` section, which consists from code of program:
+### Handling command line arguments
+
+Before we are able to get the sum of two numbers that will come from the command line arguments, we should know how to handle command line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack state of the process right after this process was launched is following: 
+
+| Purpose                                                                           | Start Address      | Length            |
+|-----------------------------------------------------------------------------------|--------------------|-------------------|
+| Unspecified                                                                       | High Addresses     |                   |
+| Informatiion block, including argument/environment strings, auxilariy information |                    | varies            |
+| Unspecified                                                                       |                    |                   |
+| Null auxiliary vector entry                                                       |                    | 1 eightbyte       |
+| Auxiliary vector entries...                                                       |                    | 2 eightbytes each |
+| 0                                                                                 |                    | eightbyte         |
+| Environment pointers ...                                                          |                    | 1 eightbyte each  |
+| 0                                                                                 | 8 + 8 * argc + rsp | eightbyte         |
+| Argument pointers                                                                 | 8 + rsp            | argc eightbytes   |
+| Argument count                                                                    | rsp                | eightbyte         |
+| Undefined                                                                         | Low Addresses      |                   |
+
+As we may see number of command line arguments that was passed to the program is on the top of the stack and the `rsp` register points to it. So, fetching the value from the stack will give us the number of arguments. Besides that we already know the `cmp` instruction which allows us to compare two values. Using this knowledge we can do the very first check in our program - to check that our program got two arguments from command line or print error message otherwise:
 
 ```assembly
+;; Definition of the .text section
 section .text
-        global _start
+    ;; Reference to the entry point of our program
+	global	_start
 
+;; Entry point
 _start:
-		pop rcx
-		cmp rcx, 3
-		jne argcError
+	;; Fetch the number of arguments from the stack and store it in the rcx register
+	pop rcx
+    ;; Check the number of the given command line arguments.
+	cmp rcx, 3
+    ;; If not enough, jump to error subroutine.
+	jne argcError
 
-		add rsp, 8
-		pop rsi
-		call str_to_int
-
-		mov r10, rax
-		pop rsi
-		call str_to_int
-		mov r11, rax
-
-		add r10, r11
-```
-
-Let's try to understand, what is happening here: After _start label first instruction get first value from stack and puts it to rcx register. If we run application with command line arguments, all of their will be in stack after running in following order:
-
-```
-    [rsp] - top of stack will contain arguments count.
-    [rsp + 8] - will contain argv[0]
-    [rsp + 16] - will contain argv[1]
-    and so on...
-```
-
-So we get command line arguments count and put it to rcx. After it we compare rcx with 3. And if they are not equal we jump to argcError label which just prints error message:
-
-```assembly
+;; Print the error message if not enough command line arguments.
 argcError:
-    ;; sys_write syscall
-    mov     rax, 1
-    ;; file descritor, standard output
-	mov     rdi, 1
-    ;; message address
-    mov     rsi, WRONG_ARGC
-    ;; length of message
-    mov     rdx, 34
-    ;; call write syscall
-    syscall
-    ;; exit from program
+	;; Specify the system call number (1 is `sys_write`).
+	mov rax, SYS_WRITE
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+	;; Set the second argument of `sys_write` to the reference of the `WRONG_ARGC_MSG` variable.
+	mov rsi, WRONG_ARGC_MSG
+	;; Set the third argument to the length of the `WRONG_ARGC_MSG` variable's value.
+	mov rdx, WRONG_ARGC_MSG_LEN
+	;; Call the `sys_write` system call.
+	syscall
+	;; Go to the exit of the program.
 	jmp exit
 ```
 
-Why we compare with 3 when we have two arguments. It's simple. First argument is a program name, and all after it are command line arguments which we passed to program. Ok, if we passed two command line arguments we go next to 10 line. Here we shift rsp to 8 and thereby missing the first argument - the name of the program. Now rsp points to first command line argument which we passed. We get it with pop command and put it to rsi register and call function for converting it to integer. Next we read about `str_to_int` implementation. After our function ends to work we have integer value in rax register and we save it in r10 register. After this we do the same operation but with r11. In the end we have two integer values in r10 and r11 registers, now we can get sum of it with add command. Now we must convert result to string and print it. Let's see how to do it:
+Note that despite we expect to get two command line arguments, we are comparing the actual number with `3`. This is done because the first implicit argument of each program is the program name.
+
+After we have made sure that the required number of command line arguments has been passed to our program, we can start with handling of them. But what basically do we need to handle them? We need to execute the following actions:
+
+- Convert the given command line arguments to integer numbers and calculate the sum of the given numbers.
+- Convert the result back to string and print it on the screen.
+
+In the next two sections we will see detailed explanation of the steps mentioned above.
+
+### Converting string to integer
+
+Since the command line arguments of each program represented as strings, we need to convert our command line arguments to numbers to calculate their sum. To convert a given string to a number we will use a simple algorithm:
+
+1. Create an accumulator that will be a result - the numeric representation of the given string.
+2. We will take first byte of the string and substract from it the value `48`. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol that has own code. The symbol `'0'` has code `48`, the symbol `'1'` has code 49, and so on. If we will substract `48` from the ASCII code of the given symbol we will get integer representation of the current digit from the given string.
+3. As soon as we know the current digit, we multiple our accumulator from the step 1 by 10 and add to it the digit that we got during the step 2.
+4. Move to the next symbol in the given string and repeat the steps 2 and 3 if it is not end of the string (`\0` symbol).
+
+Returning to the table from the section above, we may see that pointers to the command line arguments are located on the stack right above the number of command line arguments. So if we fetch the first value from the stack after we already fetched the number of arguments, it will be a pointer to the string which is the first command line argument. If we will pop the next value from the stack, it will be the second command line argument passed to the program.
+
+Now if we will take a look at the `str_to_int` procedure it should be clear without any additional details:
 
 ```assembly
-mov rax, r10
-;; number counter
-xor r12, r12
-;; convert to string
-jmp int_to_str
-```
+	;; Fetch the first command line argument from the stack and store it in the rsi register.
+	pop rsi
+	;; Convert the first command line argument to an integer number.
+	call str_to_int
+	;; Store the result in the r10 register.
+	mov r10, rax
 
-Here we put sum of command line arguments to rax register, set r12 to zero and jump to int_to_str. Ok now we have base of our program. We already know how to print string and we have what to print. Let's see at str_to_int and int_to_str implementation.
+	;; Fetch the second command line argument from the stack and store it in the rsi register.
+	pop rsi
+	;; Convert the second command line argument to an integer number.
+	call str_to_int
+	;; Store the result in the r11 register.
+	mov r11, rax
+    
+    ...
+    ...
+    ...
 
-```assembly
+;; Convert the command line argument to the integer number.
 str_to_int:
-            xor rax, rax
-            mov rcx,  10
-next:
-	    cmp [rsi], byte 0
-	    je return_str
-	    mov bl, [rsi]
-            sub bl, 48
-	    mul rcx
-	    add rax, rbx
-	    inc rsi
-	    jmp next
-
-return_str:
-	    ret
+	;; Set the value of the rax register to 0. It will store the result.
+	xor rax, rax
+	;; base for multiplication
+	mov rcx,  10
+__repeat:
+	;; Check the first element in the given string by comparison it with the NUL terminator (end of string).
+	cmp [rsi], byte 0
+	;; If we reached the end of the string return from the procedure. The result is stored in the rax register.
+	je __return
+	;; Move the current character from the command line argument to the bl register.
+	mov bl, [rsi]
+	;; Substract the value 48 from the ASCII code of the current character.
+    ;; This will give us numberic value of the character.
+	sub bl, 48
+	;; Multiple our result number by 10 to get the place for the next digit.
+	mul rcx
+	;; Add the next digit to our result number.
+	add rax, rbx
+	;; Move to the next character in the command line argument string.
+	inc rsi
+	;; Repeat while we did not reach the end of string.
+	jmp __repeat
+__return:
+    ;; Return from the str_to_int procedure.
+	ret
 ```
 
-At the start of str_to_int, we set up rax to 0 and rcx to 10. Then we go to next label. As you can see in above example (first line before first call of str_to_int) we put argv[1] in rsi from stack. Now we compare first byte of rsi with 0, because every string ends with NULL symbol and if it is we return. If it is not 0 we copy it's value to one byte bl register and substract 48 from it. Why 48? All numbers from 0 to 9 have 48 to 57 codes in asci table. So if we substract from number symbol 48 (for example from 57) we get number. Then we multiply rax on rcx (which has value - 10). After this we increment rsi for getting next byte and loop again. Algorthm is simple. For example if rsi points to '5' '7' '6' '\000' sequence, then will be following steps:
-
-```
-    rax = 0
-    get first byte - 5 and put it to rbx
-    rax * 10 --> rax = 0 * 10
-    rax = rax + rbx = 0 + 5
-    Get second byte - 7 and put it to rbx
-    rax * 10 --> rax = 5 * 10 = 50
-    rax = rax + rbx = 50 + 7 = 57
-    and loop it while rsi is not \000
-```
-
-After str_to_int we will have number in rax. Now let's look at int_to_str:
+As soon as we converted both command line arguments to integer numbers, we can calculate their sum:
 
 ```assembly
+	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
+	add r10, r11
+```
+
+Since we have our result, we just need to print it. But before printing it we have to convert the numeric result to string. This we will see in the next section.
+
+### Converting integer to string
+
+In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobrutine:
+
+```assembly
+    ;; Move sum value to the rax register.
+	mov rax, r10
+	;; Initialize counter by resetting it to 0. It will store the length of the result string.
+	xor rcx, rcx
+	;; Convert the sum from number to string to print the result on the screen.
+	jmp int_to_str
+
+;; Convert the sum to string and print on the screen.
 int_to_str:
-		mov rdx, 0
-		mov rbx, 10
-		div rbx
-		add rdx, 48
-		add rdx, 0x0
-		push rdx
-		inc r12
-		cmp rax, 0x0
-		jne int_to_str
-		jmp print
+	;; High part of dividend. The low part is in the rax register.
+    ;; The div instruction works as div operand => rdx:rax / operand. 
+    ;; The reminder is stored in rdx and the quotient in rax.
+	mov rdx, 0
+	;; Set the divisor to 10.
+	mov rbx, 10
+	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
+	div rbx
+	;; Add 48 to the reminder to get string ASCII representation of the number value.
+	add rdx, 48
+	;; Store reminder on the stack.
+	push rdx
+	;; Increase the counter.
+	inc rcx
+	;; Compare the rest of the sum with zero.
+	cmp rax, 0x0
+	;; If it is not zero yet, continue to convert it to string.
+	jne int_to_str
+	;; Otherwise print the result.
+	jmp printResult
 ```
 
-Here we put 0 to rdx and 10 to rbx. Than we exeute div rbx. If we look above at code before str_to_int call. We will see that rax contains integer number - sum of two command line arguments. With this instruction we devide rax value on rbx value and get reminder in rdx and whole part in rax. Next we add to rdx 48 and 0x0. After adding 48 we'll get asci symbol of this number and all strings much be ended with 0x0. After this we save symbol to stack, increment r12 (it's 0 at first iteration, we set it to 0 at the _start) and compare rax with 0, if it is 0 it means that we ended to convert integer to string. Algorithm step by step is following: For example we have number 23
+Before jumping to the `int_to_str` sobrutine, we need to do some preparations. As you may see we put the value of our sum in the `rax` register and initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in the our future string. Note that we are using new instruction to initialize the counter - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
 
-```
-    123 / 10. rax = 12; rdx = 3
-    rdx + 48 = "3"
-    push "3" to stack
-    compare rax with 0 if no go again
-    12 / 10. rax = 1; rdx = 2
-    rdx + 48 = "2"
-    push "2" to stack
-    compare rax with 0, if yes we can finish function execution and we will have "2" "3" ... in stack
-```
+The algorithm of the `int_to_str` sobrutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
 
-We implemented two useful function `int_to_str` and `str_to_int` for converting integer number to string and vice versa. Now we have sum of two integers which was converted into string and saved in the stack. We can print result:
+As soon as we will collect all the digits of our sum, they will be stored on the stack. So we can print our string with the following code:
 
 ```assembly
-print:
-	;;;; calculate number length
-	mov rax, 1
-	mul r12
-	mov r12, 8
-	mul r12
+;; Print result to the standard output.
+printResult:
+	;; Put the number of symbols within the string to the rax register.
+    mov rax, rcx
+    ;; Put the value 8 to the rcx register.
+    mov rcx, 8
+    ;; Calculate the number of bytes in the given string by multiplication rax to 8.
+    ;; The result will be stored in the rax register.
+    mul rcx
+
+    ;; Set the third argument to the length of the result string to print.
 	mov rdx, rax
-
-	;;;; print sum
+    ;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
-	mov rdi, STD_IN
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+    ;; Set the second argument of `sys_write` to the reference of the result string to print.
 	mov rsi, rsp
-	;; call sys_write
+	;; Call the `sys_write` system call.
 	syscall
 
-    jmp exit
-```
+    ;; Specify the system call number (1 is `sys_write`).
+	mov rax, SYS_WRITE
+    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	mov rdi, STD_OUT
+    ;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
+	mov rsi, NEW_LINE
+    ;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
+	mov rdx, 1
+    ;; Call the `sys_write` system call.
+    syscall
 
-We already know how to print string with `sys_write` syscall, but here is one interesting part. We must to calculate length of string. If you will look on the `int_to_str`, you will see that we increment r12 register every iteration, so it contains amount of digits in our number. We must multiple it to 8 (because we pushed every symbol to stack) and it will be length of our string which need to print. After this we as everytime put 1 to rax (sys_write number), 1 to rdi (stdin), string length to rdx and pointer to the top of stack to rsi (start of string). And finish our program:
-
-```assembly
 exit:
+	;; Specify the number of the system call (60 is `sys_exit`).
 	mov rax, SYS_EXIT
-	exit code
+	;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
 	mov rdi, EXIT_CODE
+	;; Call the `sys_exit` system call.
 	syscall
 ```
 
-That's All.
+Most of this code should be already well understable for you as the most significant part of it consists of the initialization of data for the call of the `sys_write` and `sys_exit` exit calls. The most interesting part should be first four lines of code of the `printResult` subroutine. As you may remember the one of the parameters of the `sys_write` system call is a length of the string that we want to print on the screen. We have this number as we maintained a counter of symbols during converting the numeric sum to the string. This counter was stored in the `rcx` register. Our string is located on the stack. We pushed each digit with the `push` operator. But the `push` operator pushes `64` bits (or `8` bytes) while our symbol is only 1 byte. To get the whole length of the string for printing, we should multiple the number of symbols to `8`. This will give us the length of the string that we can use as a third argument of the `sys_write` system call.
+
+As soon as all parameters of the system calls are ready, we can pass them as arguments to print the sum and print new line after it.
+
+Let's build our program with the usual commands:
+
+```bash
+$ nasm -f elf64 -o stack.o stack.asm
+$ ld -o stack stack.o
+```
+
+And try to run it:
+
+```bash
+$  ./stack
+Error: expected two command line argument
+$ ./stack 5
+Error: expected two command line argument
+$ ./stack 5 10
+15
+```
+
+Works as expected 🎉🎉🎉
+
+## Conclusion
+
+We’ve just written our third program using assembly — great job 🎉 In the next post, we’ll continue exploring assembly programming and see more details how to work with strings. If you have any questions or thoughts, feel free to reach out. See you in the next post!
+
