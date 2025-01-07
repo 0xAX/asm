@@ -84,8 +84,8 @@ __repeat:
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
-	;; Substract the value 48 from the ASCII code of the current character.
-        ;; This will give us numberic value of the character.
+	;; Subtract the value 48 from the ASCII code of the current character.
+        ;; This will give us numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx

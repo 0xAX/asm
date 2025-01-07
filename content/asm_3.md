@@ -1,8 +1,8 @@
 # Journey through the stack
 
-In the [previous post](asm_2.md) we started to learn the basics of the x86_64 architecture. Amonth others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
+In the [previous post](asm_2.md) we started to learn the basics of the x86_64 architecture. Among others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
 
-Let's start with a little reminder - the stack is special region in memory, which operates on the principle lifo (Last Input, First Output). We have sixtheen general-purpose registers which we can use as for the temporary data storage. They are `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp` and from `r8` to `r15`. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
+Let's start with a little reminder - the stack is special region in memory, which operates on the principle LIFO (Last Input, First Output). We have sixteen general-purpose registers which we can use as for the temporary data storage. They are `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp` and from `r8` to `r15`. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
 
 Besides the temporary storage for data, the another crucial usage of the stack is ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, return address stored on the stack. After end of the function execution, the return address copied back into the `rip` register and execution continues from the address behind the called function.
 
@@ -33,7 +33,7 @@ incRax:
 		ret
 ```
 
-In the small example above, we can see that after the program start, the value `1` is stored in the of the rax registerer. Then we call the subroutine `incRax`, which increases values of the rax register by 1. As soon as the value of the rax register is increased, the sobrutine is ended with the `ret` instruction and execution continues from the instructions that are located right behind the call of the `incRax` subroutine.
+In the small example above, we can see that after the program start, the value `1` is stored in the of the rax register. Then we call the subroutine `incRax`, which increases values of the rax register by 1. As soon as the value of the rax register is increased, the subroutine is ended with the `ret` instruction and execution continues from the instructions that are located right behind the call of the `incRax` subroutine.
 
 Besides the preserving of the return address, stack is used to access parameters of the function and local variables. From the previous chapter, you can remember that according to the [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) document, the first six parameters of a function passed in registers. 
 
@@ -58,7 +58,7 @@ int __double(int a) {
 
 If we will compile this function and take a look at the assembly output, we will see something like this:
 
-```asssembly
+```assembly
 __double(int):
         ;; Preserve the base pointer
         push    rbp
@@ -66,7 +66,7 @@ __double(int):
         mov     rbp, rsp
         ;; Put the value of the first parameter of the function from the edi register on the stack with the location rbp - 20 bytes.
         mov     DWORD PTR [rbp-20], edi
-        ;; Put the 2 to on the stack with the location rbo - 4 bytes.
+        ;; Put the 2 to on the stack with the location rbp - 4 bytes.
         mov     DWORD PTR [rbp-4], 2
         ;; Put the values of the first parameter of the function to the eax register.
         mov     eax, DWORD PTR [rbp-20]
@@ -80,13 +80,13 @@ __double(int):
 
 After the first two lines of the `__double` function the stack frame for this function is set and looks like:
 
-TODO diagram
+![asm-3-stack-fram-of__double-1](./assets/asm-3-stack-of__double-1.svg)
 
 The third instruction of the function `__double` puts the first parameter of this function to the stack with offset `-20`. After this we may see that the value `2` which is the value of the local variable `two` is also put onto the stack with the offset `-4`. The stack frame of our function for this moment should look like this: 
 
-TODO diagram
+![asm-3-stack-fram-of__double-2](./assets/asm-3-stack-of__double-2.svg)
 
-After this we put the value from the stack with the offset `-20` (the value of the functions' parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
+After this we put the value from the stack with the offset `-20` (the value of the function's parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
 
 ## Stack operations
 
@@ -95,14 +95,14 @@ We already have seen two assembly instructions that affects the current state of
 - `push` - pushes the operand into the stack.
 - `pop` - pops the top value from the stack.
 
-x86_64 processors provide additional instruction that brings affect on the stack. Besides those instruction we also have seen familar to us:
+x86_64 processors provide additional instruction that brings affect on the stack. Besides those instruction we also have seen familiar to us:
 
 - `call`
 - `ret`
 
-The first one instruction calls the given procedure. It affects stack by saving the return address on the stack before call. The second instruction is an "exit" from the given procedure. It affects the stack by removing the return address from the stack and transfering the execution flow to it. 
+The first one instruction calls the given procedure. It affects stack by saving the return address on the stack before call. The second instruction is an "exit" from the given procedure. It affects the stack by removing the return address from the stack and transferring the execution flow to it. 
 
-In the [previous post](asm_2.md) we got familar with the with such a concepts as [function prologue and eplogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions that we usually can meet in the beginning and in the end of the function:
+In the [previous post](asm_2.md) we got familiar with the with such a concepts as [function prologue and epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions that we usually can meet in the beginning and in the end of the function:
 
 ```assembly
 foo:
@@ -119,14 +119,14 @@ foo:
         pop
 ```
 
-These two could be replcaed with special instructions: `enter N, 0` and `leave`. The first isntruction has two operands: 
+These two could be replaced with special instructions: `enter N, 0` and `leave`. The first instruction has two operands: 
 
-- Number of bytes that needs to be substracted from the `rsp` register to allocate space on stack.
+- Number of bytes that needs to be subtracted from the `rsp` register to allocate space on stack.
 - Number of levels of stack frames in nested calls.
 
 These both instructions are considered "outdated" but still will work because of backward compatibility.
 
-The next already familar to us instruction that affects the stack is the `syscall` instruction. In some aspects it is similar to the `call` instruction with the one of the most significant difference is that the function that is going to be called is located in the kernel space. The return from a system call and the stack clean-up is executed with the help of the `sysret` instruction.
+The next already familiar to us instruction that affects the stack is the `syscall` instruction. In some aspects it is similar to the `call` instruction with the one of the most significant difference is that the function that is going to be called is located in the kernel space. The return from a system call and the stack clean-up is executed with the help of the `sysret` instruction.
 
 In the previous post, we mentioned that besides the general purpose registers, the other types of registers exists. One of such type of registers is `rflags`. In basic words it is a register where CPU stores its current state. In the next posts we will know more details about this type of register but for now we must know that an x86_64 process provide the two following command that affect the stack:
 
@@ -229,8 +229,8 @@ __repeat:
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
-	;; Substract the value 48 from the ASCII code of the current character.
-    ;; This will give us numberic value of the character.
+	;; Subtract the value 48 from the ASCII code of the current character.
+    ;; This will give us numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -339,7 +339,7 @@ Before we are able to get the sum of two numbers that will come from the command
 | Purpose                                                                           | Start Address      | Length            |
 |-----------------------------------------------------------------------------------|--------------------|-------------------|
 | Unspecified                                                                       | High Addresses     |                   |
-| Informatiion block, including argument/environment strings, auxilariy information |                    | varies            |
+| Information block, including argument/environment strings, auxiliary information |                    | varies            |
 | Unspecified                                                                       |                    |                   |
 | Null auxiliary vector entry                                                       |                    | 1 eightbyte       |
 | Auxiliary vector entries...                                                       |                    | 2 eightbytes each |
@@ -397,7 +397,7 @@ In the next two sections we will see detailed explanation of the steps mentioned
 Since the command line arguments of each program represented as strings, we need to convert our command line arguments to numbers to calculate their sum. To convert a given string to a number we will use a simple algorithm:
 
 1. Create an accumulator that will be a result - the numeric representation of the given string.
-2. We will take first byte of the string and substract from it the value `48`. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol that has own code. The symbol `'0'` has code `48`, the symbol `'1'` has code 49, and so on. If we will substract `48` from the ASCII code of the given symbol we will get integer representation of the current digit from the given string.
+2. We will take first byte of the string and subtract from it the value `48`. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol that has own code. The symbol `'0'` has code `48`, the symbol `'1'` has code 49, and so on. If we will subtract `48` from the ASCII code of the given symbol we will get integer representation of the current digit from the given string.
 3. As soon as we know the current digit, we multiple our accumulator from the step 1 by 10 and add to it the digit that we got during the step 2.
 4. Move to the next symbol in the given string and repeat the steps 2 and 3 if it is not end of the string (`\0` symbol).
 
@@ -437,8 +437,8 @@ __repeat:
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
-	;; Substract the value 48 from the ASCII code of the current character.
-    ;; This will give us numberic value of the character.
+	;; Subtract the value 48 from the ASCII code of the current character.
+    ;; This will give us numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -464,7 +464,7 @@ Since we have our result, we just need to print it. But before printing it we ha
 
 ### Converting integer to string
 
-In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobrutine:
+In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobroutine:
 
 ```assembly
     ;; Move sum value to the rax register.
@@ -498,9 +498,9 @@ int_to_str:
 	jmp printResult
 ```
 
-Before jumping to the `int_to_str` sobrutine, we need to do some preparations. As you may see we put the value of our sum in the `rax` register and initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in the our future string. Note that we are using new instruction to initialize the counter - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
+Before jumping to the `int_to_str` sobroutine, we need to do some preparations. As you may see we put the value of our sum in the `rax` register and initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in the our future string. Note that we are using new instruction to initialize the counter - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
 
-The algorithm of the `int_to_str` sobrutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
+The algorithm of the `int_to_str` sobroutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
 
 As soon as we will collect all the digits of our sum, they will be stored on the stack. So we can print our string with the following code:
 
@@ -546,7 +546,7 @@ exit:
 	syscall
 ```
 
-Most of this code should be already well understable for you as the most significant part of it consists of the initialization of data for the call of the `sys_write` and `sys_exit` exit calls. The most interesting part should be first four lines of code of the `printResult` subroutine. As you may remember the one of the parameters of the `sys_write` system call is a length of the string that we want to print on the screen. We have this number as we maintained a counter of symbols during converting the numeric sum to the string. This counter was stored in the `rcx` register. Our string is located on the stack. We pushed each digit with the `push` operator. But the `push` operator pushes `64` bits (or `8` bytes) while our symbol is only 1 byte. To get the whole length of the string for printing, we should multiple the number of symbols to `8`. This will give us the length of the string that we can use as a third argument of the `sys_write` system call.
+Most of this code should be already well understandable for you as the most significant part of it consists of the initialization of data for the call of the `sys_write` and `sys_exit` exit calls. The most interesting part should be first four lines of code of the `printResult` subroutine. As you may remember the one of the parameters of the `sys_write` system call is a length of the string that we want to print on the screen. We have this number as we maintained a counter of symbols during converting the numeric sum to the string. This counter was stored in the `rcx` register. Our string is located on the stack. We pushed each digit with the `push` operator. But the `push` operator pushes `64` bits (or `8` bytes) while our symbol is only 1 byte. To get the whole length of the string for printing, we should multiple the number of symbols to `8`. This will give us the length of the string that we can use as a third argument of the `sys_write` system call.
 
 As soon as all parameters of the system calls are ready, we can pass them as arguments to print the sum and print new line after it.
 
@@ -573,7 +573,7 @@ Works as expected 🎉🎉🎉
 
 ## Security considerations
 
-As we have seen in this and in the previois posts, the stack is a crucial concept that is used to manage function calls in our programs. Despite we have seen "useful" application of this concept, you should remember about another site - security. One of the most common problems is the stack overflow. Let's take a look at the simple C function (the function is written on C for simplicity):
+As we have seen in this and in the previous posts, the stack is a crucial concept that is used to manage function calls in our programs. Despite we have seen "useful" application of this concept, you should remember about another site - security. One of the most common problems is the stack overflow. Let's take a look at the simple C function (the function is written on C for simplicity):
 
 ```C
 #include <stdio.h>
@@ -610,7 +610,7 @@ The reason for this is that we put on the stack the value which is bigger than o
 - [Non-executable stack](https://en.wikipedia.org/wiki/Executable-space_protection)
 - And others...
 
-In any cases, despite all of these techiques may help you to protect your programs from stack related errors, you should be careful, especially with the data that your program receives from outside.
+In any cases, despite all of these techniques may help you to protect your programs from stack related errors, you should be careful, especially with the data that your program receives from outside.
 
 ## Conclusion
 
