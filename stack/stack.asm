@@ -6,7 +6,7 @@ section .data
 	SYS_EXIT equ 60
         ;; Number of the standard output file descriptor
 	STD_OUT	equ 1
-        ;; Exit code from the program. The 0 status code is success
+        ;; Exit code from the program. The 0 status code is a success.
 	EXIT_CODE equ 0
         ;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
@@ -26,7 +26,7 @@ _start:
 	pop rcx
         ;; Check the number of the given command line arguments.
 	cmp rcx, 3
-        ;; If not enough, jump to error subroutine.
+        ;; If not enough, jump to the error subroutine.
 	jne argcError
 
 	;; Skip the first command line argument which is usually the program name.
@@ -49,7 +49,7 @@ _start:
 	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
 	add r10, r11
 
-        ;; Move sum value to the rax register.
+        ;; Move the sum value to the rax register.
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
@@ -78,9 +78,9 @@ str_to_int:
 	;; base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Check the first element in the given string by comparison it with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of string).
 	cmp [rsi], byte 0
-	;; If we reached the end of the string return from the procedure. The result is stored in the rax register.
+	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
@@ -99,7 +99,7 @@ __return:
         ;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to string and print on the screen.
+;; Convert the sum to string and print it on the screen.
 int_to_str:
 	;; High part of dividend. The low part is in the rax register.
 	mov rdx, 0
@@ -107,9 +107,9 @@ int_to_str:
 	mov rbx, 10
 	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
 	div rbx
-	;; Add 48 to the reminder to get string ASCII representation of the number value.
+	;; Add 48 to the reminder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store reminder on the stack.
+	;; Store the reminder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -120,13 +120,13 @@ int_to_str:
 	;; Otherwise print the result.
 	jmp printResult
 
-;; Print result to the standard output.
+;; Print the result to the standard output.
 printResult:
 	;; Put the number of symbols within the string to the rax register.
         mov rax, rcx
         ;; Put the value 8 to the rcx register.
         mov rcx, 8
-        ;; Calculate the number of bytes in the given string by multiplication rax to 8.
+        ;; Calculate the number of bytes in the given string by multiplying rax by 8.
         ;; The result will be stored in the rax register.
         mul rcx
 
@@ -155,7 +155,7 @@ printResult:
 exit:
 	;; Specify the number of the system call (60 is `sys_exit`).
 	mov rax, SYS_EXIT
-	;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+	;; Set the first argument of `sys_exit` to 0. The 0 status code is a success.
 	mov rdi, EXIT_CODE
 	;; Call the `sys_exit` system call.
 	syscall

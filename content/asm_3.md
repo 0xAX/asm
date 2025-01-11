@@ -1,10 +1,10 @@
 # Journey through the stack
 
-In the [previous post](asm_2.md) we started to learn the basics of the x86_64 architecture. Among others, one of the most crucial concept that we have learned in the previous chapter was - [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter we are going to dive deeper into fundamental concepts and see the more examples of the stack usage.
+In the [previous post](asm_2.md), we started to learn the basics of the x86_64 architecture. One of the most crucial concepts we learned was the [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter, we will explore more examples of stack usage.
 
-Let's start with a little reminder - the stack is special region in memory, which operates on the principle LIFO (Last Input, First Output). We have sixteen general-purpose registers which we can use as for the temporary data storage. They are `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp` and from `r8` to `r15`. It might be too few for the applications. One of the way how to avoid this limitation is usage of the stack. 
+Let's start with a quick reminder: the stack is a special memory region that operates on the LIFO (last-in, first-out) principle. In the x86_64 architecture, we have sixteen general-purpose registers for temporary data storage: `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp`, and from `r8` to `r15`. However, for some applications, this might not be enough. One way to overcome this limitation is by using the stack.
 
-Besides the temporary storage for data, the another crucial usage of the stack is ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, return address stored on the stack. After end of the function execution, the return address copied back into the `rip` register and execution continues from the address behind the called function.
+Besides temporary data storage, another crucial use of the stack is the ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, the return address is stored on the stack. Once the function finishes execution, this return address is restored into the `rip` register and the program continues execution from the address following the called function.
 
 For example:
 
@@ -23,7 +23,7 @@ _start:
         ;; Jump to the 'exit' label if not equal
 		jne exit
 		;;
-		;; Otherwise, do something else
+		;; Otherwise, perform another action.
 		;;
 
 incRax:
@@ -33,9 +33,9 @@ incRax:
 		ret
 ```
 
-In the small example above, we can see that after the program start, the value `1` is stored in the of the rax register. Then we call the subroutine `incRax`, which increases values of the rax register by 1. As soon as the value of the rax register is increased, the subroutine is ended with the `ret` instruction and execution continues from the instructions that are located right behind the call of the `incRax` subroutine.
+In the example above, we can see that after the program starts, the value `1` is stored in the `rax` register. Next, we call the subroutine `incRax`, which increases the value in the `rax` register by 1. After updating the `rax` register, the subroutine ends with the `ret` instruction, and execution continues with the instructions immediately following the call to the `incRax` subroutine.
 
-Besides the preserving of the return address, stack is used to access parameters of the function and local variables. From the previous chapter, you can remember that according to the [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) document, the first six parameters of a function passed in registers. 
+In addition to preserving the return address, the stack is also used to access the function parameters and local variables. As you may recall from the previous chapter, the [System V AMD64 ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) document specifies that the first six function parameters are passed in registers.
 
 These registers are:
 
@@ -46,9 +46,10 @@ These registers are:
 - `r8` - used to pass the fifth argument to a function.
 - `r9` - used to pass the sixth argument to a function.
 
-Local variables are also accessed using the stack. For example let's take a look at the following trivial function written in C that doubles its parameter:
+Local variables are also accessed using the stack. For example, let's take a look at the following C function that doubles its parameter:
 
 ```C
+// The __ prefix in the __dobule function name to not mix it with the `double` data type.
 int __double(int a) {
     int two = 2;
 
@@ -56,7 +57,7 @@ int __double(int a) {
 }
 ```
 
-If we will compile this function and take a look at the assembly output, we will see something like this:
+If we compile this function and take a look at the assembly output, we will see something like this:
 
 ```assembly
 __double(int):
@@ -66,9 +67,9 @@ __double(int):
         mov     rbp, rsp
         ;; Put the value of the first parameter of the function from the edi register on the stack with the location rbp - 20 bytes.
         mov     DWORD PTR [rbp-20], edi
-        ;; Put the 2 to on the stack with the location rbp - 4 bytes.
+        ;; Put 2 to on the stack with the location rbp - 4 bytes.
         mov     DWORD PTR [rbp-4], 2
-        ;; Put the values of the first parameter of the function to the eax register.
+        ;; Put the value of the first function parameter to the eax register.
         mov     eax, DWORD PTR [rbp-20]
         ;; Multiple the value of the eax register to 2 and store the result in the eax register.
         imul    eax, DWORD PTR [rbp-4]
@@ -78,15 +79,15 @@ __double(int):
         ret
 ```
 
-After the first two lines of the `__double` function the stack frame for this function is set and looks like:
+After the first two lines of the `__double` function, the stack frame for this function is set and looks like this:
 
 ![asm-3-stack-fram-of__double-1](./assets/asm-3-stack-of__double-1.svg)
 
-The third instruction of the function `__double` puts the first parameter of this function to the stack with offset `-20`. After this we may see that the value `2` which is the value of the local variable `two` is also put onto the stack with the offset `-4`. The stack frame of our function for this moment should look like this: 
+The third instruction of the `__double` function places its first parameter to the stack with an offset of `-20`. Next, the value `2`, representing the local variable two, is also stored on the stack with an offset of `-4`. At this point, the stack frame of our function looks like this:
 
 ![asm-3-stack-fram-of__double-2](./assets/asm-3-stack-of__double-2.svg)
 
-After this we put the value from the stack with the offset `-20` (the value of the function's parameter) to the register eax and multiply it by `2` which is located on the stack with the offset `-4`. The result of the multiplication will be in the register eax. This simple example shows how stack is used to access and parameters and local variables of the function.
+Finally, we put the value from the stack at offset `-20` (the value of the function's parameter) into the `eax` register and multiply it by `2`, which is located on the stack at offset `-4`. The result of the multiplication is then stored in the `eax` register. This simple example shows how the stack is used to access both parameters and local variables of a function.
 
 ## Stack operations
 
@@ -151,7 +152,7 @@ section .data
 	SYS_EXIT equ 60
     ;; Number of the standard output file descriptor
 	STD_OUT	equ 1
-    ;; Exit code from the program. The 0 status code is success
+    ;; Exit code from the program. The 0 status code is a success.
 	EXIT_CODE equ 0
     ;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
@@ -171,7 +172,7 @@ _start:
 	pop rcx
     ;; Check the number of the given command line arguments.
 	cmp rcx, 3
-    ;; If not enough, jump to error subroutine.
+    ;; If not enough, jump to the error subroutine.
 	jne argcError
 
 	;; Skip the first command line argument which is usually the program name.
@@ -193,8 +194,7 @@ _start:
 
 	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
 	add r10, r11
-
-    ;; Move sum value to the rax register.
+    ;; Move the sum value to the rax register.
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
@@ -221,11 +221,11 @@ str_to_int:
 	;; Set the value of the rax register to 0. It will store the result.
 	xor rax, rax
 	;; base for multiplication
-	mov	rcx,  10
+	mov rcx,  10
 __repeat:
-	;; Check the first element in the given string by comparison it with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of string).
 	cmp [rsi], byte 0
-	;; If we reached the end of the string return from the procedure. The result is stored in the rax register.
+	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
@@ -235,16 +235,16 @@ __repeat:
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
 	;; Add the next digit to our result number.
-	add	rax, rbx
+	add rax, rbx
 	;; Move to the next character in the command line argument string.
-	inc	rsi
+	inc rsi
 	;; Repeat while we did not reach the end of string.
-	jmp	__repeat
+	jmp __repeat
 __return:
     ;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to string and print on the screen.
+;; Convert the sum to string and print it on the screen.
 int_to_str:
 	;; High part of dividend. The low part is in the rax register.
 	mov rdx, 0
@@ -252,9 +252,9 @@ int_to_str:
 	mov rbx, 10
 	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
 	div rbx
-	;; Add 48 to the reminder to get string ASCII representation of the number value.
+	;; Add 48 to the reminder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store reminder on the stack.
+	;; Store the reminder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -265,13 +265,13 @@ int_to_str:
 	;; Otherwise print the result.
 	jmp printResult
 
-;; Print result to the standard output.
+;; Print the result to the standard output.
 printResult:
 	;; Put the number of symbols within the string to the rax register.
     mov rax, rcx
     ;; Put the value 8 to the rcx register.
     mov rcx, 8
-    ;; Calculate the number of bytes in the given string by multiplication rax to 8.
+    ;; Calculate the number of bytes in the given string by multiplying rax by 8.
     ;; The result will be stored in the rax register.
     mul rcx
 
@@ -300,7 +300,7 @@ printResult:
 exit:
 	;; Specify the number of the system call (60 is `sys_exit`).
 	mov rax, SYS_EXIT
-	;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+	;; Set the first argument of `sys_exit` to 0. The 0 status code is a success.
 	mov rdi, EXIT_CODE
 	;; Call the `sys_exit` system call.
 	syscall
@@ -320,7 +320,7 @@ section .data
 	SYS_EXIT equ 60
     ;; Number of the standard output file descriptor
 	STD_OUT	equ 1
-    ;; Exit code from the program. The 0 status code is success
+    ;; Exit code from the program. The 0 status code is a success.
 	EXIT_CODE equ 0
     ;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
@@ -364,7 +364,7 @@ _start:
 	pop rcx
     ;; Check the number of the given command line arguments.
 	cmp rcx, 3
-    ;; If not enough, jump to error subroutine.
+    ;; If not enough, jump to the error subroutine.
 	jne argcError
 
 ;; Print the error message if not enough command line arguments.
@@ -431,9 +431,9 @@ str_to_int:
 	;; base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Check the first element in the given string by comparison it with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of string).
 	cmp [rsi], byte 0
-	;; If we reached the end of the string return from the procedure. The result is stored in the rax register.
+	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
@@ -467,14 +467,14 @@ Since we have our result, we just need to print it. But before printing it we ha
 In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobroutine:
 
 ```assembly
-    ;; Move sum value to the rax register.
+    ;; Move the sum value to the rax register.
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
 	;; Convert the sum from number to string to print the result on the screen.
 	jmp int_to_str
 
-;; Convert the sum to string and print on the screen.
+;; Convert the sum to string and print it on the screen.
 int_to_str:
 	;; High part of dividend. The low part is in the rax register.
     ;; The div instruction works as div operand => rdx:rax / operand. 
@@ -484,9 +484,9 @@ int_to_str:
 	mov rbx, 10
 	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
 	div rbx
-	;; Add 48 to the reminder to get string ASCII representation of the number value.
+	;; Add 48 to the reminder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store reminder on the stack.
+	;; Store the reminder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -505,13 +505,13 @@ The algorithm of the `int_to_str` sobroutine is pretty simple as well. We divide
 As soon as we will collect all the digits of our sum, they will be stored on the stack. So we can print our string with the following code:
 
 ```assembly
-;; Print result to the standard output.
+;; Print the result to the standard output.
 printResult:
 	;; Put the number of symbols within the string to the rax register.
     mov rax, rcx
     ;; Put the value 8 to the rcx register.
     mov rcx, 8
-    ;; Calculate the number of bytes in the given string by multiplication rax to 8.
+    ;; Calculate the number of bytes in the given string by multiplying rax by 8.
     ;; The result will be stored in the rax register.
     mul rcx
 
@@ -540,7 +540,7 @@ printResult:
 exit:
 	;; Specify the number of the system call (60 is `sys_exit`).
 	mov rax, SYS_EXIT
-	;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+	;; Set the first argument of `sys_exit` to 0. The 0 status code is a success.
 	mov rdi, EXIT_CODE
 	;; Call the `sys_exit` system call.
 	syscall
