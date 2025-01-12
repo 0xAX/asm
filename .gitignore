@@ -54,3 +54,4 @@ dkms.conf
 # Our binaries
 hello/hello
 sum/sum
+stack/stack
