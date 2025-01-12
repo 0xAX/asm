@@ -85,7 +85,7 @@ __repeat:
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
-        ;; This will give us numeric value of the character.
+        ;; This will give us the numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -93,7 +93,7 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat while we did not reach the end of string.
+	;; Repeat until we do not reach the end of the string.
 	jmp __repeat
 __return:
         ;; Return from the str_to_int procedure.
@@ -101,7 +101,7 @@ __return:
 
 ;; Convert the sum to string and print it on the screen.
 int_to_str:
-	;; High part of dividend. The low part is in the rax register.
+	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10

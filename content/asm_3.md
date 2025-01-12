@@ -49,7 +49,7 @@ These registers are:
 Local variables are also accessed using the stack. For example, let's take a look at the following C function that doubles its parameter:
 
 ```C
-// The __ prefix in the __dobule function name to not mix it with the `double` data type.
+// The "__" prefix in the `__double` function name is used to avoid confusion with the `double` data type.
 int __double(int a) {
     int two = 2;
 
@@ -65,7 +65,8 @@ __double(int):
         push    rbp
         ;; Set the new frame base pointer
         mov     rbp, rsp
-        ;; Put the value of the first parameter of the function from the edi register on the stack with the location rbp - 20 bytes.
+        ;; Put the value of the first parameter of the function from the edi register
+        ;; on the stack with the location rbp - 20 bytes.
         mov     DWORD PTR [rbp-20], edi
         ;; Put 2 to on the stack with the location rbp - 4 bytes.
         mov     DWORD PTR [rbp-4], 2
@@ -91,25 +92,23 @@ Finally, we put the value from the stack at offset `-20` (the value of the funct
 
 ## Stack operations
 
-We already have seen two assembly instructions that affects the current state of the stack:
+We've already seen two assembly instructions that affect the current state of the stack:
 
 - `push` - pushes the operand into the stack.
 - `pop` - pops the top value from the stack.
 
-x86_64 processors provide additional instruction that brings affect on the stack. Besides those instruction we also have seen familiar to us:
+x86_64 processors provide additional instructions that affect the stack. In addition to these, we’ve also seen instructions that are already familiar to us:
 
-- `call`
-- `ret`
+- `call` - calls the given procedure. It affects the stack by saving the return address before the call.
+- `ret` - exits the given procedure. It affects the stack by removing the return address and transferring the execution flow back to it. 
 
-The first one instruction calls the given procedure. It affects stack by saving the return address on the stack before call. The second instruction is an "exit" from the given procedure. It affects the stack by removing the return address from the stack and transferring the execution flow to it. 
-
-In the [previous post](asm_2.md) we got familiar with the with such a concepts as [function prologue and epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions that we usually can meet in the beginning and in the end of the function:
+In the [previous post](asm_2.md), we became familiar with concepts such as the [function prologue and epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions typically found at the beginning and end of a function:
 
 ```assembly
 foo:
         ;; Function prologue
-        push %rbp
-        mov     rbp, rsp
+        push rbp
+        mov  rbp, rsp
 
         ;;
         ;; Function body
@@ -120,19 +119,19 @@ foo:
         pop
 ```
 
-These two could be replaced with special instructions: `enter N, 0` and `leave`. The first instruction has two operands: 
+These two can be replaced with special instructions: `enter N, 0` and `leave`. The `enter` instruction has two operands:
 
-- Number of bytes that needs to be subtracted from the `rsp` register to allocate space on stack.
-- Number of levels of stack frames in nested calls.
+- Number of bytes to subtract from the `rsp` register to allocate space on the stack.
+- Number of stack frame levels in nested calls.
 
-These both instructions are considered "outdated" but still will work because of backward compatibility.
+These instructions are considered "outdated" because of performance issues and the usual function prologue and epilogue are used, but still work because of backward compatibility.
 
-The next already familiar to us instruction that affects the stack is the `syscall` instruction. In some aspects it is similar to the `call` instruction with the one of the most significant difference is that the function that is going to be called is located in the kernel space. The return from a system call and the stack clean-up is executed with the help of the `sysret` instruction.
+The next familiar instruction that affects the stack is the `syscall` instruction. In some aspects, it is similar to the `call` instruction, with one key difference: the function to be called is located in kernel space. The return from a system call and the stack clean-up are executed using the `sysret` instruction.
 
-In the previous post, we mentioned that besides the general purpose registers, the other types of registers exists. One of such type of registers is `rflags`. In basic words it is a register where CPU stores its current state. In the next posts we will know more details about this type of register but for now we must know that an x86_64 process provide the two following command that affect the stack:
+In the previous post, we mentioned that there are other types of registers besides the general purpose registers. One such register is `rflags` where the CPU stores its current state. In the next posts, we will learn more about it. For now, we must know that the x86_64 processor provides the following two commands that affect the stack:
 
 - `pushf` - pushes the `rflags` register into the stack.
-- `popf` - pops the top value from the stack and stores the value in the `rflags` register.
+- `popf` - pops the top value from the stack and stores it in the `rflags` register.
 
 ## Example
 
@@ -230,7 +229,7 @@ __repeat:
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
-    ;; This will give us numeric value of the character.
+    ;; This will give us the numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -238,7 +237,7 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat while we did not reach the end of string.
+	;; Repeat until we do not reach the end of the string.
 	jmp __repeat
 __return:
     ;; Return from the str_to_int procedure.
@@ -246,7 +245,7 @@ __return:
 
 ;; Convert the sum to string and print it on the screen.
 int_to_str:
-	;; High part of dividend. The low part is in the rax register.
+	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
@@ -438,7 +437,7 @@ __repeat:
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
-    ;; This will give us numeric value of the character.
+    ;; This will give us the numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -446,7 +445,7 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat while we did not reach the end of string.
+	;; Repeat until we do not reach the end of the string.
 	jmp __repeat
 __return:
     ;; Return from the str_to_int procedure.
@@ -476,7 +475,7 @@ In the end of the previous section we calculated the sum of two numbers and put 
 
 ;; Convert the sum to string and print it on the screen.
 int_to_str:
-	;; High part of dividend. The low part is in the rax register.
+	;; High part of the dividend. The low part is in the rax register.
     ;; The div instruction works as div operand => rdx:rax / operand. 
     ;; The reminder is stored in rdx and the quotient in rax.
 	mov rdx, 0
@@ -500,7 +499,7 @@ int_to_str:
 
 Before jumping to the `int_to_str` sobroutine, we need to do some preparations. As you may see we put the value of our sum in the `rax` register and initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in the our future string. Note that we are using new instruction to initialize the counter - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
 
-The algorithm of the `int_to_str` sobroutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
+The algorithm of the `int_to_str` sobroutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of the division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
 
 As soon as we will collect all the digits of our sum, they will be stored on the stack. So we can print our string with the following code:
 
