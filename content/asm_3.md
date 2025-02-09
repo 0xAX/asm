@@ -2,7 +2,7 @@
 
 In the [previous post](asm_2.md), we started to learn the basics of the x86_64 architecture. One of the most crucial concepts we learned was the [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter, we will explore more examples of stack usage.
 
-Let's start with a quick reminder: the stack is a special memory region that operates on the LIFO (last-in, first-out) principle. In the x86_64 architecture, we have sixteen general-purpose registers for temporary data storage: `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp`, and from `r8` to `r15`. However, for some applications, this might not be enough. One way to overcome this limitation is by using the stack.
+Let's start with a quick remainder: the stack is a special memory region that operates on the LIFO (last-in, first-out) principle. In the x86_64 architecture, we have sixteen general-purpose registers for temporary data storage: `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp`, and from `r8` to `r15`. However, for some applications, this might not be enough. One way to overcome this limitation is by using the stack.
 
 Besides temporary data storage, another crucial use of the stack is the ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, the return address is stored on the stack. Once the function finishes execution, this return address is restored into the `rip` register and the program continues execution from the address following the called function.
 
@@ -14,23 +14,23 @@ global _start
 section .text
 
 _start:
-        ;; Put 1 to the rax register
-		mov rax, 1
-        ;; Call the incRax subroutine
-		call incRax
-        ;; Compare the value in the rax register with 2
-		cmp rax, 2
-        ;; Jump to the 'exit' label if not equal
-		jne exit
-		;;
-		;; Otherwise, perform another action.
-		;;
+	;; Put 1 to the rax register
+	mov rax, 1
+	;; Call the incRax subroutine
+	call incRax
+	;; Compare the value in the rax register with 2
+	cmp rax, 2
+	;; Jump to the 'exit' label if not equal
+	jne exit
+	;;
+	;; Otherwise, perform another action.
+	;;
 
 incRax:
-        ;; Increment the value of the rax register
-		inc rax
-        ;; Return from the incRax subroutine
-		ret
+	;; Increment the value of the rax register
+	inc rax
+	;; Return from the incRax subroutine
+	ret
 ```
 
 In the example above, we can see that after the program starts, the value `1` is stored in the `rax` register. Next, we call the subroutine `incRax`, which increases the value in the `rax` register by 1. After updating the `rax` register, the subroutine ends with the `ret` instruction, and execution continues with the instructions immediately following the call to the `incRax` subroutine.
@@ -61,23 +61,23 @@ If we compile this function and take a look at the assembly output, we will see 
 
 ```assembly
 __double(int):
-        ;; Preserve the base pointer
-        push    rbp
-        ;; Set the new frame base pointer
-        mov     rbp, rsp
-        ;; Put the value of the first parameter of the function from the edi register
-        ;; on the stack with the location rbp - 20 bytes.
-        mov     DWORD PTR [rbp-20], edi
-        ;; Put 2 to on the stack with the location rbp - 4 bytes.
-        mov     DWORD PTR [rbp-4], 2
-        ;; Put the value of the first function parameter to the eax register.
-        mov     eax, DWORD PTR [rbp-20]
-        ;; Multiple the value of the eax register to 2 and store the result in the eax register.
-        imul    eax, DWORD PTR [rbp-4]
-        ;; Restore base pointer.
-        pop     rbp
-        ;; Exit from the __dobule function.
-        ret
+	;; Preserve the base pointer
+	push rbp
+	;; Set the new frame base pointer
+	mov rbp, rsp
+	;; Put the value of the first parameter of the function from the edi register
+	;; on the stack with the location rbp - 20 bytes.
+	mov DWORD PTR [rbp-20], edi
+	;; Put 2 to on the stack with the location rbp - 4 bytes.
+	mov DWORD PTR [rbp-4], 2
+	;; Put the value of the first function parameter to the eax register.
+	mov eax, DWORD PTR [rbp-20]
+	;; Multiple the value of the eax register to 2 and store the result in the eax register.
+	imul eax, DWORD PTR [rbp-4]
+	;; Restore base pointer.
+	pop rbp
+	;; Exit from the __dobule function.
+	ret
 ```
 
 After the first two lines of the `__double` function, the stack frame for this function is set and looks like this:
@@ -100,23 +100,23 @@ We've already seen two assembly instructions that affect the current state of th
 x86_64 processors provide additional instructions that affect the stack. In addition to these, we’ve also seen instructions that are already familiar to us:
 
 - `call` - calls the given procedure. It affects the stack by saving the return address before the call.
-- `ret` - exits the given procedure. It affects the stack by removing the return address and transferring the execution flow back to it. 
+- `ret` - exits the given procedure. It affects the stack by removing the return address and transferring the execution flow back to it.
 
 In the [previous post](asm_2.md), we became familiar with concepts such as the [function prologue and epilogue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue). These are special instructions typically found at the beginning and end of a function:
 
 ```assembly
 foo:
-        ;; Function prologue
-        push rbp
-        mov  rbp, rsp
+	;; Function prologue
+	push rbp
+	mov  rbp, rsp
 
-        ;;
-        ;; Function body
-        ;;
+	;;
+	;; Function body
+	;;
 
-        ;; Function epilogue
-        mov rsp, rbp
-        pop
+	;; Function epilogue
+	mov rsp, rbp
+	pop
 ```
 
 These two can be replaced with special instructions: `enter N, 0` and `leave`. The `enter` instruction has two operands:
@@ -145,33 +145,33 @@ Before any explanation, first of all let's take a look at the whole code:
 ```assembly
 ;; Definition of the .data section
 section .data
-    ;; Number of `sys_write` system call
+	;; Number of `sys_write` system call
 	SYS_WRITE equ 1
-    ;; Number of `sys_exit` system call
+	;; Number of `sys_exit` system call
 	SYS_EXIT equ 60
-    ;; Number of the standard output file descriptor
+	;; Number of the standard output file descriptor
 	STD_OUT	equ 1
-    ;; Exit code from the program. The 0 status code is a success.
+	;; Exit code from the program. The 0 status code is a success.
 	EXIT_CODE equ 0
-    ;; ASCII code of the new line symbol ('\n')
+	;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
-    ;; Error message that is printed in a case of not enough command line arguments
+	;; Error message that is printed in a case of not enough command line arguments
 	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
-    ;; Length of the WRONG_ARGC_MSG message
-    WRONG_ARGC_MSG_LEN equ 42
+	;; Length of the WRONG_ARGC_MSG message
+	WRONG_ARGC_MSG_LEN equ 42
 
 ;; Definition of the .text section
 section .text
-    ;; Reference to the entry point of our program
+	;; Reference to the entry point of our program
 	global	_start
 
 ;; Entry point
 _start:
 	;; Fetch the number of arguments from the stack and store it in the rcx register
 	pop rcx
-    ;; Check the number of the given command line arguments.
+	;; Check the number of the given command line arguments.
 	cmp rcx, 3
-    ;; If not enough, jump to the error subroutine.
+	;; If not enough, jump to the error subroutine.
 	jne argcError
 
 	;; Skip the first command line argument which is usually the program name.
@@ -193,7 +193,7 @@ _start:
 
 	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
 	add r10, r11
-    ;; Move the sum value to the rax register.
+	;; Move the sum value to the rax register.
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
@@ -229,7 +229,7 @@ __repeat:
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
-    ;; This will give us the numeric value of the character.
+	;; This will give us the numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -240,7 +240,7 @@ __repeat:
 	;; Repeat until we do not reach the end of the string.
 	jmp __repeat
 __return:
-    ;; Return from the str_to_int procedure.
+	;; Return from the str_to_int procedure.
 	ret
 
 ;; Convert the sum to string and print it on the screen.
@@ -249,11 +249,12 @@ int_to_str:
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
-	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
+	;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
+	;; and the remainder will be stored in `rdx` register.
 	div rbx
-	;; Add 48 to the reminder to get a string ASCII representation of the number value.
+	;; Add 48 to the remainder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store the reminder on the stack.
+	;; Store the remainder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -267,34 +268,34 @@ int_to_str:
 ;; Print the result to the standard output.
 printResult:
 	;; Put the number of symbols within the string to the rax register.
-    mov rax, rcx
-    ;; Put the value 8 to the rcx register.
-    mov rcx, 8
-    ;; Calculate the number of bytes in the given string by multiplying rax by 8.
-    ;; The result will be stored in the rax register.
-    mul rcx
+	mov rax, rcx
+	;; Put the value 8 to the rcx register.
+	mov rcx, 8
+	;; Calculate the number of bytes in the given string by multiplying rax by 8.
+	;; The result will be stored in the rax register.
+	mul rcx
 
-    ;; Set the third argument to the length of the result string to print.
+	;; Set the third argument to the length of the result string to print.
 	mov rdx, rax
-    ;; Specify the system call number (1 is `sys_write`).
+	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
 	mov rdi, STD_OUT
-    ;; Set the second argument of `sys_write` to the reference of the result string to print.
+	;; Set the second argument of `sys_write` to the reference of the result string to print.
 	mov rsi, rsp
 	;; Call the `sys_write` system call.
 	syscall
 
-    ;; Specify the system call number (1 is `sys_write`).
+	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
 	mov rdi, STD_OUT
-    ;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
+	;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
 	mov rsi, NEW_LINE
-    ;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
+	;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
 	mov rdx, 1
-    ;; Call the `sys_write` system call.
-    syscall
+	;; Call the `sys_write` system call.
+	syscall
 
 exit:
 	;; Specify the number of the system call (60 is `sys_exit`).
@@ -313,27 +314,27 @@ In the beginning of our program we may see already traditional definition of the
 
 ```assembly
 section .data
-    ;; Number of `sys_write` system call
+	;; Number of `sys_write` system call
 	SYS_WRITE equ 1
-    ;; Number of `sys_exit` system call
+	;; Number of `sys_exit` system call
 	SYS_EXIT equ 60
-    ;; Number of the standard output file descriptor
+	;; Number of the standard output file descriptor
 	STD_OUT	equ 1
-    ;; Exit code from the program. The 0 status code is a success.
+	;; Exit code from the program. The 0 status code is a success.
 	EXIT_CODE equ 0
-    ;; ASCII code of the new line symbol ('\n')
+	;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
-    ;; Error message that is printed in a case of not enough command line arguments
+	;; Error message that is printed in a case of not enough command line arguments
 	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
-    ;; Length of the WRONG_ARGC_MSG message
-    WRONG_ARGC_MSG_LEN equ 42
+	;; Length of the WRONG_ARGC_MSG message
+	WRONG_ARGC_MSG_LEN equ 42
 ```
 
 As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is not an exception. We may see the definition of the system call numbers variables, string error messages and so on. This part is very well commented and everything should be clear in general. If you feel that you do not understand something it is better to return to the previous posts and clarify before you will proceed with the rest of explanation.
 
 ### Handling command line arguments
 
-Before we are able to get the sum of two numbers that will come from the command line arguments, we should know how to handle command line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack state of the process right after this process was launched is following: 
+Before we are able to get the sum of two numbers that will come from the command line arguments, we should know how to handle command line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack state of the process right after this process was launched is following:
 
 | Purpose                                                                           | Start Address      | Length            |
 |-----------------------------------------------------------------------------------|--------------------|-------------------|
@@ -354,16 +355,16 @@ As we may see number of command line arguments that was passed to the program is
 ```assembly
 ;; Definition of the .text section
 section .text
-    ;; Reference to the entry point of our program
+	;; Reference to the entry point of our program
 	global	_start
 
 ;; Entry point
 _start:
 	;; Fetch the number of arguments from the stack and store it in the rcx register
 	pop rcx
-    ;; Check the number of the given command line arguments.
+	;; Check the number of the given command line arguments.
 	cmp rcx, 3
-    ;; If not enough, jump to the error subroutine.
+	;; If not enough, jump to the error subroutine.
 	jne argcError
 
 ;; Print the error message if not enough command line arguments.
@@ -418,10 +419,10 @@ Now if we will take a look at the `str_to_int` procedure it should be clear with
 	call str_to_int
 	;; Store the result in the r11 register.
 	mov r11, rax
-    
-    ...
-    ...
-    ...
+
+	...
+	...
+	...
 
 ;; Convert the command line argument to the integer number.
 str_to_int:
@@ -437,7 +438,7 @@ __repeat:
 	;; Move the current character from the command line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
-    ;; This will give us the numeric value of the character.
+	;; This will give us the numeric value of the character.
 	sub bl, 48
 	;; Multiple our result number by 10 to get the place for the next digit.
 	mul rcx
@@ -448,7 +449,7 @@ __repeat:
 	;; Repeat until we do not reach the end of the string.
 	jmp __repeat
 __return:
-    ;; Return from the str_to_int procedure.
+	;; Return from the str_to_int procedure.
 	ret
 ```
 
@@ -466,7 +467,7 @@ Since we have our result, we just need to print it. But before printing it we ha
 In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobroutine:
 
 ```assembly
-    ;; Move the sum value to the rax register.
+	;; Move the sum value to the rax register.
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
@@ -476,16 +477,17 @@ In the end of the previous section we calculated the sum of two numbers and put 
 ;; Convert the sum to string and print it on the screen.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
-    ;; The div instruction works as div operand => rdx:rax / operand. 
-    ;; The reminder is stored in rdx and the quotient in rax.
+	;; The div instruction works as div operand => rdx:rax / operand.
+	;; The remainder is stored in rdx and the quotient in rax.
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
-	;; Divide the sum (rax from rax) to 10. Reminder will be stored in the rdx register.
+	;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
+	;; and the remainder will be stored in `rdx` register.
 	div rbx
-	;; Add 48 to the reminder to get a string ASCII representation of the number value.
+	;; Add 48 to the remainder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store the reminder on the stack.
+	;; Store the remainder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -507,34 +509,34 @@ As soon as we will collect all the digits of our sum, they will be stored on the
 ;; Print the result to the standard output.
 printResult:
 	;; Put the number of symbols within the string to the rax register.
-    mov rax, rcx
-    ;; Put the value 8 to the rcx register.
-    mov rcx, 8
-    ;; Calculate the number of bytes in the given string by multiplying rax by 8.
-    ;; The result will be stored in the rax register.
-    mul rcx
+	mov rax, rcx
+	;; Put the value 8 to the rcx register.
+	mov rcx, 8
+	;; Calculate the number of bytes in the given string by multiplying rax by 8.
+	;; The result will be stored in the rax register.
+	mul rcx
 
-    ;; Set the third argument to the length of the result string to print.
+	;; Set the third argument to the length of the result string to print.
 	mov rdx, rax
-    ;; Specify the system call number (1 is `sys_write`).
+	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
 	mov rdi, STD_OUT
-    ;; Set the second argument of `sys_write` to the reference of the result string to print.
+	;; Set the second argument of `sys_write` to the reference of the result string to print.
 	mov rsi, rsp
 	;; Call the `sys_write` system call.
 	syscall
 
-    ;; Specify the system call number (1 is `sys_write`).
+	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
+	;; Set the first argument of `sys_write` to 1 (`stdout`).
 	mov rdi, STD_OUT
-    ;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
+	;; Set the second argument of `sys_write` to the reference of the `NWE_LINE` variable.
 	mov rsi, NEW_LINE
-    ;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
+	;; Set the third argument to the length of the `NEW_LINE` variable's value (1 byte).
 	mov rdx, 1
-    ;; Call the `sys_write` system call.
-    syscall
+	;; Call the `sys_write` system call.
+	syscall
 
 exit:
 	;; Specify the number of the system call (60 is `sys_exit`).
