@@ -334,7 +334,7 @@ As we know from the previous posts, the main purpose of the `data` section is to
 
 ### Handling command line arguments
 
-Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack layout of a process immediately after it is launched is as follows:
+Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. Pointers to the command line arguments are located on the stack. To access them we need to know the offset from the top of the stack. To figure out where the command line arguments of a Linux program located on the stack we need to read the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). Accodring to this document, the initial stack layout of a program immediately after it is launched is as follows:
 
 | Purpose                                                                           | Start Address      | Length            |
 |-----------------------------------------------------------------------------------|--------------------|-------------------|
@@ -349,6 +349,10 @@ Before calculating the sum of two numbers from the command-line arguments, we ne
 | Argument pointers                                                                 | 8 + rsp            | argc eightbytes   |
 | Argument count                                                                    | rsp                | eightbyte         |
 | Undefined                                                                         | Low Addresses      |                   |
+
+Accodring to the table above the command line arguments located on the stack like this:
+
+![asm-3-args-on-stack](./assets/asm-3-args-on-stack.svg)
 
 As we can see, the number of command-line arguments passed to the program is stored at the top of the stack, with the `rsp` register pointing to it. Fetching this value from the stack gives us the number of arguments. Additionally, we already know the `cmp` instruction, which allows us to compare two values. Using this knowledge, we can perform the first check in our program — verifying that the program got two arguments from the command line or printing an error message otherwise:
 
