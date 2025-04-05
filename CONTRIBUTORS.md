@@ -10,4 +10,4 @@ Special thanks to all the people who helped to develop this project:
 - [knoxknox](https://github.com/knoxknox)
 - [tirkarthi](https://github.com/tirkarthi)
 - [maldron0309](https://github.com/maldron0309)
-- [@Yimura](https://github.com/Yimura)
+- [Yimura](https://github.com/Yimura)

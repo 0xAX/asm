@@ -124,7 +124,7 @@ These two can be replaced with special instructions: `enter N, 0` and `leave`. T
 - Number of bytes to subtract from the `rsp` register to allocate space on the stack.
 - Number of stack frame levels in nested calls.
 
-These instructions are considered "outdated" because of performance issues and the usual function prologue and epilogue are used, but still work because of backward compatibility.
+These instructions are considered "outdated" due to performance issues, and the usual function prologue and epilogue are typically used instead. However, these instructions still work for backward compatibility.
 
 The next familiar instruction that affects the stack is the `syscall` instruction. In some aspects, it is similar to the `call` instruction, with one key difference: the function to be called is located in kernel space. The return from a system call and the stack clean-up are executed using the `sysret` instruction.
 
@@ -135,12 +135,12 @@ In the previous post, we mentioned that there are other types of registers besid
 
 ## Example
 
-After we went through some theory it is time to write some code! Let's see another one example that should make us more confident with the assembly programming. This time we will write a simple program, which will get [two command line arguments](https://en.wikipedia.org/wiki/Command-line_interface#Arguments), try to calculate sum of the given values and print the result.
+After going through the theory, it’s time to write some code! Let’s explore another example to boost our confidence with assembly programming. In the previous chapter have seen the [assembly program](./asm_2.md#program-example) that calculated the sum of two numbers. The numbers were hard-coded in the program code. Let's try to do something similar but less trivial. This time, we will write a simple program that takes [two command-line arguments](https://en.wikipedia.org/wiki/Command-line_interface#Arguments), calculates their sum, and prints the result.
 
 > [!NOTE]
-> For the sake of simplification we will skip the check that numeric values are given in the command line arguments and do not do any checks for overflow. You may do it as your homework.
+> For simplification, we will skip checking whether the command-line arguments are numeric and won’t handle overflow checks. You can do it as your homework.
 
-Before any explanation, first of all let's take a look at the whole code:
+Before diving into details, let's first examine the entire code:
 
 ```assembly
 ;; Definition of the .data section
@@ -306,11 +306,11 @@ exit:
 	syscall
 ```
 
-Yes I know, this example looks quite big for a such simple problem 😨. But do not worry. The code itself should be documented pretty well with the comments. But let's go through its parts and try to understand how it works.
+Yes, this example might seem quite big for such a simple problem 😨 But do not worry — the code is well-documented with comments. Let’s go through its parts and understand how it works.
 
 ### Definition of variables
 
-In the beginning of our program we may see already traditional definition of the `.data` section:
+At the beginning of our program, we can see a typical definition of the `.data` section:
 
 ```assembly
 section .data
@@ -330,16 +330,16 @@ section .data
 	WRONG_ARGC_MSG_LEN equ 42
 ```
 
-As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is not an exception. We may see the definition of the system call numbers variables, string error messages and so on. This part is very well commented and everything should be clear in general. If you feel that you do not understand something it is better to return to the previous posts and clarify before you will proceed with the rest of explanation.
+As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is no exception. Here, we define the system call number variables, string error messages, and more. This code sample contains comments with descriptions, so everything should generally be clear. If something is unclear, it’s a good idea to revisit the previous posts for clarification before you proceed with the rest of the explanation.
 
 ### Handling command line arguments
 
-Before we are able to get the sum of two numbers that will come from the command line arguments, we should know how to handle command line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack state of the process right after this process was launched is following:
+Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. According to the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf), the initial stack layout of a process immediately after it is launched is as follows:
 
 | Purpose                                                                           | Start Address      | Length            |
 |-----------------------------------------------------------------------------------|--------------------|-------------------|
 | Unspecified                                                                       | High Addresses     |                   |
-| Information block, including argument/environment strings, auxiliary information |                    | varies            |
+| Information block, including argument/environment strings, auxiliary information  |                    | varies            |
 | Unspecified                                                                       |                    |                   |
 | Null auxiliary vector entry                                                       |                    | 1 eightbyte       |
 | Auxiliary vector entries...                                                       |                    | 2 eightbytes each |
@@ -350,7 +350,7 @@ Before we are able to get the sum of two numbers that will come from the command
 | Argument count                                                                    | rsp                | eightbyte         |
 | Undefined                                                                         | Low Addresses      |                   |
 
-As we may see number of command line arguments that was passed to the program is on the top of the stack and the `rsp` register points to it. So, fetching the value from the stack will give us the number of arguments. Besides that we already know the `cmp` instruction which allows us to compare two values. Using this knowledge we can do the very first check in our program - to check that our program got two arguments from command line or print error message otherwise:
+As we can see, the number of command-line arguments passed to the program is stored at the top of the stack, with the `rsp` register pointing to it. Fetching this value from the stack gives us the number of arguments. Additionally, we already know the `cmp` instruction, which allows us to compare two values. Using this knowledge, we can perform the first check in our program — verifying that the program got two arguments from the command line or printing an error message otherwise:
 
 ```assembly
 ;; Definition of the .text section
@@ -383,23 +383,23 @@ argcError:
 	jmp exit
 ```
 
-Note that despite we expect to get two command line arguments, we are comparing the actual number with `3`. This is done because the first implicit argument of each program is the program name.
+Note that although we expect to get two command-line arguments, we are comparing the actual number with `3`. This is because the first implicit argument for every program is its name.
 
-After we have made sure that the required number of command line arguments has been passed to our program, we can start with handling of them. But what basically do we need to handle them? We need to execute the following actions:
+After making sure that the required number of command-line arguments are passed to our program, we can start working with them. But what do we need to do? Here are the steps:
 
-- Convert the given command line arguments to integer numbers and calculate the sum of the given numbers.
-- Convert the result back to string and print it on the screen.
+1. Convert the given command line arguments to integer numbers and calculate the sum of the given numbers.
+2. Convert the result back to string and print it on the screen.
 
-In the next two sections we will see detailed explanation of the steps mentioned above.
+In the next two sections, we will see a detailed explanation of these steps.
 
-### Converting string to integer
+### Converting a string to an integer
 
-Since the command line arguments of each program represented as strings, we need to convert our command line arguments to numbers to calculate their sum. To convert a given string to a number we will use a simple algorithm:
+As the command-line arguments of each program are represented as strings, first we need to convert our command-line arguments to numbers to calculate their sum. To convert a given string to a number, we will use a simple algorithm:
 
-1. Create an accumulator that will be a result - the numeric representation of the given string.
-2. We will take first byte of the string and subtract from it the value `48`. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol that has own code. The symbol `'0'` has code `48`, the symbol `'1'` has code 49, and so on. If we will subtract `48` from the ASCII code of the given symbol we will get integer representation of the current digit from the given string.
-3. As soon as we know the current digit, we multiple our accumulator from the step 1 by 10 and add to it the digit that we got during the step 2.
-4. Move to the next symbol in the given string and repeat the steps 2 and 3 if it is not end of the string (`\0` symbol).
+1. Create an accumulator to store an intermediate result while converting the string into its numeric representation.
+2. Take the first byte of the string and subtract the value `48` from it. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol with its own code. The symbol 0 has code `48`, the symbol 1 has code `49`, and so on. If we subtract `48` from the ASCII code of the given symbol, we get an integer representation of the current digit from the given string.
+3. As soon as we know the current digit, we multiply our accumulator from step 1 by 10 and add to it the digit that we got in step 2.
+4. Move to the next symbol in the given string and repeat steps 2 and 3 if it is not the end of the string (`\0` symbol).
 
 Returning to the table from the section above, we may see that pointers to the command line arguments are located on the stack right above the number of command line arguments. So if we fetch the first value from the stack after we already fetched the number of arguments, it will be a pointer to the string which is the first command line argument. If we will pop the next value from the stack, it will be the second command line argument passed to the program.
 
