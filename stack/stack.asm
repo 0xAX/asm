@@ -53,7 +53,7 @@ _start:
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from a number to a string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result to the standard output.
 	jmp int_to_str
 
 ;; Print the error message if not enough command line arguments.
@@ -99,7 +99,7 @@ __return:
 	;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to a string and print it on the screen.
+;; Convert the sum to a string and print it to the standard output.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0

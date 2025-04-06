@@ -197,7 +197,7 @@ _start:
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from a number to a string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result to the standard output.
 	jmp int_to_str
 
 ;; Print the error message if not enough command line arguments.
@@ -243,7 +243,7 @@ __return:
 	;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to a string and print it on the screen.
+;; Convert the sum to a string and print it to the standard output.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0
@@ -392,7 +392,7 @@ Note that although we expect to get two command-line arguments, we are comparing
 After making sure that the required number of command-line arguments are passed to our program, we can start working with them. But what do we need to do? Here are the steps:
 
 1. Convert the given command line arguments to integer numbers and calculate the sum of the given numbers.
-2. Convert the result back to string and print it on the screen.
+2. Convert the result back to string and print it to the standard output.
 
 In the next two sections, we will see a detailed explanation of these steps.
 
@@ -475,10 +475,10 @@ In the previous section, we calculated the sum of two numbers and put the result
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from a number to a string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result to the standard output.
 	jmp int_to_str
 
-;; Convert the sum to a string and print it on the screen.
+;; Convert the sum to a string and print it to the standard output.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	;; The div instruction works as div operand => rdx:rax / operand.
@@ -558,7 +558,7 @@ exit:
 	syscall
 ```
 
-Most of this code should already be understandable, as it mainly consists of the data initialization for the `sys_write` and `sys_exit` system calls. Both of them we already have seen in two previous chapters. The most interesting part is the first four lines of the `printResult` subroutine. As you may remember, one of the parameters of the `sys_write` system call is the length of the string we want to print on the screen. We have this number because we maintained a counter of characters while converting the numeric sum to a string. This counter was stored in the `rcx` register. Our string is located on the stack, where we pushed each digit using the `push` instruction. However, the `push` instruction pushes `64` bits (or `8` bytes), while our symbol is only 1 byte. To calculate the total length of the string for printing, we should multiply the number of symbols by `8`. This will give us the length of the string that we can use as the third argument of the `sys_write` system call.
+Most of this code should already be understandable, as it mainly consists of the data initialization for the `sys_write` and `sys_exit` system calls. Both of them we already have seen in two previous chapters. The most interesting part is the first four lines of the `printResult` subroutine. As you may remember, one of the parameters of the `sys_write` system call is the length of the string we want to print to the standard output. We have this number because we maintained a counter of characters while converting the numeric sum to a string. This counter was stored in the `rcx` register. Our string is located on the stack, where we pushed each digit using the `push` instruction. However, the `push` instruction pushes `64` bits (or `8` bytes), while our symbol is only 1 byte. To calculate the total length of the string for printing, we should multiply the number of symbols by `8`. This will give us the length of the string that we can use as the third argument of the `sys_write` system call.
 
 Once all parameters of both system calls are ready, we can pass them as arguments to print the sum followed by a new line.
 
