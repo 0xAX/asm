@@ -468,7 +468,7 @@ Now that we have our result, we just need to print it. But before printing it, w
 
 ### Converting an integer to a string
 
-In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobroutine:
+In the previous section, we calculated the sum of two numbers and put the result in the `r10` register. As the `sys_write` system call can only print a string, now we need to convert our numeric sum into a string. To do so, we will use the `int_to_str` subroutine:
 
 ```assembly
 	;; Move the sum value to the rax register.
@@ -503,11 +503,18 @@ int_to_str:
 	jmp printResult
 ```
 
-Before jumping to the `int_to_str` sobroutine, we need to do some preparations. As you may see we put the value of our sum in the `rax` register and initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in the our future string. Note that we are using new instruction to initialize the counter - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
+Before jumping to the `int_to_str` subroutine, we must prepare the data with two instructions:
 
-The algorithm of the `int_to_str` sobroutine is pretty simple as well. We divide our number by `10` to get the digit and add the value `48` to the result of the division. Remember about ASCII codes? If yes it should be clear why we are doing it. As soon as we got the symbolic representation of the current digit we push it on the stack. As soon as the given digit is converted we increase our counter of numbers of symbols within the string and check our sum number. If it is zero it means we have the resulted string. If not, we just repeat the all operations.
+1. First, we put the value of our sum in the `rax` register using the `mov` instruction.
+2. Then, we initialize the counter (`rcx` register) with zero. This counter will store the number of symbols in our future string. To initialize the counter, we use a new instruction - `xor`. This instruction is a [bitwise XOR](https://en.wikipedia.org/wiki/Bitwise_operation#XOR) operator which resets bits of the operands to 0 if they are the same.
 
-As soon as we will collect all the digits of our sum, they will be stored on the stack. So we can print our string with the following code:
+The algorithm of the `int_to_str` subroutine is pretty simple. We divide our number by `10` to get the next digit and add the value `48` to the result of the division. Remember about the ASCII codes? If yes, it should be clear why we are doing it: 
+
+1. As soon as we get the symbolic representation of the current digit, we push it on the stack.
+2. When the given digit is converted, we increase our counter that represents the number of characters within the string. 
+3. After that, we check the sum number. If it is zero, we have the resulting string. If not, we repeat all operations.
+
+Once we collect all the digits of the sum, they will be stored on the stack. Now we can print the string using the following code:
 
 ```assembly
 ;; Print the result to the standard output.
@@ -551,18 +558,18 @@ exit:
 	syscall
 ```
 
-Most of this code should be already well understandable for you as the most significant part of it consists of the initialization of data for the call of the `sys_write` and `sys_exit` exit calls. The most interesting part should be first four lines of code of the `printResult` subroutine. As you may remember the one of the parameters of the `sys_write` system call is a length of the string that we want to print on the screen. We have this number as we maintained a counter of symbols during converting the numeric sum to the string. This counter was stored in the `rcx` register. Our string is located on the stack. We pushed each digit with the `push` operator. But the `push` operator pushes `64` bits (or `8` bytes) while our symbol is only 1 byte. To get the whole length of the string for printing, we should multiple the number of symbols to `8`. This will give us the length of the string that we can use as a third argument of the `sys_write` system call.
+Most of this code should already be understandable, as it mainly consists of the data initialization for the `sys_write` and `sys_exit` system calls. Both of them we already have seen in two previous chapters. The most interesting part is the first four lines of the `printResult` subroutine. As you may remember, one of the parameters of the `sys_write` system call is the length of the string we want to print on the screen. We have this number because we maintained a counter of characters while converting the numeric sum to a string. This counter was stored in the `rcx` register. Our string is located on the stack, where we pushed each digit using the `push` instruction. However, the `push` instruction pushes `64` bits (or `8` bytes), while our symbol is only 1 byte. To calculate the total length of the string for printing, we should multiply the number of symbols by `8`. This will give us the length of the string that we can use as the third argument of the `sys_write` system call.
 
-As soon as all parameters of the system calls are ready, we can pass them as arguments to print the sum and print new line after it.
+Once all parameters of both system calls are ready, we can pass them as arguments to print the sum followed by a new line.
 
-Let's build our program with the usual commands:
+Now, let's build our program with the usual commands:
 
 ```bash
 $ nasm -f elf64 -o stack.o stack.asm
 $ ld -o stack stack.o
 ```
 
-And try to run it:
+Then, try to run it:
 
 ```bash
 $  ./stack
