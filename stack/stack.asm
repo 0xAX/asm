@@ -1,8 +1,8 @@
 ;; Definition of the .data section
 section .data
-	;; Number of `sys_write` system call
+	;; Number of the `sys_write` system call
 	SYS_WRITE equ 1
-	;; Number of `sys_exit` system call
+	;; Number of the `sys_exit` system call
 	SYS_EXIT equ 60
 	;; Number of the standard output file descriptor
 	STD_OUT	equ 1
@@ -22,7 +22,7 @@ section .text
 
 ;; Entry point
 _start:
-	;; Fetch the number of arguments from the stack and store it in the rcx register
+	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
 	;; Check the number of the given command line arguments.
 	cmp rcx, 3
@@ -53,7 +53,7 @@ _start:
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from number to string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result on the screen.
 	jmp int_to_str
 
 ;; Print the error message if not enough command line arguments.
@@ -78,7 +78,7 @@ str_to_int:
 	;; base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Compare the first element in the given string with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
@@ -93,21 +93,21 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat until we do not reach the end of the string.
+	;; Repeat until we reach the end of the string.
 	jmp __repeat
 __return:
 	;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to string and print it on the screen.
+;; Convert the sum to a string and print it on the screen.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
-	;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
-	;; and the remainder will be stored in `rdx` register.
-	div rbx
+        ;; Divide the sum stored in `rax. The resulting quotient will be stored in `rax`,
+	;; and the remainder will be stored in the `rdx` register.
+        div rbx
 	;; Add 48 to the remainder to get a string ASCII representation of the number value.
 	add rdx, 48
 	;; Store the remainder on the stack.
@@ -116,14 +116,14 @@ int_to_str:
 	inc rcx
 	;; Compare the rest of the sum with zero.
 	cmp rax, 0x0
-	;; If it is not zero yet, continue to convert it to string.
+	;; If it is not zero, continue to convert it to string.
 	jne int_to_str
-	;; Otherwise print the result.
+	;; Otherwise, print the result.
 	jmp printResult
 
 ;; Print the result to the standard output.
 printResult:
-	;; Put the number of symbols within the string to the rax register.
+	;; Put the number of string characters to the rax register.
 	mov rax, rcx
 	;; Put the value 8 to the rcx register.
 	mov rcx, 8

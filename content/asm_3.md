@@ -135,7 +135,7 @@ In the previous post, we mentioned that there are other types of registers besid
 
 ## Example
 
-After going through the theory, it’s time to write some code! Let’s explore another example to boost our confidence with assembly programming. In the previous chapter have seen the [assembly program](./asm_2.md#program-example) that calculated the sum of two numbers. The numbers were hard-coded in the program code. Let's try to do something similar but less trivial. This time, we will write a simple program that takes [two command-line arguments](https://en.wikipedia.org/wiki/Command-line_interface#Arguments), calculates their sum, and prints the result.
+After going through the theory, it’s time to write some code! Let’s explore another example to boost our confidence with assembly programming. In the previous chapter, we wrote the [assembly program](./asm_2.md#program-example) that calculated the sum of two numbers that were hard-coded in the program's code. Now, let's do something similar but less trivial. This time, we will write a simple program that takes two [command-line arguments](https://en.wikipedia.org/wiki/Command-line_interface#Arguments), calculates their sum, and prints the result.
 
 > [!NOTE]
 > For simplification, we will skip checking whether the command-line arguments are numeric and won’t handle overflow checks. You can do it as your homework.
@@ -145,9 +145,9 @@ Before diving into details, let's first examine the entire code:
 ```assembly
 ;; Definition of the .data section
 section .data
-	;; Number of `sys_write` system call
+	;; Number of the `sys_write` system call
 	SYS_WRITE equ 1
-	;; Number of `sys_exit` system call
+	;; Number of the `sys_exit` system call
 	SYS_EXIT equ 60
 	;; Number of the standard output file descriptor
 	STD_OUT	equ 1
@@ -167,7 +167,7 @@ section .text
 
 ;; Entry point
 _start:
-	;; Fetch the number of arguments from the stack and store it in the rcx register
+	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
 	;; Check the number of the given command line arguments.
 	cmp rcx, 3
@@ -197,7 +197,7 @@ _start:
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from number to string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result on the screen.
 	jmp int_to_str
 
 ;; Print the error message if not enough command line arguments.
@@ -222,7 +222,7 @@ str_to_int:
 	;; base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Compare the first element in the given string with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
@@ -237,13 +237,13 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat until we do not reach the end of the string.
+	;; Repeat until we reach the end of the string.
 	jmp __repeat
 __return:
 	;; Return from the str_to_int procedure.
 	ret
 
-;; Convert the sum to string and print it on the screen.
+;; Convert the sum to a string and print it on the screen.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	mov rdx, 0
@@ -260,14 +260,14 @@ int_to_str:
 	inc rcx
 	;; Compare the rest of the sum with zero.
 	cmp rax, 0x0
-	;; If it is not zero yet, continue to convert it to string.
+	;; If it is not zero, continue to convert it to string.
 	jne int_to_str
-	;; Otherwise print the result.
+	;; Otherwise, print the result.
 	jmp printResult
 
 ;; Print the result to the standard output.
 printResult:
-	;; Put the number of symbols within the string to the rax register.
+	;; Put the number of string characters to the rax register.
 	mov rax, rcx
 	;; Put the value 8 to the rcx register.
 	mov rcx, 8
@@ -314,9 +314,9 @@ At the beginning of our program, we can see a typical definition of the `.data` 
 
 ```assembly
 section .data
-	;; Number of `sys_write` system call
+	;; Number of the `sys_write` system call
 	SYS_WRITE equ 1
-	;; Number of `sys_exit` system call
+	;; Number of the `sys_exit` system call
 	SYS_EXIT equ 60
 	;; Number of the standard output file descriptor
 	STD_OUT	equ 1
@@ -334,7 +334,7 @@ As we know from the previous posts, the main purpose of the `data` section is to
 
 ### Handling command line arguments
 
-Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. Pointers to the command line arguments are located on the stack. To access them we need to know the offset from the top of the stack. To figure out where the command line arguments of a Linux program located on the stack we need to read the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). Accodring to this document, the initial stack layout of a program immediately after it is launched is as follows:
+Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. Pointers to the command-line arguments are located on the stack. To access them, we need to know the offset from the top of the stack. To learn where the command-line arguments of a Linux program are located on the stack, it's good to read the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). According to this document, the initial stack layout of a program immediately after launch is as follows:
 
 | Purpose                                                                           | Start Address      | Length            |
 |-----------------------------------------------------------------------------------|--------------------|-------------------|
@@ -350,7 +350,7 @@ Before calculating the sum of two numbers from the command-line arguments, we ne
 | Argument count                                                                    | rsp                | eightbyte         |
 | Undefined                                                                         | Low Addresses      |                   |
 
-Accodring to the table above the command line arguments located on the stack like this:
+According to the table above, the command-line arguments are located on the stack like this:
 
 ![asm-3-args-on-stack](./assets/asm-3-args-on-stack.svg)
 
@@ -364,7 +364,7 @@ section .text
 
 ;; Entry point
 _start:
-	;; Fetch the number of arguments from the stack and store it in the rcx register
+	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
 	;; Check the number of the given command line arguments.
 	cmp rcx, 3
@@ -401,13 +401,13 @@ In the next two sections, we will see a detailed explanation of these steps.
 As the command-line arguments of each program are represented as strings, first we need to convert our command-line arguments to numbers to calculate their sum. To convert a given string to a number, we will use a simple algorithm:
 
 1. Create an accumulator to store an intermediate result while converting the string into its numeric representation.
-2. Take the first byte of the string and subtract the value `48` from it. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) symbol with its own code. The symbol 0 has code `48`, the symbol 1 has code `49`, and so on. If we subtract `48` from the ASCII code of the given symbol, we get an integer representation of the current digit from the given string.
+2. Take the first byte of the string and subtract the value `48` from it. Each byte in a string is an [ASCII](https://en.wikipedia.org/wiki/ASCII) character with its own code. The character 0 has code `48`, the character 1 has code `49`, and so on. If we subtract `48` from the ASCII code of the given character, we get an integer representation of the current digit from the given string.
 3. As soon as we know the current digit, we multiply our accumulator from step 1 by 10 and add to it the digit that we got in step 2.
-4. Move to the next symbol in the given string and repeat steps 2 and 3 if it is not the end of the string (`\0` symbol).
+4. Move to the next character in the given string and repeat steps 2 and 3 if it is not the end of the string (`\0` symbol).
 
-Returning to the table from the section above, we may see that pointers to the command line arguments are located on the stack right above the number of command line arguments. So if we fetch the first value from the stack after we already fetched the number of arguments, it will be a pointer to the string which is the first command line argument. If we will pop the next value from the stack, it will be the second command line argument passed to the program.
+Returning to the table from the section above, we can see that pointers to the command-line arguments are located on the stack right above the number of command-line arguments. So, after we pop the number of arguments (ARGC), the stack pointer will point to the address of the first command-line argument (ARGV[0]). If we pop the next value from the stack, it will point to the second command-line argument (ARGV[1]) passed to the program.
 
-Now if we will take a look at the `str_to_int` procedure it should be clear without any additional details:
+Now the `str_to_int` procedure should be more clear:
 
 ```assembly
 	;; Fetch the first command line argument from the stack and store it in the rsi register.
@@ -435,7 +435,7 @@ str_to_int:
 	;; base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Compare the first element in the given string with the NUL terminator (end of string).
+	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
@@ -450,23 +450,23 @@ __repeat:
 	add rax, rbx
 	;; Move to the next character in the command line argument string.
 	inc rsi
-	;; Repeat until we do not reach the end of the string.
+	;; Repeat until we reach the end of the string.
 	jmp __repeat
 __return:
 	;; Return from the str_to_int procedure.
 	ret
 ```
 
-As soon as we converted both command line arguments to integer numbers, we can calculate their sum:
+As soon as we converted both command-line arguments to integer numbers, we can calculate their sum:
 
 ```assembly
 	;; Calculate the sum of the arguments. The result will be stored in the r10 register.
 	add r10, r11
 ```
 
-Since we have our result, we just need to print it. But before printing it we have to convert the numeric result to string. This we will see in the next section.
+Now that we have our result, we just need to print it. But before printing it, we have to convert the numeric result back to a string.
 
-### Converting integer to string
+### Converting an integer to a string
 
 In the end of the previous section we calculated the sum of two numbers and put the result in the `r10` register. The `sys_write` system call can print only string. So we need to convert our numeric sum to string before we can print it. We will achieve this by the `int_to_str` sobroutine:
 
@@ -475,10 +475,10 @@ In the end of the previous section we calculated the sum of two numbers and put 
 	mov rax, r10
 	;; Initialize counter by resetting it to 0. It will store the length of the result string.
 	xor rcx, rcx
-	;; Convert the sum from number to string to print the result on the screen.
+	;; Convert the sum from a number to a string to print the result on the screen.
 	jmp int_to_str
 
-;; Convert the sum to string and print it on the screen.
+;; Convert the sum to a string and print it on the screen.
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	;; The div instruction works as div operand => rdx:rax / operand.
@@ -486,8 +486,8 @@ int_to_str:
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
-	;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
-	;; and the remainder will be stored in `rdx` register.
+    ;; Divide the sum stored in `rax. The resulting quotient will be stored in `rax`,
+	;; and the remainder will be stored in the `rdx` register.
 	div rbx
 	;; Add 48 to the remainder to get a string ASCII representation of the number value.
 	add rdx, 48
@@ -497,9 +497,9 @@ int_to_str:
 	inc rcx
 	;; Compare the rest of the sum with zero.
 	cmp rax, 0x0
-	;; If it is not zero yet, continue to convert it to string.
+	;; If it is not zero, continue to convert it to string.
 	jne int_to_str
-	;; Otherwise print the result.
+	;; Otherwise, print the result.
 	jmp printResult
 ```
 
@@ -512,7 +512,7 @@ As soon as we will collect all the digits of our sum, they will be stored on the
 ```assembly
 ;; Print the result to the standard output.
 printResult:
-	;; Put the number of symbols within the string to the rax register.
+	;; Put the number of string characters to the rax register.
 	mov rax, rcx
 	;; Put the value 8 to the rcx register.
 	mov rcx, 8
