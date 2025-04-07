@@ -585,7 +585,9 @@ Works as expected 🎉🎉🎉
 
 ## Security considerations
 
-As we have seen in this and in the previous posts, the stack is a crucial concept that is used to manage function calls in our programs. Despite we have seen "useful" application of this concept, you should remember about another site - security. One of the most common problems is the stack overflow. Let's take a look at the simple C function (the function is written on C for simplicity):
+As we have seen in this and in the previous posts, the stack is a crucial concept that is used to manage function calls in our programs. Understanding of how the stack memory managed is not only important for writing programs with re-usable functions but also crucial for writing secure programs. The stack often has been a common source of security vulnerabilities, especially in low-level code and assembly routines. When you use `call` and `ret` instructions, the processor doesn’t verify if the return address is valid, but it just simply pops the address and jumps on it. One of the most common problems is the [stack overflow](https://en.wikipedia.org/wiki/Stack_overflow).
+
+Let's take a look at the simple C function (the function is written on C for simplicity):
 
 ```C
 #include <stdio.h>
@@ -623,6 +625,16 @@ The reason for this is that we put on the stack the value which is bigger than o
 - And others...
 
 In any cases, despite all of these techniques may help you to protect your programs from stack related errors, you should be careful, especially with the data that your program receives from outside.
+
+This example might be a little bit artificial as unlikely you are going to use the `gets` function in your code. The [manual page](https://man7.org/linux/man-pages/man3/gets.3.html) of this function says:
+
+> Never use gets().  Because it is impossible to tell without knowing the data in advance how many characters gets() will read, and because gets() will continue to store characters past the end of the buffer, it is extremely dangerous to use.  It has been used to break computer security.  Use fgets() instead.
+
+Moreover this function is deprecated. But despite such artificial example, there can be real danger even if you are not using deprecated functions and use all the options of the compiler that help you to protect your program. 
+
+The real world case when a wrong memory management led to serious consequences is [CVE-2017-1000253](https://nvd.nist.gov/vuln/detail/CVE-2017-1000253). This vulnerability was found in the Linux kernel and led to the [privilege escalation](https://en.wikipedia.org/wiki/Privilege_escalation). When the kernel runs a process, it needs to perform many different operations. One of such operations are to load the program into memory and initialize the stack. The binary itself is loaded and located below the stack memory. Besides that, there is a gap which is 128 megabytes. The loading of a big enough binary led to the situation when certain segments of the binary were loaded and mapped to this gap. The binaries with the big enough data segements (bingger than 128 megabytes) can end up mapped over the stack memory. All of this may lead to the situation when the [ELF .dynamic section](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) is overwritten by the stack. One may put a path to a shared library that will be loaded by the kernel and the code executed with the higher privileges. If you are interested in more details you can read the [report](https://www.qualys.com/2017/09/26/linux-pie-cve-2017-1000253/cve-2017-1000253.txt) and the [fix](https://github.com/torvalds/linux/commit/a87938b2e246b81b4fb713edb371a9fa3c5c3c86).
+
+As we've seen, subtle bugs in stack layout can lead to serious vulnerabilities.
 
 ## Conclusion
 
