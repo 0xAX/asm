@@ -1,7 +1,11 @@
-This is "reverse string" with assembly for Linux x86-64.
+# Reverse string
 
-Build it with: `make`
+This is a simple program that reverses a given input string with assembly for Linux x86-64.
 
-More details at - [Say hello to x64 Assembly [part 4]](https://github.com/0xAX/asm/blob/master/content/asm_4.md)
+To build the program, run:
 
-[@0xAX](https://x.com/0xAX)
+```bash
+make
+```
+
+For more details, read [Part 4. Journey through the stack](https://github.com/0xAX/asm/blob/master/content/asm_4.md).
