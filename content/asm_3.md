@@ -2,7 +2,7 @@
 
 In the [previous post](asm_2.md), we started to learn the basics of the x86_64 architecture. One of the most crucial concepts we learned was the [stack](https://en.wikipedia.org/wiki/Stack-based_memory_allocation). In this chapter, we will explore more examples of stack usage.
 
-Let's start with a quick remainder: the stack is a special memory region that operates on the LIFO (last-in, first-out) principle. In the x86_64 architecture, we have sixteen general-purpose registers for temporary data storage: `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp`, and from `r8` to `r15`. However, for some applications, this might not be enough. One way to overcome this limitation is by using the stack.
+Let's start with a quick reminder: the stack is a special memory region that operates on the LIFO (last-in, first-out) principle. In the x86_64 architecture, we have sixteen general-purpose registers for temporary data storage: `rax`, `rbx`, `rcx`, `rdx`, `rdi`, `rsi`, `rbp`, `rsp`, and from `r8` to `r15`. However, for some applications, this might not be enough. One way to overcome this limitation is by using the stack.
 
 Besides temporary data storage, another crucial use of the stack is the ability to call and return from the [functions](https://en.wikipedia.org/wiki/Function_(computer_programming)). When we call a function, the return address is stored on the stack. Once the function finishes execution, this return address is restored into the `rip` register and the program continues execution from the address following the called function.
 
@@ -155,8 +155,8 @@ section .data
 	EXIT_CODE equ 0
 	;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
-	;; Error message that is printed in a case of not enough command line arguments
-	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
+	;; Error message that is printed in a case of not enough command-line arguments
+	WRONG_ARGC_MSG	db "Error: expected two command-line arguments", 0xa
 	;; Length of the WRONG_ARGC_MSG message
 	WRONG_ARGC_MSG_LEN equ 42
 
@@ -169,24 +169,24 @@ section .text
 _start:
 	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
-	;; Check the number of the given command line arguments.
+	;; Check the number of the given command-line arguments.
 	cmp rcx, 3
 	;; If not enough, jump to the error subroutine.
 	jne argcError
 
-	;; Skip the first command line argument which is usually the program name.
+	;; Skip the first command-line argument which is usually the program name.
 	add rsp, 8
 
-	;; Fetch the first command line argument from the stack and store it in the rsi register.
+	;; Fetch the first command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the first command line argument to an integer number.
+	;; Convert the first command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r10 register.
 	mov r10, rax
 
-	;; Fetch the second command line argument from the stack and store it in the rsi register.
+	;; Fetch the second command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the second command line argument to an integer number.
+	;; Convert the second command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r11 register.
 	mov r11, rax
@@ -200,7 +200,7 @@ _start:
 	;; Convert the sum from a number to a string to print the result to the standard output.
 	jmp int_to_str
 
-;; Print the error message if not enough command line arguments.
+;; Print the error message if not enough command-line arguments.
 argcError:
 	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
@@ -215,18 +215,18 @@ argcError:
 	;; Go to the exit of the program.
 	jmp exit
 
-;; Convert the command line argument to the integer number.
+;; Convert the command-line argument to the integer number.
 str_to_int:
 	;; Set the value of the rax register to 0. It will store the result.
 	xor rax, rax
-	;; base for multiplication
+	;; Base for multiplication
 	mov rcx,  10
 __repeat:
 	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
-	;; Move the current character from the command line argument to the bl register.
+	;; Move the current character from the command-line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
 	;; This will give us the numeric value of the character.
@@ -235,7 +235,7 @@ __repeat:
 	mul rcx
 	;; Add the next digit to our result number.
 	add rax, rbx
-	;; Move to the next character in the command line argument string.
+	;; Move to the next character in the command-line argument string.
 	inc rsi
 	;; Repeat until we reach the end of the string.
 	jmp __repeat
@@ -250,11 +250,11 @@ int_to_str:
 	;; Set the divisor to 10.
 	mov rbx, 10
 	;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
-	;; and the remainder will be stored in `rdx` register.
+	;; and the reminder will be stored in `rdx` register.
 	div rbx
-	;; Add 48 to the remainder to get a string ASCII representation of the number value.
+	;; Add 48 to the reminder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store the remainder on the stack.
+	;; Store the reminder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -324,15 +324,15 @@ section .data
 	EXIT_CODE equ 0
 	;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
-	;; Error message that is printed in a case of not enough command line arguments
-	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
+	;; Error message that is printed in a case of not enough command-line arguments
+	WRONG_ARGC_MSG	db "Error: expected two command-line argument", 0xa
 	;; Length of the WRONG_ARGC_MSG message
 	WRONG_ARGC_MSG_LEN equ 42
 ```
 
 As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is no exception. Here, we define the system call number variables, string error messages, and more. This code sample contains comments with descriptions, so everything should generally be clear. If something is unclear, it’s a good idea to revisit the previous posts for clarification before you proceed with the rest of the explanation.
 
-### Handling command line arguments
+### Handling command-line arguments
 
 Before calculating the sum of two numbers from the command-line arguments, we need to understand how to handle command-line arguments in our programs. Pointers to the command-line arguments are located on the stack. To access them, we need to know the offset from the top of the stack. To learn where the command-line arguments of a Linux program are located on the stack, it's good to read the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). According to this document, the initial stack layout of a program immediately after launch is as follows:
 
@@ -354,7 +354,7 @@ According to the table above, the command-line arguments are located on the stac
 
 ![asm-3-args-on-stack](./assets/asm-3-args-on-stack.svg)
 
-As we can see, the number of command-line arguments passed to the program is stored at the top of the stack, with the `rsp` register pointing to it. Fetching this value from the stack gives us the number of arguments. Additionally, we already know the `cmp` instruction, which allows us to compare two values. Using this knowledge, we can perform the first check in our program — verifying that the program got two arguments from the command line or printing an error message otherwise:
+As we can see, the number of command-line arguments passed to the program is stored at the top of the stack, with the `rsp` register pointing to it. Fetching this value from the stack gives us the number of arguments. Additionally, we already know the `cmp` instruction, which allows us to compare two values. Using this knowledge, we can perform the first check in our program — verifying that the program got two arguments from the command-line or printing an error message otherwise:
 
 ```assembly
 ;; Definition of the .text section
@@ -366,12 +366,12 @@ section .text
 _start:
 	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
-	;; Check the number of the given command line arguments.
+	;; Check the number of the given command-line arguments.
 	cmp rcx, 3
 	;; If not enough, jump to the error subroutine.
 	jne argcError
 
-;; Print the error message if not enough command line arguments.
+;; Print the error message if not enough command-line arguments.
 argcError:
 	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
@@ -387,12 +387,12 @@ argcError:
 	jmp exit
 ```
 
-Note that although we expect to get two command-line arguments, we are comparing the actual number with `3`. This is because the first implicit argument for every program is its name.
+Note that although we expect two command-line arguments, we compare the actual number with `3`. This is because the first implicit argument for every program is its name.
 
 After making sure that the required number of command-line arguments are passed to our program, we can start working with them. But what do we need to do? Here are the steps:
 
-1. Convert the given command line arguments to integer numbers and calculate the sum of the given numbers.
-2. Convert the result back to string and print it to the standard output.
+1. Convert the given command-line arguments to integer numbers and calculate their sum.
+2. Convert the result back to a string and print it to the standard output.
 
 In the next two sections, we will see a detailed explanation of these steps.
 
@@ -410,16 +410,16 @@ Returning to the table from the section above, we can see that pointers to the c
 Now the `str_to_int` procedure should be more clear:
 
 ```assembly
-	;; Fetch the first command line argument from the stack and store it in the rsi register.
+	;; Fetch the first command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the first command line argument to an integer number.
+	;; Convert the first command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r10 register.
 	mov r10, rax
 
-	;; Fetch the second command line argument from the stack and store it in the rsi register.
+	;; Fetch the second command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the second command line argument to an integer number.
+	;; Convert the second command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r11 register.
 	mov r11, rax
@@ -428,18 +428,18 @@ Now the `str_to_int` procedure should be more clear:
 	...
 	...
 
-;; Convert the command line argument to the integer number.
+;; Convert the command-line argument to the integer number.
 str_to_int:
 	;; Set the value of the rax register to 0. It will store the result.
 	xor rax, rax
-	;; base for multiplication
+	;; Base for multiplication
 	mov rcx,  10
 __repeat:
 	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
-	;; Move the current character from the command line argument to the bl register.
+	;; Move the current character from the command-line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
 	;; This will give us the numeric value of the character.
@@ -448,7 +448,7 @@ __repeat:
 	mul rcx
 	;; Add the next digit to our result number.
 	add rax, rbx
-	;; Move to the next character in the command line argument string.
+	;; Move to the next character in the command-line argument string.
 	inc rsi
 	;; Repeat until we reach the end of the string.
 	jmp __repeat
@@ -482,16 +482,16 @@ In the previous section, we calculated the sum of two numbers and put the result
 int_to_str:
 	;; High part of the dividend. The low part is in the rax register.
 	;; The div instruction works as div operand => rdx:rax / operand.
-	;; The remainder is stored in rdx and the quotient in rax.
+	;; The reminder is stored in rdx and the quotient in rax.
 	mov rdx, 0
 	;; Set the divisor to 10.
 	mov rbx, 10
     ;; Divide the sum stored in `rax. The resulting quotient will be stored in `rax`,
-	;; and the remainder will be stored in the `rdx` register.
+	;; and the reminder will be stored in the `rdx` register.
 	div rbx
-	;; Add 48 to the remainder to get a string ASCII representation of the number value.
+	;; Add 48 to the reminder to get a string ASCII representation of the number value.
 	add rdx, 48
-	;; Store the remainder on the stack.
+	;; Store the reminder on the stack.
 	push rdx
 	;; Increase the counter.
 	inc rcx
@@ -573,9 +573,9 @@ Then, try to run it:
 
 ```bash
 $  ./stack
-Error: expected two command line argument
+Error: expected two command-line argument
 $ ./stack 5
-Error: expected two command line argument
+Error: expected two command-line argument
 $ ./stack 5 10
 15
 ```
@@ -585,7 +585,7 @@ Works as expected 🎉🎉🎉
 
 ## Security considerations
 
-As seen in this and the previous posts, the stack is a crucial concept used to manage function calls in our programs. Understanding how the stack memory is managed is important for writing programs with reusable functions and crucial for writing secure programs. The stack is a common source of security vulnerabilities, especially in low-level code and assembly routines. When you use `call` and `ret` instructions, the processor doesn’t verify if the return address is valid, but it just simply pops the address and jumps on it. One of the most common problems is the [stack overflow](https://en.wikipedia.org/wiki/Stack_overflow).
+As seen in this and the previous posts, the stack is a crucial concept used to manage function calls in our programs. Understanding how the stack memory is managed is important for writing programs with reusable functions and crucial for writing secure programs. The stack is a common source of security vulnerabilities, especially in low-level code and assembly routines. When you use `call` and `ret` instructions, the processor doesn’t verify if the return address is valid, but it simply pops the address and jumps on it. One of the most common problems is the [stack overflow](https://en.wikipedia.org/wiki/Stack_overflow).
 
 Let's take a look at the simple C function:
 
@@ -629,8 +629,6 @@ Despite all of these techniques may help you to protect your programs from stack
 This example might be a little bit artificial as unlikely you are going to use the `gets` function in your code. The [manual page](https://man7.org/linux/man-pages/man3/gets.3.html) of this function says:
 
 > Never use gets().  Because it is impossible to tell without knowing the data in advance how many characters gets() will read, and because gets() will continue to store characters past the end of the buffer, it is extremely dangerous to use.  It has been used to break computer security.  Use fgets() instead.
-
-This example might seem a bit artificial as unlikely you are going to use the deprecated `gets` function. However, even with such an unrealistic example, real risks still exist — even if you avoid deprecated functions and use all the compiler’s safety features to protect your program.
 
 The real-world case when wrong memory management led to serious consequences is [CVE-2017-1000253](https://nvd.nist.gov/vuln/detail/CVE-2017-1000253). This vulnerability was found in the Linux kernel and led to the [privilege escalation](https://en.wikipedia.org/wiki/Privilege_escalation). When the kernel runs a process, it needs to perform many different operations, such as loading the program into memory and initializing the stack. After the program is loaded and stack initialized, the program is located below the stack memory, with a 128-megabyte gap between them. However, when a large program is loaded, it can overwrite the stack memory. Under certain conditions, it may lead to privilege escalation. If you are interested in more details, you can read the [report](https://www.qualys.com/2017/09/26/linux-pie-cve-2017-1000253/cve-2017-1000253.txt) and the [fix](https://github.com/torvalds/linux/commit/a87938b2e246b81b4fb713edb371a9fa3c5c3c86).
 

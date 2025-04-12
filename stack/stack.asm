@@ -10,8 +10,8 @@ section .data
 	EXIT_CODE equ 0
 	;; ASCII code of the new line symbol ('\n')
 	NEW_LINE db 0xa
-	;; Error message that is printed in a case of not enough command line arguments
-	WRONG_ARGC_MSG	db "Error: expected two command line argument", 0xa
+	;; Error message that is printed in a case of not enough command-line arguments
+	WRONG_ARGC_MSG	db "Error: expected two command-line arguments", 0xa
 	;; Length of the WRONG_ARGC_MSG message
 	WRONG_ARGC_MSG_LEN equ 42
 
@@ -24,24 +24,24 @@ section .text
 _start:
 	;; Fetch the number of arguments from the stack and store it in the rcx register.
 	pop rcx
-	;; Check the number of the given command line arguments.
+	;; Check the number of the given command-line arguments.
 	cmp rcx, 3
 	;; If not enough, jump to the error subroutine.
 	jne argcError
 
-	;; Skip the first command line argument which is usually the program name.
+	;; Skip the first command-line argument which is usually the program name.
 	add rsp, 8
 
-	;; Fetch the first command line argument from the stack and store it in the rsi register.
+	;; Fetch the first command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the first command line argument to an integer number.
+	;; Convert the first command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r10 register.
 	mov r10, rax
 
-	;; Fetch the second command line argument from the stack and store it in the rsi register.
+	;; Fetch the second command-line argument from the stack and store it in the rsi register.
 	pop rsi
-	;; Convert the second command line argument to an integer number.
+	;; Convert the second command-line argument to an integer number.
 	call str_to_int
 	;; Store the result in the r11 register.
 	mov r11, rax
@@ -56,7 +56,7 @@ _start:
 	;; Convert the sum from a number to a string to print the result to the standard output.
 	jmp int_to_str
 
-;; Print the error message if not enough command line arguments.
+;; Print the error message if not enough command-line arguments.
 argcError:
 	;; Specify the system call number (1 is `sys_write`).
 	mov rax, SYS_WRITE
@@ -71,18 +71,18 @@ argcError:
 	;; Go to the exit of the program.
 	jmp exit
 
-;; Convert the command line argument to the integer number.
+;; Convert the command-line argument to the integer number.
 str_to_int:
 	;; Set the value of the rax register to 0. It will store the result.
 	xor rax, rax
-	;; base for multiplication
+	;; Base for multiplication
 	mov rcx,  10
 __repeat:
 	;; Compare the first element in the given string with the NUL terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
-	;; Move the current character from the command line argument to the bl register.
+	;; Move the current character from the command-line argument to the bl register.
 	mov bl, [rsi]
 	;; Subtract the value 48 from the ASCII code of the current character.
 	;; This will give us the numeric value of the character.
@@ -91,7 +91,7 @@ __repeat:
 	mul rcx
 	;; Add the next digit to our result number.
 	add rax, rbx
-	;; Move to the next character in the command line argument string.
+	;; Move to the next character in the command-line argument string.
 	inc rsi
 	;; Repeat until we reach the end of the string.
 	jmp __repeat
