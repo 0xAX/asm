@@ -626,9 +626,7 @@ The reason for this error is that we put on the stack a value bigger than our 8-
 
 Despite all of these techniques may help you to protect your programs from stack-related errors, you should be careful, especially with the external data that your program receives.
 
-This example might be a little bit artificial as unlikely you are going to use the `gets` function in your code. The [manual page](https://man7.org/linux/man-pages/man3/gets.3.html) of this function says:
-
-> Never use gets().  Because it is impossible to tell without knowing the data in advance how many characters gets() will read, and because gets() will continue to store characters past the end of the buffer, it is extremely dangerous to use.  It has been used to break computer security.  Use fgets() instead.
+The C function example above might seem a bit artificial as unlikely you are going to use the [deprecated](https://man7.org/linux/man-pages/man3/gets.3.html) gets function. However, even with such an unrealistic example, real risks still exist — even if you avoid deprecated functions and use all the compiler’s safety features to protect your program.
 
 The real-world case when wrong memory management led to serious consequences is [CVE-2017-1000253](https://nvd.nist.gov/vuln/detail/CVE-2017-1000253). This vulnerability was found in the Linux kernel and led to the [privilege escalation](https://en.wikipedia.org/wiki/Privilege_escalation). When the kernel runs a process, it needs to perform many different operations, such as loading the program into memory and initializing the stack. After the program is loaded and stack initialized, the program is located below the stack memory, with a 128-megabyte gap between them. However, when a large program is loaded, it can overwrite the stack memory. Under certain conditions, it may lead to privilege escalation. If you are interested in more details, you can read the [report](https://www.qualys.com/2017/09/26/linux-pie-cve-2017-1000253/cve-2017-1000253.txt) and the [fix](https://github.com/torvalds/linux/commit/a87938b2e246b81b4fb713edb371a9fa3c5c3c86).
 
