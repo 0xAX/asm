@@ -1,51 +1,57 @@
 # Data manipulation
 
-Building simple examples in the previous chapters, we have understood that a basic assembly program consists basically from two things:
+In the previous chapters, we built a few simple examples and figured out that a basic assembly program consists of just two main things:
 
 - Instructions
 - Operands
 
-We know that there many types of instructions:
+We also learned that there are different types of instructions, like:
 
 - Data transfer instructions
 - Binary arithmetic instructions
 - Logical instructions
 - Control transfer instruction
 - String instructions
-- Other instructions like I/O instructions, flag control instructions, bits instructions.
+- And others, like I/O, flag control, and bit manipulation instructions
 
-Some of them we have seen in the previous chapters already. In this chapter we will learn more details about them.
+We’ve already seen some of them in action, but in this chapter, we’re going to dive a little deeper into how they work — especially when it comes to working with data.
 
 ## Data transfer instructions
 
-As you may guess based on the name, the data transfer instructions used to move data between memory and general-purpose registers. One of the most used and well know to us instruction is `mov`. We use it to move data between general-purpose registers, to move an immediate value to a general-purpose register, and to move data between memory and general purpose registers. The first two cases are simple. We just specify two general purpose registers which we want to use to move data. For example to copy value of the `rcx` register to `rax` we can with:
+Data transfer instructions are used to move data between memory and general-purpose registers. One of the most commonly used and familiar instructions is `mov`. We use it to:
+
+- Move data between general-purpose registers
+- Move an immediate value to a general-purpose register
+- Move data between memory and general-purpose registers
+
+The first two cases are simple. We just specify two general-purpose registers we want to use to move data. For example, to copy the value of the `rcx` register into `rax`, we can use:
 
 ```assembly
 mov rax, rcx
 ```
 
-Or to put value `5` to the `rax` register:
+To put value `5` into the `rax` register, we use:
 
 ```assembly
 mov rax, 5
 ```
 
-To move data between general-purpose registers and memory we should use special syntax using square brackets. For example to put the value of the `rax` register into memory address specified by the `rcx` register:
+To move data between general-purpose registers and memory, we should use a special syntax with square brackets. For example, to store the value of the `rax` register into the memory address specified by the `rcx` register:
 
 ```assembly
 mov [rcx], rax
 ```
 
-In addition there are extended instructions that can be useful when you need to smaller values into larger registers. These instructions are `movsx` and `movzx`. The purpose of these instructions should be clear if you ask yourself a question - when I move an 8-bit or 16-bit value into a 32- or 64-bit register, what should happen to the unused upper bits? The `movzx` instruction fills upper bits with `0` and the `movsx` instruction copies the sign bit to upper bits.
+In addition, extended instructions can be useful when you need to move smaller values into larger registers. These instructions are `movsx` and `movzx`. The purpose of these instructions should be clear if you ask yourself a question: when I move an 8-bit or 16-bit value into a 32- or 64-bit register, what should happen to the unused upper bits? The `movzx` instruction fills the upper bits with `0`, and the `movsx` instruction copies the sign bit to the upper bits.
 
 Besides these instructions to move data from one place to another, there are conditional move instructions:
 
-- `cmove` and `cmovne` - Move if the previous comparison operation found that operands are equal (or not).
-- `cmovz` and `cmovnz` - Move if the previous comparison operation found that result is zero (or not).
-- `cmovc` and `cmovnc` - Move if the previous comparison operation set (or not) the [carry flag](https://en.wikipedia.org/wiki/Carry_flag).
-- And other instructions. If you want to have more information about them, you can find them in the [5.1.1 Data Transfer Instructions chapter of Intel manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
+- `cmove` and `cmovne` - Move if the previous comparison operation found that the operands are equal (or not).
+- `cmovz` and `cmovnz` - Move if the previous comparison operation found that the result is zero (or not).
+- `cmovc` and `cmovnc` - Move if the previous comparison operation set the [carry flag](https://en.wikipedia.org/wiki/Carry_flag) (or not).
+- For more information about these and other instructions, read the [5.1.1 Data Transfer Instructions chapter of the Intel manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
 
-For example, the following code will move the value of the `rdx` to the `rax` if the are not equal:
+For example, the following code moves the value of the `rdx` register to `rax` if they are not equal:
 
 ```assembly
 cmp rax, rdx
@@ -54,23 +60,23 @@ cmovne rax, rdx
 
 ## Binary arithmetic instructions
 
-We use the decimal arithmetic instructions to operate with integer numbers. We already have seen these instructions in one of the previous chapters:
+We use the decimal arithmetic instructions to operate with integer numbers. We have already seen these instructions in one of the previous chapters:
 
-- `add`  - Addition. Add the value of the second operand to the first and store the result in the first operand.
-- `sub`  - Subtraction. Subtract the value of the second operand from the first and store the result in the first operand.
-- `mul` and `imul`  - Unsigned and signed multiplication. Both instructions takes a single operand. The value of this operand is multiplied to the value of the `rax` register and the result is stored in the pair of the `rax` and `rdx` registers. The multiplication of two `n` bit numbers may lead to the `2 * n` result. That is the reason why the result is stored in the `rdx:rax` pair.
-- `div` and `idiv`  - Unsigned and signed division. Both instructions takes a single operand. The value of this operand is divided on the value of the `rax` register. The place where the result is stored depends on the size of operands. In a case of 8-bit operands, the result is stored in the `al:ah` pair. In a case of `16-bit` operands the result is stored in the `dx:ax` pair, for `32-bit` operands the result is stored in the `edx:eax`, and in the case of `64` bit operands the result is stored in the `rdx:rax` pair.
-- `inc`  - Increment the value of the first operand.
-- `dec`  - Decrement the value of the first operand.
-- `neg`  - Negate the value of the first operand.
+- `add`  - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
+- `sub`  - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
+- `mul` and `imul`  - Unsigned and signed multiplication. Both instructions take a single operand. The value of this operand is multiplied by the value of the `rax` register, and the result is stored in the `rax` and `rdx` registers. The multiplication of two `n` bit numbers may lead to the `2 * n` result. This is why the result is stored in the `rdx:rax` pair.
+- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of `16-bit` operands, the result is stored in the `dx:ax` pair. For `32-bit` operands, the result is stored in the `edx:eax`, and in the case of `64-bit` operands, the result is stored in the `rdx:rax` pair.
+- `inc`  - Increments the value of the first operand.
+- `dec`  - Decrements the value of the first operand.
+- `neg`  - Negates the value of the first operand.
 
 For example:
 
 ```assembly
-;; Increment the value of the rcx
+;; Increment the value of the rcx register
 inc rcx
 
-;; Add the value of the rcx to rdx
+;; Add the value of rcx to rdx
 add rdx, rcx
 ```
 
@@ -78,18 +84,20 @@ add rdx, rcx
 
 The logical instructions are used to execute [logical operations](https://en.wikipedia.org/wiki/Boolean_algebra#Operations):
 
-- `and` - Logical *and*. The instruction takes two operands and performs the logical *and* operation on them. The result is stored in the first operand.
-- `or` - Logical *or*. The instruction takes two operands and performs the logical *or* operation on them. The result is stored in the first operand.
-- `xor` - Logical *xor*. The instruction takes two operands and performs the logical *xor* operation on them. The result is stored in the first operand.
-- `not` - Logical *not*. The instruction takes two operands and performs the logical *not* operation on them. The result is stored in the first operand.
+- `and` - The instruction takes two operands and performs the logical *and* operation on them.
+- `or` - The instruction takes two operands and performs the logical *or* operation on them.
+- `xor` - The instruction takes two operands and performs the logical *xor* operation on them.
+- `not` - The instruction takes two operands and performs the logical *not* operation on them.
+
+The result is stored in the first operand.
 
 For example:
 
 ```assembly
-;; If rax = 1 and rbx = 0, rax will store 0
+;; If rax = 1 and rbx = 0, rax stores 0
 and rax, rbx
 
-;; If rax = 1 and rbx = 0, rax will store 1
+;; If rax = 1 and rbx = 0, rax stores 1
 or rax, rbx
 ```
 
