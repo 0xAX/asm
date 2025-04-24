@@ -70,23 +70,17 @@ A computer operates with bytes of data. The bytes can be stored in memory in dif
 - `big`
 - `little`
 
-We can imagine memory as one large array of bytes, where each byte has its own unique address. For example, let's say we have the following four bytes in memory: `AA 56 AB FF`. In the `little-endian` order, the least significant byte is stored at the smallest memory address:
+We can imagine memory as one large array of bytes, where each byte has its own unique address. For example, let's say we have the following four bytes in memory: `0A 0B 0C 0D`. In the `little-endian` order, the least significant byte is stored at the smallest memory address:
 
-| Address            | Byte |
-|--------------------|------|
-| 0x0000000000000000 | 0xFF |
-| 0x0000000000000001 | 0xAB |
-| 0x0000000000000002 | 0x56 |
-| 0x0000000000000003 | 0xAA |
+| Memory address |   7   |   6   |   5   |   4   |   3   |   2   |   1   |   0   |
+|----------------|-------|-------|-------|-------|-------|-------|-------|-------|
+| Bytes          |  0x00 |  0x00 |  0x00 |  0x00 |  0x0A |  0x0B |  0x0C |  0x0D |
 
 In the case of the `big-endian` order, the bytes are stored in the opposite order, so the most significant byte is stored at the smallest memory address:
 
-| Address            | Byte |
-|--------------------|------|
-| 0x0000000000000000 | 0xAA |
-| 0x0000000000000001 | 0x56 |
-| 0x0000000000000002 | 0xAB |
-| 0x0000000000000003 | 0xFF |
+| Memory address |   7   |   6   |   5   |   4   |   3   |   2   |   1   |   0   |
+|----------------|-------|-------|-------|-------|-------|-------|-------|-------|
+| Bytes          |  0x00 |  0x00 |  0x00 |  0x00 |  0x0D |  0x0C |  0x0B |  0x0A |
 
 ### System calls
 
