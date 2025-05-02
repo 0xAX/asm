@@ -36,7 +36,7 @@ To put value `5` into the `rax` register, we use:
 mov rax, 5
 ```
 
-To move data between general-purpose registers and memory, we should use a special syntax with square brackets. For example, to store the value of the `rax` register into the memory address specified by the `rcx` register:
+To move data between general-purpose registers and memory, we should use a special syntax with square brackets. For example, to store the value of the `rax` register into the memory address specified by the `rcx` register, use:
 
 ```assembly
 mov [rcx], rax
@@ -49,7 +49,8 @@ Besides these instructions to move data from one place to another, there are con
 - `cmove` and `cmovne` - Move if the previous comparison operation found that the operands are equal (or not).
 - `cmovz` and `cmovnz` - Move if the previous comparison operation found that the result is zero (or not).
 - `cmovc` and `cmovnc` - Move if the previous comparison operation set the [carry flag](https://en.wikipedia.org/wiki/Carry_flag) (or not).
-- For more information about these and other instructions, read the [5.1.1 Data Transfer Instructions chapter of the Intel manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
+
+For more information about these and other instructions, read the [5.1.1 Data Transfer Instructions chapter of the Intel manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
 
 For example, the following code moves the value of the `rdx` register to `rax` if they are not equal:
 
@@ -64,7 +65,7 @@ We use the decimal arithmetic instructions to operate with integer numbers. We h
 
 - `add`  - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
 - `sub`  - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
-- `mul` and `imul`  - Unsigned and signed multiplication. Both instructions take a single operand. The value of this operand is multiplied by the value of the `rax` register, and the result is stored in the `rax` and `rdx` registers. The multiplication of two `n` bit numbers may lead to the `2 * n` result. This is why the result is stored in the `rdx:rax` pair.
+- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
 - `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of `16-bit` operands, the result is stored in the `dx:ax` pair. For `32-bit` operands, the result is stored in the `edx:eax`, and in the case of `64-bit` operands, the result is stored in the `rdx:rax` pair.
 - `inc`  - Increments the value of the first operand.
 - `dec`  - Decrements the value of the first operand.
@@ -103,20 +104,20 @@ or rax, rbx
 
 ## Control transfer instruction
 
-We have seen already these instructions in the previous chapters. Usually a program is executed by CPU sequentially instruction by instruction. We use these when we need to change the flow of our program. These instructions closely bound to the `cmp` instruction. This instruction takes two operands and compares them. Based on the comparison result one of the special CPU `rflags` register is set. One of the most common flag bits are:
+We have already seen control transfer instructions in the previous chapters. Normally, the CPU runs a program sequentially, executing instructions one after another. But when we need to change the flow of our program, that’s when control transfer instructions come into play. These instructions are closely bound to the `cmp` instruction, which takes two operands and compares them. Based on the comparison result, one of the special CPU `rflags` registers is set. One of the most common flag bits are:
 
-- `zf` - [zero flag](https://en.wikipedia.org/wiki/Zero_flag). Set if the operands of the `cmp` instruction are equal to each other.
-- `cf` - [carry flag](https://en.wikipedia.org/wiki/Carry_flag). Set if the result of an arithmetic instruction is too big for the place where it is going to be stored.
+- `zf` - [zero flag](https://en.wikipedia.org/wiki/Zero_flag). Set if the operands of the `cmp` instruction are equal.
+- `cf` - [carry flag](https://en.wikipedia.org/wiki/Carry_flag). Set if the result of an arithmetic instruction is too big to fit the register where it will be stored.
 - `sf` - [sign flag](https://en.wikipedia.org/wiki/Negative_flag). Set if the result of an arithmetic instruction produced a value in which the most significant bit is set.
 - `df` - [direction flag](https://en.wikipedia.org/wiki/Direction_flag) - Set if the strings are processed from highest to lowest address.
 
 The most common control transfer instructions are:
 
-- `jmp` - Jump on the given address of a program.
-- `je` and `jne` - Jump if the previous comparison operation showed that operands are equal or not.
-- `jz` and `jnz` - Jump if the previous comparison operation set zero flag to `1` or `0`.
-- `jg` and `jl` - Jump if the previous comparison operation resulted that one operand is greater or smaller than another.
-- `jge` and `jle` - Jump if the previous comparison operation resulted that one operand is greater (or equal) or smaller (or equal) than another.
+- `jmp` - Jump to the specified address of a program.
+- `je` and `jne` - Jump if the previous comparison operation showed that the operands are equal (or not).
+- `jz` and `jnz` - Jump if the previous comparison operation set the zero flag to `1` or `0`.
+- `jg` and `jl` - Jump if the previous comparison operation resulted in one operand being greater or smaller than another.
+- `jge` and `jle` - Jump if the previous comparison operation resulted in one operand being greater (or equal) or smaller (or equal) than another.
 
 For example:
 
@@ -129,16 +130,16 @@ jne label_if_not_equal
 
 ## String instructions
 
-There is no such data type as a string but nothing stops us to put string-like data into memory and operate on it. `x86_64` CPU provides special instructions to manipulate with such data. Some of these instructions are:
+Although there is no dedicated data type for strings in assembly, nothing prevents us from storing string-like data in memory and working with it. The `x86_64` CPU architecture provides special instructions designed to operate on such data. Some of these instructions include:
 
-- `movs(b|w|d|q)` - moves copy a byte, word, doubleword, or quadword (depends on the instruction's postfix) from the source to destination. The source string is pointed by the `rsi` registers and the destination string is pointed by the `rdi` registers.
-- `cmps(b|w|d|q)` - compares values of the two memory locations pointed by the `rsi` and `rdi` registers.
+- `movs(b|w|d|q)` - moves a byte, word, doubleword, or quadword (depends on the instruction's postfix) from the source to the destination. The `rsi` registers point to the source string, and the `rdi` registers point to the destination string.
+- `cmps(b|w|d|q)` - compares values of two memory locations pointed by the `rsi` and `rdi` registers.
 - `scas` - compares a value from a general-purpose register with the value located in the memory address pointed by the `rdi` register.
 - `lods` - loads a value pointed by the `rsi` register to a general-purpose register.
-- `stos` - stores a value from a general-purpose register into memory location pointed by the `rdi` register and increments the memory address located there.
-- `rep` - repeats one of the instruction above while the value of the `rcx` register is not `0`.
+- `stos` - stores a value from a general-purpose register into the memory location pointed by the `rdi` register and increments the memory address located there.
+- `rep` - repeats one of the instructions above while the value of the `rcx` register is not `0`.
 
-The example of the usage of these instructions we will see in the next section.
+We will see an example of how to use these instructions in the next section.
 
 ## Example
 
