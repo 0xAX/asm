@@ -24,7 +24,7 @@ Here are links to each post:
   * [Part 1. Introduction](https://github.com/0xAX/asm/blob/master/content/asm_1.md)
   * [Part 2. The `x86_64` concepts](https://github.com/0xAX/asm/blob/master/content/asm_2.md)
   * [Part 3. Journey through the stack](https://github.com/0xAX/asm/blob/master/content/asm_3.md)
-  * [Say hello to x86_64 Assembly part 4](https://github.com/0xAX/asm/blob/master/content/asm_4.md)
+  * [Part 4. Data manipulation](https://github.com/0xAX/asm/blob/master/content/asm_4.md)
   * [Say hello to x86_64 Assembly part 5](https://github.com/0xAX/asm/blob/master/content/asm_5.md)
   * [Say hello to x86_64 Assembly part 6](https://github.com/0xAX/asm/blob/master/content/asm_6.md)
   * [Say hello to x86_64 Assembly part 7](https://github.com/0xAX/asm/blob/master/content/asm_7.md)
