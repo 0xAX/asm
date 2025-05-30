@@ -8,7 +8,7 @@ section .data
         STD_OUT equ 1
         ;; Exit code from the program. The 0 status code is a success.
         EXIT_CODE equ 0
-        ;; Length of the string with only new line symbol.
+        ;; Length of the string that contains only the new line symbol.
         NEW_LINE_LEN equ 1
 
         ;; ASCII code of the new line symbol ('\n').
@@ -28,14 +28,12 @@ section .text
 
 ;; Entry point of the program.
 _start:
-        ;; Set rcx value to 0. It will be used as a storage for the input string length.
+        ;; Set the rcx value to 0. It will be used as a storage for the input string length.
         xor rcx, rcx
         ;; Store the address of the input string in the rsi register.
         mov rsi, INPUT
         ;; Store the address of the output buffer in the rdi register.
         mov  rdi, OUTPUT
-        ;; Clear direction flag. To handle string from left to right.
-        cld
         ;; Call the reverseStringAndPrint procedure.
         call reverseStringAndPrint
 
@@ -51,7 +49,7 @@ reverseStringAndPrint:
         push rax
         ;; Increase the counter that stores the length of our input string.
         inc rcx
-        ;; Continue to go over the input string if we did not reach end of if.
+        ;; Continue to go over the input string if we did not reach its end.
         jmp reverseStringAndPrint
 
 ;; Reverse the string and store it in the output buffer.
@@ -73,7 +71,7 @@ reverseString:
 
 ;; Print the reversed string to the standard output.
 printResult:
-        ;; Set the the length of the result string to print.
+        ;; Set the length of the result string to print.
         mov rdx, rdi
         ;; Specify the system call number (1 is `sys_write`).
         mov rax, SYS_WRITE
@@ -84,7 +82,7 @@ printResult:
         ;; Call the `sys_write` system call.
         syscall
 
-        ;; Set the the length of the result string to print.
+        ;; Set the length of the result string to print.
         mov rdx, NEW_LINE_LEN
         ;; Specify the system call number (1 is `sys_write`).
         mov rax, SYS_WRITE
