@@ -42,7 +42,7 @@ To move data between general-purpose registers and memory, we should use a speci
 mov [rcx], rax
 ```
 
-In addition, extended instructions can be useful when you need to move smaller values into larger registers. These instructions are `movsx` and `movzx`. The purpose of these instructions should be clear if you ask yourself a question: when I move an 8-bit or 16-bit value into a 32-bit or 64-bit register, what should happen to the unused upper bits? The `movzx` instruction fills the upper bits with `0`. The `movsx` instruction copies the [sign bit](https://en.wikipedia.org/wiki/Sign_bit) to the upper bits. In a case of the `movsx` instruction it means that if we move an integer number from a smaller register to a bigger, the upper bits of the bigger register will be filled with `0` if the number was positive and with `1` if negative.
+In addition, extended instructions can be useful when you need to move smaller values into larger registers. These instructions are `movsx` and `movzx`. The purpose of these instructions should be clear if you ask yourself a question: when I move an 8-bit or 16-bit value into a 32-bit or 64-bit register, what should happen to the unused upper bits? The `movzx` instruction fills the upper bits with `0`. The `movsx` instruction copies the [sign bit](https://en.wikipedia.org/wiki/Sign_bit) to the upper bits. In the case of the `movsx` instruction, when moving an integer number from a smaller register to a bigger one, the upper bits of the bigger register are filled with `0` if the number is positive, and with `1` if the number is negative.
 
 Besides these instructions to move data from one place to another, there are conditional move instructions:
 
@@ -213,7 +213,7 @@ reverseStringAndPrint:
         cmp byte [rsi], 0
         ;; If we reached the end of the input string, reverse it.
         je reverseString
-        ;; Load byte from the rsi to al register and move pointer to the next character in the string.
+        ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
         lodsb
         ;; Save the character of the input string on the stack.
         push rax

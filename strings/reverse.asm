@@ -43,7 +43,7 @@ reverseStringAndPrint:
         cmp byte [rsi], 0
         ;; If we reached the end of the input string, reverse it.
         je reverseString
-        ;; Load byte from the rsi to al register and move pointer to the next character in the string.
+        ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
         lodsb
         ;; Save the character of the input string on the stack.
         push rax
@@ -66,7 +66,7 @@ reverseString:
         inc rdi
         ;; Decrease the counter of the length of the string.
         dec rcx
-        ;; Move to the next character while we did not reach the end of the string.
+        ;; Move to the next character until we reach the end of the string.
         jmp reverseString
 
 ;; Print the reversed string to the standard output.
