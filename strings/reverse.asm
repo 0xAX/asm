@@ -1,123 +1,101 @@
-;;
-;; initialized data
-;;
+;; Definition of the .data section
 section .data
-	SYS_WRITE	equ 1
-	STD_OUT		equ 1
-	SYS_EXIT	equ 60
-	EXIT_CODE	equ 0
+        ;; Number of the `sys_write` system call.
+        SYS_WRITE equ 1
+        ;; Number of the `sys_exit` system call.
+        SYS_EXIT equ 60
+        ;; Number of the standard output file descriptor.
+        STD_OUT equ 1
+        ;; Exit code from the program. The 0 status code is a success.
+        EXIT_CODE equ 0
+        ;; Length of the string that contains only the new line symbol.
+        NEW_LINE_LEN equ 1
 
-	NEW_LINE	db 0xa
-	INPUT		db "Hello world!"
+        ;; ASCII code of the new line symbol ('\n').
+        NEW_LINE db 0xa
+        ;; Input string that we are going to reverse
+        INPUT db "Hello world!"
 
-;;
-;; non initialized data
-;;
+;; Definition of the .bss section.
 section .bss
-	OUTPUT	resb 1
+        ;; Output buffer where the reversed string will be stored.
+        OUTPUT  resb 1
 
-;;
-;; code
-;;
+;; Definition of the .text section.
 section .text
-	global	_start
+        ;; Reference to the entry point of our program.
+        global  _start
 
-;;
-;; main routine
-;;
+;; Entry point of the program.
 _start:
-	;; get addres of INPUT
-	mov	rsi, INPUT
-	;; zeroize rcx for counter
-	xor	rcx, rcx
-	; df = 0 si++
-	cld
-	; remember place after function call
-	mov	rdi, $ + 15
-	;; get string lengt
-	call	calculateStrLength
-	;; write zeros to rax
-	xor	rax, rax
-	;; additional counter for reverseStr
-	xor	rdi, rdi
-	;; reverse string
-	jmp	reverseStr
+        ;; Set the rcx value to 0. It will be used as a storage for the input string length.
+        xor rcx, rcx
+        ;; Store the address of the input string in the rsi register.
+        mov rsi, INPUT
+        ;; Store the address of the output buffer in the rdi register.
+        mov  rdi, OUTPUT
+        ;; Call the reverseStringAndPrint procedure.
+        call reverseStringAndPrint
 
-;;
-;; calculate length of string
-;;
-calculateStrLength:
-	;; check is it end of string
-	cmp	byte [rsi], 0
-	;; if yes exit from function
-	je	exitFromRoutine
-	;; load byte from rsi to al and inc rsi
-	lodsb
-	;; push symbol to stack
-	push	rax
-	;; increase counter
-	inc	rcx
-	;; loop again
-	jmp	calculateStrLength
+;; Calculate the length of the input string and prepare to reverse it.
+reverseStringAndPrint:
+        ;; Compare the first element in the given string with the NUL terminator (end of the string).
+        cmp byte [rsi], 0
+        ;; If we reached the end of the input string, reverse it.
+        je reverseString
+        ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
+        lodsb
+        ;; Save the character of the input string on the stack.
+        push rax
+        ;; Increase the counter that stores the length of our input string.
+        inc rcx
+        ;; Continue to go over the input string if we did not reach its end.
+        jmp reverseStringAndPrint
 
-;;
-;; back to _start
-;;
-exitFromRoutine:
-	;; push return addres to stack again
-	push	rdi
-	;; return to _start
-	ret
+;; Reverse the string and store it in the output buffer.
+reverseString:
+        ;; Check the counter that stores the length of the string.
+        cmp rcx, 0
+        ;; If it is equal to `0`, print the reverse string.
+        je printResult
+        ;; Pop the character from the stack.
+        pop rax
+        ;; Put the character to the output buffer.
+        mov [rdi], rax
+        ;; Move the pointer to the next character in the output buffer.
+        inc rdi
+        ;; Decrease the counter of the length of the string.
+        dec rcx
+        ;; Move to the next character until we reach the end of the string.
+        jmp reverseString
 
-;;
-;; reverse string
-;;
-;; 31 in stack
-reverseStr:
-	;; check is it end of string
-	cmp	rcx, 0
-	;; if yes print result string
-	je	printResult
-	;; get symbol from stack
-	pop	rax
-	;; write it to output buffer
-	mov	[OUTPUT + rdi], rax
-	;; decrease length counter
-	dec	rcx
-	;; increase additional length counter (for write syscall)
-	inc	rdi
-	;; loop again
-	jmp	reverseStr
-
-;;
-;; Print result string
-;;
+;; Print the reversed string to the standard output.
 printResult:
-	mov	rdx, rdi
-	mov	rax, 1
-	mov	rdi, 1
-	mov	rsi, OUTPUT
-	syscall
-	jmp	printNewLine
+        ;; Set the length of the result string to print.
+        mov rdx, rdi
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the result string to print.
+        mov rsi, OUTPUT
+        ;; Call the `sys_write` system call.
+        syscall
 
-;;
-;; Print new line
-;;
-printNewLine:
-	mov	rax, SYS_WRITE
-	mov	rdi, STD_OUT
-	mov	rsi, NEW_LINE
-	mov	rdx, 1
-	syscall
-	jmp	exit
+        ;; Set the length of the result string to print.
+        mov rdx, NEW_LINE_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the result string to print.
+        mov rsi, NEW_LINE
+        ;; Call the `sys_write` system call.
+        syscall
 
-;;
-;; Exit from program
-;;
-exit:
-	;; syscall number
-	mov	rax, SYS_EXIT
-	;; exit code
-	mov	rdi, EXIT_CODE
-	;; call sys_exit
-	syscall
+        ;; Specify the number of the system call (60 is `sys_exit`).
+        mov rax, SYS_EXIT
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is a success.
+        mov rdi, EXIT_CODE
+        ;; Call the `sys_exit` system call.
+        syscall

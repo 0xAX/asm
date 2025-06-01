@@ -55,3 +55,4 @@ dkms.conf
 hello/hello
 sum/sum
 stack/stack
+strings/reverse

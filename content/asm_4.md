@@ -1,194 +1,309 @@
+# Data manipulation
 
-Some time ago i started to write series of blog posts about assembly programming for x86_64. You can find it by asm tag. Unfortunately i was busy last time and there were not new post, so today I continue to write posts about assembly, and will try to do it every week.
+In the previous chapters, we built a few simple examples and figured out that a basic assembly program consists of just two main things:
 
-Today we will look at strings and some strings operations. We still use nasm assembler, and linux x86_64.
+- Instructions
+- Operands
 
-## Reverse string
+We also learned that there are different types of instructions, like:
 
-Of course when we talk about assembly programming language we can't talk about string data type, actually we're dealing with array of bytes. Let's try to write simple example, we will define string data and try to reverse and write result to stdout. This tasks seems pretty simple and popular when we start to learn new programming language. Let's look on implementation.
+- Data transfer instructions
+- Binary arithmetic instructions
+- Logical instructions
+- Control transfer instructions
+- String instructions
+- And others, like I/O, flag control, and bit manipulation instructions
 
-First of all, I define initialized data. It will be placed in data section (You can read about sections in part):
+We’ve already seen some of them in action, but in this chapter, we’re going to dive a little deeper into how they work — especially when it comes to working with data.
+
+## Data transfer instructions
+
+Data transfer instructions are used to move data between memory and general-purpose registers. One of the most commonly used and familiar instructions is `mov`. We use it to:
+
+- Move data between general-purpose registers
+- Move an immediate value to a general-purpose register
+- Move data between memory and general-purpose registers
+
+The first two cases are simple. We just specify two general-purpose registers we want to use to move data. For example, to copy the value of the `rcx` register into `rax`, we can use:
 
 ```assembly
+mov rax, rcx
+```
+
+To put value `5` into the `rax` register, we use:
+
+```assembly
+mov rax, 5
+```
+
+To move data between general-purpose registers and memory, we should use a special syntax with square brackets. For example, to store the value of the `rax` register into the memory address specified by the `rcx` register, use:
+
+```assembly
+mov [rcx], rax
+```
+
+In addition, extended instructions can be useful when you need to move smaller values into larger registers. These instructions are `movsx` and `movzx`. The purpose of these instructions should be clear if you ask yourself a question: when I move an 8-bit or 16-bit value into a 32-bit or 64-bit register, what should happen to the unused upper bits? The `movzx` instruction fills the upper bits with `0`. The `movsx` instruction copies the [sign bit](https://en.wikipedia.org/wiki/Sign_bit) to the upper bits. In the case of the `movsx` instruction, when moving an integer number from a smaller register to a bigger one, the upper bits of the bigger register are filled with `0` if the number is positive, and with `1` if the number is negative.
+
+Besides these instructions to move data from one place to another, there are conditional move instructions:
+
+- `cmove` and `cmovne` - Move if the previous comparison operation found that the operands are equal (or not).
+- `cmovz` and `cmovnz` - Move if the previous comparison operation found that the result is zero (or not).
+- `cmovc` and `cmovnc` - Move if the previous comparison operation set the [carry flag](https://en.wikipedia.org/wiki/Carry_flag) (or not).
+
+For more information about these and other instructions, read the [5.1.1 Data Transfer Instructions chapter of the Intel manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
+
+For example, the following code moves the value of the `rdx` register to `rax` if they are not equal:
+
+```assembly
+cmp rax, rdx
+cmovne rax, rdx
+```
+
+## Binary arithmetic instructions
+
+We use the decimal arithmetic instructions to operate with integer numbers. We have already seen these instructions in one of the previous chapters:
+
+- `add`  - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
+- `sub`  - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
+- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
+- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
+- `inc`  - Increments the value of the first operand.
+- `dec`  - Decrements the value of the first operand.
+- `neg`  - Negates the value of the first operand.
+
+For example:
+
+```assembly
+;; Increment the value of the rcx register
+inc rcx
+
+;; Add the value of rcx to rdx
+add rdx, rcx
+```
+
+## Logical instructions
+
+The logical instructions are used to execute [logical operations](https://en.wikipedia.org/wiki/Boolean_algebra#Operations):
+
+- `and` - The instruction takes two operands and performs the logical *and* operation on them.
+- `or` - The instruction takes two operands and performs the logical *or* operation on them.
+- `xor` - The instruction takes two operands and performs the logical *xor* operation on them.
+- `not` - The instruction takes two operands and performs the logical *not* operation on them.
+
+The result is stored in the first operand.
+
+For example:
+
+```assembly
+;; If rax = 1 and rbx = 0, rax stores 0
+and rax, rbx
+
+;; If rax = 1 and rbx = 0, rax stores 1
+or rax, rbx
+```
+
+## Control transfer instructions
+
+We have already seen control transfer instructions in the previous chapters. Normally, the CPU runs a program sequentially, executing instructions one after another. But when we need to change the flow of our program, that’s when control transfer instructions come into play. These instructions are closely bound to the `cmp` instruction, which takes two operands and compares them. Based on the comparison result, one of the special CPU `rflags` registers is set. One of the most common flag bits are:
+
+- `zf` - [zero flag](https://en.wikipedia.org/wiki/Zero_flag). Set if the operands of the `cmp` instruction are equal.
+- `cf` - [carry flag](https://en.wikipedia.org/wiki/Carry_flag). Set if the result of an arithmetic instruction is too big to fit the register where it will be stored.
+- `sf` - [sign flag](https://en.wikipedia.org/wiki/Negative_flag). Set if the result of an arithmetic instruction produced a value in which the most significant bit is set.
+- `df` - [direction flag](https://en.wikipedia.org/wiki/Direction_flag). Set if the strings are processed from highest to lowest address.
+
+The most common control transfer instructions are:
+
+- `jmp` - Jump to the specified address of a program.
+- `je` and `jne` - Jump if the previous comparison operation showed that the operands are equal (or not).
+- `jz` and `jnz` - Jump if the previous comparison operation set the zero flag to `1` or `0`.
+- `jg` and `jl` - Jump if the previous comparison operation resulted in one operand being greater or smaller than another.
+- `jge` and `jle` - Jump if the previous comparison operation resulted in one operand being greater (or equal) or smaller (or equal) than another.
+
+For example:
+
+```assembly
+;; Compare the values of the rax and rbx registers
+cmp rax, rbx
+;; Jump if the values are not equal
+jne label_if_not_equal
+```
+
+## String instructions
+
+Although there is no dedicated data type for strings in assembly, nothing prevents us from storing string-like data in memory and working with it. The `x86_64` CPU architecture provides special instructions designed to operate on such data. Some of these instructions include:
+
+- `movs(b|w|d|q)` - moves a byte, word, doubleword, or quadword (depends on the instruction's postfix) from the source to the destination. The `rsi` registers point to the source string, and the `rdi` registers point to the destination string.
+- `cmps(b|w|d|q)` - compares values of two memory locations pointed by the `rsi` and `rdi` registers.
+- `scas` - compares a value from a general-purpose register with the value located in the memory address pointed by the `rdi` register.
+- `lods` - loads a value pointed by the `rsi` register to a general-purpose register.
+- `stos` - stores a value from a general-purpose register into the memory location pointed by the `rdi` register and increments the memory address located there.
+- `rep` - repeats one of the instructions above while the value of the `rcx` register is not `0`.
+
+We will see an example of how to use these instructions in the next section.
+
+## Example
+
+Now that we are familiar with more assembly instructions, it's time to write some code! Let's try building an assembly program that reverses a given string. We will print the resulting reversed string to the [standard output](https://en.wikipedia.org/wiki/Standard_streams).
+
+First of all, let's define some static data needed for our program:
+
+```assembly
+;; Definition of the .data section
 section .data
-		SYS_WRITE equ 1
-		STD_OUT   equ 1
-		SYS_EXIT  equ 60
-		EXIT_CODE equ 0
+        ;; Number of the `sys_write` system call.
+        SYS_WRITE equ 1
+        ;; Number of the `sys_exit` system call.
+        SYS_EXIT equ 60
+        ;; Number of the standard output file descriptor.
+        STD_OUT equ 1
+        ;; Exit code from the program. The 0 status code is a success.
+        EXIT_CODE equ 0
+        ;; Length of the string that contains only the new line symbol.
+        NEW_LINE_LEN equ 1
 
-		NEW_LINE db 0xa
-		INPUT db "Hello world!"
+        ;; ASCII code of the new line symbol ('\n').
+        NEW_LINE db 0xa
+        ;; Input string that we are going to reverse
+        INPUT db "Hello world!"
 ```
 
-Here we can see four constants:
+Here we can see constants and variables that we will use in our program instead of [magic numbers](https://en.wikipedia.org/wiki/Magic_number_(programming)). Note that we predefine the input string that we will reverse in our program. In the previous chapter, you saw how to handle command-line arguments. As a self-exercise, you can extend this program to take a string and reverse it as a command-line argument.
 
-* `SYS_WRITE` - 'write' syscall number
-* `STD_OUT` - stdout file descriptor
-* `SYS_EXIT` - 'exit' syscall number
-* `EXIT_CODE` - exit code
-
-syscall list you can find - here. Also there defined:
-
-* `NEW_LINE` - new line (\n) symbol
-* `INPUT` - our input string, which we will reverse
-
-Next we define bss section for our buffer, where we will put reversed string:
+Next, we define the `.bss` section for our buffer where we will put the reversed string:
 
 ```assembly
+;; Definition of the .bss section.
 section .bss
-		OUTPUT resb 12
+        ;; Output buffer where the reversed string will be stored.
+        OUTPUT  resb 1
 ```
 
-Ok we have some data and buffer where to put result, now we can define text section for code. Let's start from main _start routine:
+After we defined the data needed to build our program, we can define the `.text` section:
 
 ```assembly
+;; Definition of the .text section.
+section .text
+        ;; Reference to the entry point of our program.
+        global  _start
+
+;; Entry point of the program.
 _start:
-		mov rsi, INPUT
-		xor rcx, rcx
-		cld
-		mov rdi, $ + 15
-		call calculateStrLength
-		xor rax, rax
-		xor rdi, rdi
-		jmp reverseStr
+        ;; Set the rcx value to 0. It will be used as a storage for the input string length.
+        xor rcx, rcx
+        ;; Store the address of the input string in the rsi register.
+        mov rsi, INPUT
+        ;; Store the address of the output buffer in the rdi register.
+        mov  rdi, OUTPUT
+        ;; Call the reverseStringAndPrint procedure.
+        call reverseStringAndPrint
 ```
 
-Here are some new things. Let's see how it works: First of all we put INPUT address to si register at line 2, as we did for writing to stdout and write zeros to rcx register, it will be counter for calculating length of our string. At line 4 we can see cld operator. It resets df flag to zero. We need in it because when we will calculate length of string, we will go through symbols of this string, and if df flag will be 0, we will handle symbols of string from left to right. Next we call calculateStrLength function. I missed line 5 with mov rdi, $ + 15 instruction, i will tell about it little later. And now let's look at calculateStrLength implementation:
+At the beginning of our program, we need to:
+
+- Set the value of the `rcx` register to `0`. We will use this register to store the length of the input string that we need to reverse.
+- Point the `rsi` register to the input string.
+- Point the `rdi` register to the output buffer that will store the reversed string.
+
+After that, we need to call the `reverseStringAndPrint` procedure to calculate the length of the input string and reverse it. Let's take a look at the implementation of this procedure:
 
 ```assembly
-calculateStrLength:
-		;; check is it end of string
-		cmp byte [rsi], 0
-		;; if yes exit from function
-		je exitFromRoutine
-		;; load byte from rsi to al and inc rsi
-		lodsb
-		;; push symbol to stack
-		push rax
-		;; increase counter
-		inc rcx
-		;; loop again
-		jmp calculateStrLength
+;; Calculate the length of the input string and prepare to reverse it.
+reverseStringAndPrint:
+        ;; Compare the first element in the given string with the NUL terminator (end of the string).
+        cmp byte [rsi], 0
+        ;; If we reached the end of the input string, reverse it.
+        je reverseString
+        ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
+        lodsb
+        ;; Save the character of the input string on the stack.
+        push rax
+        ;; Increase the counter that stores the length of our input string.
+        inc rcx
+        ;; Continue to go over the input string if we did not reach its end.
+        jmp reverseStringAndPrint
 ```
 
-As you can understand by it's name, it just calculates length of INPUT string and store result in rcx register. First of all we check that rsi register doesn't point to zero, if so this is the end of string and we can exit from function. Next is lodsb instruction. It's simple, it just put 1 byte to al register (low part of 16 bit ax) and changes rsi pointer. As we executed cld instruction, lodsb everytime will move rsi to one byte from left to right, so we will move by string symbols. After it we push rax value to stack, now it contains symbol from our string (lodsb puts byte from si to al, al is low 8 bit of rax). Why we did push symbol to stack? You must remember how stack works, it works by principle LIFO (last input, first output). It is very good for us. We will take first symbol from si, push it to stack, than second and so on. So there will be last symbol of string at the stack top. Than we just pop symbol by symbol from stack and write to OUTPUT buffer. After it we increment our counter (rcx) and loop again to the start of routine.
+At the beginning of this procedure, we compare the value pointed to by the `rsi` register with `0`. Here, `0` means the end of the input string, as each string is [NUL-terminated](https://en.wikipedia.org/wiki/Null-terminated_string). If we reach the end of the input string, we jump to the `reverseString` label, which will reverse our string. Otherwise, we take characters one by one from the input string using the `loadsb` instruction and store them on the stack. It is very convenient to store the string's characters on the stack. Since the stack has a [LIFO](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) access pattern, we will pop the characters from the stack in reverse order — from the end to the beginning. This allows us to reverse the string. This procedure is [recursive](https://en.wikipedia.org/wiki/Recursion) and will be called repeatedly until we reach the end of the string.
 
-Ok, we pushed all symbols from string to stack, now we can jump to exitFromRoutine return to _start there. How to do it? We have ret instruction for this. But if code will be like this:
+After reaching the end of the string, we can reverse it. We will do it using the following code:
 
 ```assembly
-exitFromRoutine:
-		;; return to _start
-		ret
+;; Reverse the string and store it in the output buffer.
+reverseString:
+        ;; Check the counter that stores the length of the string.
+        cmp rcx, 0
+        ;; If it is equal to `0`, print the reverse string.
+        je printResult
+        ;; Pop the character from the stack.
+        pop rax
+        ;; Put the character to the output buffer.
+        mov [rdi], rax
+        ;; Move the pointer to the next character in the output buffer.
+        inc rdi
+        ;; Decrease the counter of the length of the string.
+        dec rcx
+        ;; Move to the next character until we reach the end of the string.
+        jmp reverseString
 ```
 
-It will not work. Why? It is tricky. Remember we called calculateStrLength at _start. What occurs when we call a function? First of all function's parameters pushes to stack from right to left. After it return address pushes to stack. So function will know where to return after end of execution. But look at calculateStrLength, we pushed symbols from our string to stack and now there is no return address of stack top and function doesn't know where to return. How to be with it. Now we must take a look to the weird instruction before call:
+In the first two lines of the code, we check the counter that stores the length of our string. If it is equal to `0`, the string reversal is finished, and we can push it with the `printResult` procedure. Otherwise, we pop the character from the stack to the `rax` register and put it to the address pointed by the `rdi` register. During these operations, we call two additional `inc` and `dec` instructions to:
+
+- Decrease the counter that stores the length of the string to exit from the procedure when we reach the end of the string.
+- Increment the address stored in the `rdi` register to point to the next free space in the output buffer for the next character.
+
+At the end of executing `reverseString`, we should have a reversed string in the output buffer. It's time to print it and exit our program with:
 
 ```assembly
-    mov rdi, $ + 15
-```
-
-First all:
-
-* `$` - returns position in memory of string where $ defined
-* `$$` - returns position in memory of current section start
-
-So we have position of mov rdi, $ + 15, but why we add 15 here? Look, we need to know position of next line after calculateStrLength. Let's open our file with objdump util:
-
-```assembly
-objdump -D reverse
-
-reverse:     file format elf64-x86-64
-
-Disassembly of section .text:
-
-00000000004000b0 <_start>:
-  4000b0:	48 be 41 01 60 00 00 	movabs $0x600141,%rsi
-  4000b7:	00 00 00
-  4000ba:	48 31 c9             	xor    %rcx,%rcx
-  4000bd:	fc                   	cld
-  4000be:	48 bf cd 00 40 00 00 	movabs $0x4000cd,%rdi
-  4000c5:	00 00 00
-  4000c8:	e8 08 00 00 00       	callq  4000d5 <calculateStrLength>
-  4000cd:	48 31 c0             	xor    %rax,%rax
-  4000d0:	48 31 ff             	xor    %rdi,%rdi
-  4000d3:	eb 0e                	jmp    4000e3 <reverseStr>
-```
-
-We can see here that line 12 (our mov rdi, $ + 15) takes 10 bytes and function call at line 16 - 5 bytes, so it takes 15 bytes. That's why our return address will be mov rdi, $ + 15. Now we can push return address from rdi to stack and return from function:
-
-```assembly
-exitFromRoutine:
-		;; push return addres to stack again
-		push rdi
-		;; return to _start
-		ret
-```
-
-Now we return to start. After call of the `calculateStrLength` we write zeros to rax and rdi and jump to reverseStr label. It's implementation is following:
-
-```assembly
-reverseStr:
-		cmp rcx, 0
-		je printResult
-		pop rax
-		mov [OUTPUT + rdi], rax
-		dec rcx
-		inc rdi
-		jmp reverseStr
-```
-
-Here we check our counter which is length of string and if it is zero we wrote all symbols to buffer and can print it. After checking counter we pop from stack to rax register first symbol and write it to OUTPUT buffer. We add rdi because in other way we'll write symbol to first byte of buffer. After this we increase rdi for moving next by OUTPUT buffer, decrease length counter and jump to the start of label.
-
-After execution of reverseStr we have reversed string in OUTPUT buffer and can write result to stdout with new line:
-
-```assembly
+;; Print the reversed string to the standard output.
 printResult:
-		mov rdx, rdi
-		mov rax, 1
-		mov rdi, 1
-		mov rsi, OUTPUT
-                syscall
-		jmp printNewLine
+        ;; Set the length of the result string to print.
+        mov rdx, rdi
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the result string to print.
+        mov rsi, OUTPUT
+        ;; Call the `sys_write` system call.
+        syscall
 
-printNewLine:
-		mov rax, SYS_WRITE
-		mov rdi, STD_OUT
-		mov rsi, NEW_LINE
-		mov rdx, 1
-		syscall
-		jmp exit
+        ;; Set the length of the result string to print.
+        mov rdx, NEW_LINE_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the result string to print.
+        mov rsi, NEW_LINE
+        ;; Call the `sys_write` system call.
+        syscall
+
+        ;; Specify the number of the system call (60 is `sys_exit`).
+        mov rax, SYS_EXIT
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is a success.
+        mov rdi, EXIT_CODE
+        ;; Call the `sys_exit` system call.
+        syscall
 ```
 
-and exit from the our program:
+If you carefully read the previous chapters, the code above needs no explanation. At this point, our program is ready, and we can build it as usual:
 
-```assembly
-exit:
-		mov rax, SYS_EXIT
-		mov rdi, EXIT_CODE
-		syscall
+```bash
+$ nasm -g -f elf64 -o reverse.o reverse.asm
+$ ld -o reverse reverse.o
 ```
 
-That's all, now we can compile our program with:
+Then, try to run it:
 
-```assembly
-all:
-	nasm -g -f elf64 -o reverse.o reverse.asm
-	ld -o reverse reverse.o
-
-clean:
-	rm reverse reverse.o
+```bash
+$ ./reverse
+!dlrow olleH
 ```
 
-and run it:
+Works as expected! 🎉🎉🎉
 
-![result](/content/assets/result_asm_4.png)
+## Conclusion
 
-## String operations
+In this chapter, we got familiar with more assembly instructions, which means that you can already write more or less advanced programs using assembly programming language. Good job! 🥳
 
-Of course there are many other instructions for string/bytes manipulations:
-
-* `REP` - repeat while rcx is not zero
-* `MOVSB` - copy a string of bytes (MOVSW, MOVSD and etc..)
-* `CMPSB` - byte string comparison
-* `SCASB` - byte string scanning
-* `STOSB` - write byte to string
+For more information about different instructions for `x86_64`, go to the [Intel manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
