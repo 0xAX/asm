@@ -430,7 +430,7 @@ As a result of this macro, for example the instruction:
 REPX {pmulhuw x, m7}, m0, m1, m2, m3
 ```
 
-we will have the following expandsion of the macro:
+we will have the following expansion of the macro:
 
 ```assembly
 pmulhuw m0, m7
