@@ -1,41 +1,41 @@
 # Macros
 
-In the previous chapters, we have got familiar with the basic instructions of assembler programming language. We know how to do basic arithmetic and logic operations. We know how to call functions provided by the Linux kernel called - system calls. We have seen some operations that helps us to operate on string-like data. We have seen already stack operations and many more. In this chapter let's take a look how can we simplify programming process.
+In the previous chapters, we've become familiar with the basic instructions of the assembler programming language. We know how to do basic arithmetic and logic operations. We know how to call functions provided by the Linux kernel called system calls. We have seen some operations that help us operate on string-like data. We have seen stack operations and many more. In this chapter, let's take a look at how we can simplify the programming process.
 
-Instead of the abstract assembler, we will take a look at the abilities which [NASM](https://nasm.us/) assembler provides us. One of this feature is - macros. 
+Instead of the abstract assembler, in this chapter, we will look at the abilities that [NASM](https://nasm.us/) assembler provides us. One of these features is macros.
 
-If you already have some experience programming in other languages, you’ve likely come across the term macro. It can be considered as a term with very wide meaning. However, depending on the technology you are using and the context, [macro](https://en.wikipedia.org/wiki/Macro_(computer_science)) can refer mainly to the two very different things:
+If you already have some programming experience in other languages, you’ve likely come across the term macro. It can be considered as a term with a very wide meaning. However, depending on the technology you are using and the context, [macro](https://en.wikipedia.org/wiki/Macro_(computer_science)) can refer mainly to two very different things:
 
-- Text substitution. These are the macros you may find in C or C++ programming languages. They performing a simple text replacement before the code compilation happens. This leads to the situation when the compiler never operators with macros but only with the results of them. For example:
+- Text substitution. These are the macros you may find in C or C++ programming languages. They perform a simple text replacement before code compilation happens. This leads to a situation where the compiler operates with the results of the macros, not the macros themselves. For example:
 
    ```C
    #define SQUARE(x) (x * x)
-   
+
    int x = SQUARE(5); // will be replaced with 5 * 5
    ```
 
-- Macros that work at the level of the code structure. For example [lisp](https://lispcookbook.github.io/cl-cookbook/macros.html) or [rust](https://doc.rust-lang.org/book/ch20-05-macros.html) macros. This type of macros generate code by manipulating or expanding parts of the language’s syntax tree.
+- Macros that operate at the code structure level, such as [lisp](https://lispcookbook.github.io/cl-cookbook/macros.html) or [rust](https://doc.rust-lang.org/book/ch20-05-macros.html) macros. This type of macro generates code by manipulating or expanding parts of the language’s syntax tree.
 
-NASM provides macros that work using the first way. NASM contains a powerful macro processor which provides different abilities for the conditional code execution and text replacement. In the next sections we will see them.
+NASM provides macros that work according to the first method. It includes a powerful macro processor that provides different capabilities for conditional code execution and text replacement. In the following sections, we will explore these features.
 
 ## Single-line NASM macros
 
-NASM provides support for the two form of macros:
+NASM provides support for two forms of macros:
 
 - `single-line`
 - `multi-line`
 
-All the single-line macro must start from `%define` directive. The form of this directive is following:
+All single-line macros must start from the `%define` directive. The form of this directive is as follows:
 
 ```assembly
 %define macro_name(parameter) value
 ```
 
-This is very similar to an usual C-like macro that we may define using the `#define` directive. For example, using this directive we can create the following single-line macros:
+This is very similar to a usual C-like macro that we may define using the `#define` directive. For example, using this directive, we can create the following single-line macros:
 
 ```assembly
 ;; Define a symbolic name for the location of argv (CLI arguments) on the stack
-;; In x86-64 System V ABI, the stack layout at program start is:
+;; In x86-64 System V ABI, the stack layout at the program's start is:
 ;; [rsp]         → argc
 ;; [rsp + 8]     → argv[0]
 ;; [rsp + 16]    → argv[1]
@@ -47,7 +47,7 @@ define argc [rsp]
 ;; Pointer to argv[0] (program name)
 %define argv0 qword [rsp + 8]
 
-;;Pointer to argv[1] (first actual CLI arg)
+;; Pointer to argv[1] (first actual CLI argument)
 %define argv1 qword [rsp + 16]
 ```
 
@@ -60,11 +60,11 @@ mov rax, argc
 mov rsi, argv1
 ```
 
-If we use the `%define` directive to define a macro, the macro code is evaluated when the macro is used. NASM provides additional directive - `%xdefine` which has the same form as the `%define` directive but it is evaluated immediately at the point of definition.
+When we use the `%define` directive to define a macro, the macro is expanded when it is used. NASM also provides the `%xdefine` directive, which looks similar but evaluates the macro immediately at the point of definition.
 
 ## Multi-line NASM macros
 
-As the complexity of your programs will grow, you may start to notice repeatable patterns. Single-line macros are good but might be not always enough. That’s where multi-line macros may become useful. Unlike single-line %define macros, which simply substitute a short expression or instruction, multi-line macros allow you to define an entire block of code with parameters
+As the complexity of your programs grows, you may start to notice repeatable patterns. Single-line macros are good, but might not always be enough. That’s where multi-line macros may become useful. Unlike single-line `%define` macros, which simply substitute a short expression or instruction, multi-line macros allow you to define an entire block of code with parameters.
 
 A definition of a multi-line macro starts with the `%macro` NASM directive and ends with the `%endmacro` directive. The general form of a multi-line macro is:
 
@@ -79,7 +79,7 @@ A definition of a multi-line macro starts with the `%macro` NASM directive and e
 %endmacro
 ```
 
-For example we can take a look at the multi-line macro below:
+For example:
 
 ```assembly
 %macro prolog 0
@@ -88,14 +88,14 @@ For example we can take a look at the multi-line macro below:
 %endmacro
 ```
 
-After we defined our macro we can use it in the code:
+After we defined our macro, we can use it in the code:
 
 ```assembly
 _start:
         prolog
 ```
 
-In the previous chapters we have used very often code that prints the data. To not write this code-snippet every time, like for example we did in the example of the [previous chapter](https://github.com/0xAX/asm/blob/master/content/asm_4.md) we can write a macro. Let's take a look at it:
+In the previous chapters, we often used code that prints data. To not write this code snippet every time, like for example in the [previous chapter](https://github.com/0xAX/asm/blob/master/content/asm_4.md), we can write a macro. Let's take a look at it:
 
 ```assembly
 ;; Definition of the PRINT macro.
@@ -148,7 +148,7 @@ _start:
         PRINT msg_1, 9
         ;; Print new line message with the length 1.
         PRINT newline, 1
-        ;; Print the first message with the length 9.
+        ;; Print the second message with the length 9.
         PRINT msg_2, 9
         ;; Print new line message with the length 1.
         PRINT newline, 1
@@ -156,18 +156,18 @@ _start:
         EXIT 0
 ```
 
-Now let's try to go through the macros definitions and try to understand how they work. The macro definition starts from the `%macro` directive and definition of the name of the macro and number of input parameters. Our `PRINT` macro will expect two arguments:
+Now let's go through the macro definitions and see how they work. A macro definition starts from the `%macro` directive, followed by the macro’s name and the number of input parameters it expects. For example, our `PRINT` macro expects two arguments:
 
 - The reference to the string that is going to be printed
 - The length of this string
 
 The `EXIT` macro expects only one input argument - exit code. 
 
-There is an additional syntax - `n-*` which says that a macro accepts at least `n` arguments.
+There is also an additional syntax (`n-*`) that indicates a macro accepts at least `n` arguments.
 
-In the macros body we just initialize the registers according to the [ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) to call the [system calls](https://en.wikipedia.org/wiki/System_call). The only one difference that you may note is that instead of direct values, we use the input parameters in the macro. The input parameters starts from the `%` symbol followed by the number of the parameter.
+In the macro's body, we initialize the registers according to the [ABI](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf) to make [system calls](https://en.wikipedia.org/wiki/System_call). The only difference you may notice is that instead of using direct values, we use input parameters. These parameters start with the `%` symbol, followed by the number of the parameter (`%1`, `%2`, etc).
 
-The another syntax ability in the multi-line macro is definition of the labels inside of a macro. NASM provides you ability to define a label within the macro. In this case the label name should be prefixed with the `%%`. For example:
+Another syntax ability in the multi-line NASM macros is the possibility to define labels inside a macro. In this case, the label name should be prefixed with `%%`. For example:
 
 ```assembly
 %macro retg 0
@@ -182,15 +182,15 @@ The another syntax ability in the multi-line macro is definition of the labels i
  
 ## Conditional assembly
 
-Another useful ability is to write conditional code. To do that, NASM provides the following standard directives:
+Another useful feature that NASM assembly offers is the ability to write conditional code. To do that, NASM provides the following standard directives:
 
-- `ifdef/endif` - assembly code will be built if and only if the condition is true
+- `ifdef/endif` - assembly code will be built only if the condition is true
 - `ifmacro/endif` - check the existence of the given macro name
 - `if/elif/else/endif` - check the numeric expression
 - `ifenv/elifenv/elifnenv/endif` - check if an environment variable exists
-- And others like `ifempty`, `iftoken`, and `ifid`.
+- And others, like `ifempty`, `iftoken`, and `ifid`.
 
-For example we can slightly change the previous example:
+For example, we can slightly change the previous example and use `%ifdef DEBUG`:
 
 ```assembly
 ;; Entry point of the program.
@@ -200,7 +200,7 @@ _start:
         ;; Print new line message with the length 1.
         PRINT newline, 1
 %ifdef DEBUG
-        ;; Print the first message with the length 9.
+        ;; Print the second message with the length 9.
         PRINT msg_2, 9
         ;; Print new line message with the length 1.
         PRINT newline, 1
@@ -209,14 +209,14 @@ _start:
         EXIT 0
 ```
 
-The second message here will be printed if and only if - `DEBUG` is defined. If we run the code as is, we will see the only the first message is printed:
+In this code snippet, the second message will be printed only if `DEBUG` is defined. If we run the code as is, we will see that only the first message is printed:
 
 ```bash
 ~$ nasm -f elf64 -o test.o test.asm && ld -o test test.o && ./test
 Message 1
 ```
 
-Although if we will pass `DEBUG` to the program or define it, we will see the both messages are printed:
+However, if we pass `DEBUG` to the program or define it, we will see that both messages are printed:
 
 ```bash
 ~$ nasm -DDEBUG -f elf64 -o test.o test.asm && ld -o test test.o && ./test
@@ -226,11 +226,11 @@ Message 2
 
 ## Useful standard macros
 
-Besides the self-written macros, NASM provides rich set of already pre-defined macros and directives. In this section we will see some them.
+Besides the self-written macros, NASM provides a rich set of pre-defined macros and directives. In this section, we will see some of them.
 
 ### %include directive
 
-We can include another assembly file into our file and jump to the labels defined in it, or call procedures defined there. The usage is pretty trivial, just specify the name of the assembly file you want to include:
+We can include another assembly file into our file and jump to the labels defined in it, or call procedures defined there. The usage is pretty trivial - just specify the name of the assembly file you want to include:
 
 ```assembly
 %include "helpers.asm"
@@ -238,7 +238,7 @@ We can include another assembly file into our file and jump to the labels define
 
 ### %assign directive
 
-The single-line macro also can be defined with the special directive - `%assign`. The difference from the `%define` directive, is that using the `%assign` directive you can define a macro without parameters that will expand to a numeric value.
+You can also define a single-line macro with the special directive - `%assign`. The difference from the `%define` directive is that, by using the `%assign` directive, you can define a macro without parameters that will expand to a numeric value.
 
 For example:
 
@@ -258,25 +258,25 @@ For example:
 
 ### %! directive
 
-Sometimes it can be useful to get a value of an environment variable. For this, NASM provides the special `%!` directive that can be used to get a value from the given environment variable. For example:
+Sometimes it can be useful to get the value from the given environment variable. For this, NASM provides the special `%!` directive. For example:
 
 ```assembly
 %defstr HOME %!HOME
 ```
 
-### User defined error directives
+### User-defined error directives
 
-NASM provides the following three directives to specify user-defined errors or warnings:
+NASM provides the following directives to specify user-defined errors or warnings:
 
 - `%error msg`
 - `%fatal msg`
 - `%warning msg`
 
-In a case of the first two the execution of the program will be interrupted if one of the will be met.
+For the first two directives, the program will print the message given as an argument of the directive and the execution will interrupted. In a case of the `%warning` directive, only the message will be printed.
 
 ### %strlen directive
 
-Using the `%strlen` directive we may calculate the length of string. So we can rework our `PRINT` macro to accept only single input argument and calculate the length of the given string inside of the macro:
+Using the `%strlen` directive, we can calculate the length of a string. Using `%strlen`, we can rework our `PRINT` macro to accept only a single input argument and calculate the length of the given string inside the macro:
 
 ```assembly
 ;; Definition of the PRINT macro.
@@ -297,11 +297,11 @@ Using the `%strlen` directive we may calculate the length of string. So we can r
 
 ### %rotate directive
 
-The `%rotate` directive provides abilities to rotate the input arguments given to the macro. The arguments are rotated to the left by one position. This directive usually useful in conjunction with the next - `%rep` directive.
+The `%rotate` directive allows you to rotate the input arguments given to the macro. The arguments are rotated to the left by one position. This directive is usually used together with the next `%rep` directive.
 
 ### %rep directive
 
-This directive provides ability to repeat the given code pre-defined number of times. Its form looks like:
+This directive allows you to repeat the given code for a pre-defined number of times. Its form looks like:
 
 ```assembly
 %rep COUNT
@@ -311,26 +311,26 @@ This directive provides ability to repeat the given code pre-defined number of t
 
 ### STRUC macro
 
-This is not really a NASM macro or directive, but very useful feature of NASM. You can use `STRUC` and `ENDSTRUC` for data structure definition. These allow you to define custom data layouts with named fields. 
+This is not really a NASM macro or directive, but a very useful NASM feature. You can use `STRUC` and `ENDSTRUC` to define custom data layouts with named fields.
 
 The basic syntax is:
 
 ```assembly
 struc structure-name
-        ;; reserve 10 bytes for the first field
+        ;; Reserve 10 bytes for the first field
         field-1-name: resb 10
-        ;; reserve 1 byte for the second field
+        ;; Reserve 1 byte for the second field
         field-2-name: resb 1
 endstruc
 ```
 
-After we have defined our structure, we can make so-called "instance" of it. Let's take a look at the following code reworked from the previous example:
+After we have defined our structure, we can make a so-called "instance" of it. Let's take a look at the code reworked from the previous example to see how to use structures and their instances:
 
 ```assembly
 ;; Definition of the PRINT macro.
 %macro PRINT 2
         ;; Specify the number of the system call (1 is `sys_write`).
-    	mov rax, 1
+        mov rax, 1
         ;; Set the first argument of `sys_write` to 1 (`stdout`).
         mov rdi, 1
         ;; Set the second argument of `sys_write` to the reference of the string to print.
@@ -353,14 +353,14 @@ After we have defined our structure, we can make so-called "instance" of it. Let
         syscall
 %endmacro
 
-;; Define person structure
+;; Define a "person" structure
 struc person
         ;; Person name
         .name resb 10
         ;; Person age
         .age  resb 1
 endstruc
-        
+
 ;; Definition of the .data section.
 section .data
         ;; ASCII code of the new line symbol ('\n').
@@ -388,11 +388,9 @@ _start:
         EXIT 0
 ```
 
-Looking at the example above we may see how to use structures and their instances.
-
 ## Example
 
-Traditionally each previous chapter was ended with an example. All of the previous examples were pretty trivial. They may look a bit like an artificial programs that do not do anything useful. Since we already know assembler a little bit we can take a look at something practical. In this time I would suggest to take a look at the real code from the very popular open source project - [ffmpeg](https://en.wikipedia.org/wiki/FFmpeg). It has significant amount of code written in assembly mainly for the sake of performance. You can be sure in it if you will try to find all the files with the `.asm` extension. Luckily, this project also uses NASM, so most of things should be similar to us.
+Traditionally, each chapter ends with an example. So far, the examples we've looked at were fairly simple — they might even look a bit artificial, since they didn't do anything particularly useful. Now that we know assembler a little bit more, we can take a look at something more practical. This time, let's have a look at the real code from the very popular open source project - [ffmpeg](https://en.wikipedia.org/wiki/FFmpeg). FFmpeg contains a significant amount of code written in assembly, mostly written for performance reasons. You can see this for yourself by searching for all files with the `.asm` extension. Fortunately, the project uses NASM, so much of the code will look familiar.
 
 Let's take a look at the definition of the macro `REPX` defined in the [x86inc.asm](https://github.com/FFmpeg/FFmpeg/blob/master/libavutil/x86/x86inc.asm) source code file:
 
@@ -408,29 +406,32 @@ Let's take a look at the definition of the macro `REPX` defined in the [x86inc.a
 %endmacro
 ```
 
-As you may see, it has some comments. So at least we know from the beginning what this macro should do. Now let's try to understand how it does its job. 
+As you may see, this macro contains comments that help to understand from the beginning what it should do. Let's try to understand how this macro does its job.
 
-First of all the definition of the macro is a little bit new to us. The `2-*` notation means that the macro accepts at least 2 input parameters.
+First of all, the definition of the macro is a little bit new to us. The `2-*` notation means that the macro accepts at least 2 input parameters. The macro will use the first argument as an instruction and the rest of the arguments to which this instruction will be applied.
 
-The first line in the macro body defines the local `%%f` macro. This macro will be expanded into the first argument of the `REPX` macro. Since the `xdefine` directive was used it captured the first argument of the `REPX` macro whatever will happen with it next. So if the macro was used like this:
+The first line in the macro body defines the local macro named `%%f`. This macro is expanded to the first argument of the `REPX` macro. Because the `xdefine` directive is used instead of `%define`, it captures the value of the first argument of the `REPX` macro as is. For example, `%%f` will be bound to `{psrlw x, 8}`, if the macro is used like this:
 
 ```assembly
 REPX {psrlw x, 8}, m0, m1, m2, m3
 ```
 
-the `%%f` macro is bound to the `{psrlw x, 8}`.
+The macro name is prefixed with `%%` to define a uniquely scoped macro with the name which scoped only to this invocation of the `REPX` macro to not clash with other macros named `f` elsewhere.
 
-The next instruction in this macro is the `%rep` directive. In our case it will repeat the given body `%0 - 1` times. The `%0` here is the number of the arguments given to the `REPX` macro.
+The next instruction in this macro is the `%rep` directive. In our case, it repeats the given body `%0 - 1` times. The `%0` here is the number of the arguments given to the `REPX` macro. Since the first argument of the macro is an instruction that we need to repeat for the given arguments, we skip one repetition by doing `%0 - 1`.
 
-The loop in this macro consists of the two lines of code. The first one contains `%rotate` directive which rotates the arguments list by 1 position. It moves the second argument to the first position, the third argument to the third position, and so on. The last line of this macro applies the operation stored in `%%f` to the given argument after rotation. This operation is repeated for the all arguments of the `REPX` macro except the first one.
+The loop in this macro consists of two lines of code:
 
-As a result of this macro, for example the instruction:
+- The first line contains the `%rotate` directive, which rotates the arguments by 1 position at each iteration of the loop. It moves the second argument to the first position, the third argument to the second position, and so on.
+- The second line has the call of the `%%f` macro. Remember that this macro is bound to the first original instruction of the `REPX` macro. By passing the `%1` to the `%%f` macro it expands to the original first argument of the `REPX` macro with the `x` replaced with the first argument of the same macro but after we rotated them. So at the first iteration of the loop it will be expanded to the first argument of the `REPX` macro with `x` replaced with the second argument of the same macro. At the second iteration of the loop it will be expanded to the first argument of the `REPX` macro with `x` replaced with the third argument of the same macro. This will be repeated for the all arguments of the `REPX` macro.
+
+So, when we use a macro with such arguments:
 
 ```assembly
-REPX {pmulhuw x, m7}, m0, m1, m2, m3
+REPX {psrlw x, 8}, m0, m1, m2, m3
 ```
 
-we will have the following expansion of the macro:
+It will be expanded to:
 
 ```assembly
 pmulhuw m0, m7
@@ -443,6 +444,6 @@ We have just tried to understand real-world assembly code!
 
 ## Conclusion
 
-As we have seen in this chapter, macros are the powerful tool that may help you to reduce complexity in your assembly programming.
+As we have seen in this chapter, macros are a powerful tool that can help reduce complexity in assembly programming.
 
 For more information about NASM macros, go to the [official documentation](https://nasm.us/doc/nasmdoc4.html).
