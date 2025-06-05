@@ -66,7 +66,6 @@ We use the decimal arithmetic instructions to operate with integer numbers. We h
 - `add`  - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
 - `sub`  - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
 - `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
-- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
 - `inc`  - Increments the value of the first operand.
 - `dec`  - Decrements the value of the first operand.
 - `neg`  - Negates the value of the first operand.
