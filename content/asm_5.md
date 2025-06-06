@@ -31,7 +31,7 @@ All single-line macros must start from the `%define` directive. The form of this
 %define macro_name(parameter) value
 ```
 
-This is very similar to a usual C-like macro that we may define using the `#define` directive. For example, using this directive, we can create the following single-line macros:
+This is very similar to a usual C-like macro that we can define using the `#define` directive. For example, using this directive, we can create the following single-line macros:
 
 ```assembly
 ;; Define a symbolic name for the location of argv (CLI arguments) on the stack
@@ -56,7 +56,7 @@ Now we can use our definition in the code:
 ```assembly
 ;; Store the number of command line arguments in the rax register
 mov rax, argc
-;; Store the pointer to the first command like argument in the rsi register
+;; Store the pointer to the first command line argument in the rsi register
 mov rsi, argv1
 ```
 
@@ -158,7 +158,7 @@ _start:
 
 Now let's go through the macro definitions and see how they work. A macro definition starts from the `%macro` directive, followed by the macro’s name and the number of input parameters it expects. For example, our `PRINT` macro expects two arguments:
 
-- The reference to the string that is going to be printed
+- The reference to the string that we want to print
 - The length of this string
 
 The `EXIT` macro expects only one input argument - exit code. 
@@ -219,7 +219,7 @@ Message 1
 However, if we pass `DEBUG` to the program or define it, we will see that both messages are printed:
 
 ```bash
-~$ nasm -DDEBUG -f elf64 -o test.o test.asm && ld -o test test.o && ./test
+~$ nasm -D DEBUG -f elf64 -o test.o test.asm && ld -o test test.o && ./test
 Message 1
 Message 2
 ```
@@ -272,7 +272,7 @@ NASM provides the following directives to specify user-defined errors or warning
 - `%fatal msg`
 - `%warning msg`
 
-For the first two directives, the program will print the message given as an argument of the directive and the execution will interrupted. In a case of the `%warning` directive, only the message will be printed.
+For the first two directives, the program prints the message given as an argument, and the program's execution is interrupted. In the case of the `%warning` directive, only the message is printed.
 
 ### %strlen directive
 
@@ -408,7 +408,7 @@ Let's take a look at the definition of the macro `REPX` defined in the [x86inc.a
 
 As you may see, this macro contains comments that help to understand from the beginning what it should do. Let's try to understand how this macro does its job.
 
-First of all, the definition of the macro is a little bit new to us. The `2-*` notation means that the macro accepts at least 2 input parameters. The macro will use the first argument as an instruction and the rest of the arguments to which this instruction will be applied.
+First of all, the definition of the macro is a little bit new to us. The `2-*` notation means that the macro accepts at least 2 input parameters. The macro uses the first argument as an instruction and applies it to the remaining arguments.
 
 The first line in the macro body defines the local macro named `%%f`. This macro is expanded to the first argument of the `REPX` macro. Because the `xdefine` directive is used instead of `%define`, it captures the value of the first argument of the `REPX` macro as is. For example, `%%f` will be bound to `{psrlw x, 8}`, if the macro is used like this:
 
@@ -416,14 +416,14 @@ The first line in the macro body defines the local macro named `%%f`. This macro
 REPX {psrlw x, 8}, m0, m1, m2, m3
 ```
 
-The macro name is prefixed with `%%` to define a uniquely scoped macro with the name which scoped only to this invocation of the `REPX` macro to not clash with other macros named `f` elsewhere.
+The macro name is prefixed with `%%` to define a uniquely scoped macro, with the name limited to this invocation of the `REPX` macro. This prevents clashes with other macros named `f` elsewhere.
 
 The next instruction in this macro is the `%rep` directive. In our case, it repeats the given body `%0 - 1` times. The `%0` here is the number of the arguments given to the `REPX` macro. Since the first argument of the macro is an instruction that we need to repeat for the given arguments, we skip one repetition by doing `%0 - 1`.
 
 The loop in this macro consists of two lines of code:
 
 - The first line contains the `%rotate` directive, which rotates the arguments by 1 position at each iteration of the loop. It moves the second argument to the first position, the third argument to the second position, and so on.
-- The second line has the call of the `%%f` macro. Remember that this macro is bound to the first original instruction of the `REPX` macro. By passing the `%1` to the `%%f` macro it expands to the original first argument of the `REPX` macro with the `x` replaced with the first argument of the same macro but after we rotated them. So at the first iteration of the loop it will be expanded to the first argument of the `REPX` macro with `x` replaced with the second argument of the same macro. At the second iteration of the loop it will be expanded to the first argument of the `REPX` macro with `x` replaced with the third argument of the same macro. This will be repeated for the all arguments of the `REPX` macro.
+- The second line has the invocation of the %%f macro, which was previously defined to expand into the first argument of the REPX macro. It also replaces x in the first argument of REPX with the parameter given to the %%f macro. By passing %1 to %%f, the macro expands to the original first argument of the REPX macro, replacing the placeholder x with each of the subsequent arguments of the REPX. On each iteration of the loop, x is substituted with the next argument of the REPX macro starting from the second because of the previous rotate definition  — so the first iteration uses the second argument, the second iteration uses the third, and so on. This is repeated until all arguments are processed.
 
 So, when we use a macro with such arguments:
 
@@ -440,7 +440,7 @@ pmulhuw m2, m7
 pmulhuw m3, m7
 ```
 
-We have just tried to understand real-world assembly code!
+We’ve just explored a real-world assembly code! 🎉 🎉 🎉 
 
 ## Conclusion
 
