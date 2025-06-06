@@ -210,6 +210,8 @@ After that, we need to call the `reverseStringAndPrint` procedure to calculate t
 reverseStringAndPrint:
         ;; Compare the first element in the given string with the NUL terminator (end of the string).
         cmp byte [rsi], 0
+        ;; Preserve the length of the reversed string in the rdx register. We will use this value during printing the string.
+        mov rdx, rcx
         ;; If we reached the end of the input string, reverse it.
         je reverseString
         ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
@@ -250,13 +252,11 @@ In the first two lines of the code, we check the counter that stores the length 
 - Decrease the counter that stores the length of the string to exit from the procedure when we reach the end of the string.
 - Increment the address stored in the `rdi` register to point to the next free space in the output buffer for the next character.
 
-At the end of executing `reverseString`, we should have a reversed string in the output buffer. It's time to print it and exit our program with:
+At the end of executing `reverseString`, we should have a reversed string in the output buffer. It's time to print it and exit from our program with:
 
 ```assembly
 ;; Print the reversed string to the standard output.
 printResult:
-        ;; Set the length of the result string to print.
-        mov rdx, rdi
         ;; Specify the system call number (1 is `sys_write`).
         mov rax, SYS_WRITE
         ;; Set the first argument of `sys_write` to 1 (`stdout`).
