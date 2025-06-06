@@ -192,7 +192,7 @@ _start:
         ;; Store the address of the input string in the rsi register.
         mov rsi, INPUT
         ;; Store the address of the output buffer in the rdi register.
-        mov  rdi, OUTPUT
+        mov rdi, OUTPUT
         ;; Call the reverseStringAndPrint procedure.
         call reverseStringAndPrint
 ```
