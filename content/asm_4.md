@@ -210,7 +210,7 @@ After that, we need to call the `reverseStringAndPrint` procedure to calculate t
 reverseStringAndPrint:
         ;; Compare the first element in the given string with the NUL terminator (end of the string).
         cmp byte [rsi], 0
-        ;; Preserve the length of the reversed string in the rdx register. We will use this value during printing the string.
+        ;; Preserve the length of the reversed string in the rdx register. We will use this value when printing the string.
         mov rdx, rcx
         ;; If we reached the end of the input string, reverse it.
         je reverseString
