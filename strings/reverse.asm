@@ -33,7 +33,7 @@ _start:
         ;; Store the address of the input string in the rsi register.
         mov rsi, INPUT
         ;; Store the address of the output buffer in the rdi register.
-        mov  rdi, OUTPUT
+        mov rdi, OUTPUT
         ;; Call the reverseStringAndPrint procedure.
         call reverseStringAndPrint
 
@@ -41,6 +41,8 @@ _start:
 reverseStringAndPrint:
         ;; Compare the first element in the given string with the NUL terminator (end of the string).
         cmp byte [rsi], 0
+        ;; Preserve the length of the reversed string in the rdx register. We will use this value when printing the string.
+        mov rdx, rcx
         ;; If we reached the end of the input string, reverse it.
         je reverseString
         ;; Load a byte from the rsi to al register and move pointer to the next character in the string.
@@ -71,8 +73,6 @@ reverseString:
 
 ;; Print the reversed string to the standard output.
 printResult:
-        ;; Set the length of the result string to print.
-        mov rdx, rdi
         ;; Specify the system call number (1 is `sys_write`).
         mov rax, SYS_WRITE
         ;; Set the first argument of `sys_write` to 1 (`stdout`).
