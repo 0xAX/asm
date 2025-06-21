@@ -128,7 +128,7 @@ Besides the storage for data, the CPU obviously provides instructions to operate
 
 In the next sections we will take a look at some of these instructions. Of course, we will not cover all the instructions supported by the modern CPUs. For more information, read the Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
 
-The calling conventions for floating-point numbers is different. If a function parameter is a floating-point number - it will be passed in one of `XMM` registers - the first argument will be passed in the `xmm0` register, the second argument will be passed in `xmm1` register and so on up till `xmm7`. The rest of arguments after eights argument are passed on the [stack](./asm_3.md).
+The calling conventions for floating-point numbers is different. If a function parameter is a floating-point number - it will be passed in one of `XMM` registers - the first argument will be passed in the `xmm0` register, the second argument will be passed in `xmm1` register and so on up till `xmm7`. The rest of arguments after eights argument are passed on the [stack](./asm_3.md). The value of the functions that return a floating-point value is stored in the `xmm0` register.
 
 ### Data transfer instructions
 
