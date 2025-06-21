@@ -1,181 +1,80 @@
+# Floating-point arithmetic
 
-It is sixth part of Say hello to x86_64 Assembly and here we will look on AT&T assembler syntax. Previously we used nasm assembler in all parts, but there are some another assemblers with different syntax, fasm, yasm and others. As i wrote above we will look on gas (GNU assembler) and difference between it's syntax and nasm. GCC uses GNU assembler, so if you see at assembler output for simple hello world:
+In the previous chapters, we have written a simple assembly programs which were oprating with numeric and string-like data. All the numeric data that we have used was only integer numbers. This is not always practical and map the reality. Integer numbers does not allow us to represent fractional number values. In this chapter we will look how to operate with the  [floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic) in our programs.
 
-```C
-#include <unistd.h>
+## Floating-point representation
 
-int main(void) {
-	write(1, "Hello World\n", 15);
-	return 0;
-}
-```
+First of all, let's take a look how floating-point numbers are represented in memory. There are three floating point data types:
 
-You will see following output:
+- single-precision
+- double-precision
+- double-extended precision
 
-```assembly
-	.file	"test.c"
-	.section	.rodata
-.LC0:
-	.string	"Hello World\n"
-	.text
-	.globl	main
-	.type	main, @function
-main:
-.LFB0:
-	.cfi_startproc
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movl	$15, %edx
-	movl	$.LC0, %esi
-	movl	$1, %edi
-	call	write
-	movl	$0, %eax
-	popq	%rbp
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
-.LFE0:
-	.size	main, .-main
-	.ident	"GCC: (Ubuntu 4.9.1-16ubuntu6) 4.9.1"
-	.section	.note.GNU-stack,"",@progbits
-```
+The Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) says:
 
-Looks different then nasm Hello world, let's look on some differences.
+> The data formats for these data types correspond directly to formats specified in the IEEE Standard 754 for Binary Floating-Point Arithmetic.
 
-## AT&T syntax
+To get all the possible details about representation of the floating-point numbers in computer memory, you should take a look at this standard.
 
-### Sections
+All of these formats differ in accuracy. The single-precision and double-precision formats correspond to the [C's](https://en.wikipedia.org/wiki/C_(programming_language)) [float and double](https://cppreference.com/w/c/language/arithmetic_types.html) data types. The double-extended precision format corresponds to the C's `long double` data type.  Let's take a look at each of them.
 
-I don't know how about you, but when I start to write assembler program, usually I'm starting from sections definition. Let's look on simple example:
+### Single-precision format
 
-```assembly
-.data
-    //
-    // initialized data definition
-    //
-.text
-    .global _start
+To represent a floating-point number using the single-precision format, the number is split on the three parts:
 
-_start:
-    //
-    // main routine
-    //
-```
+- sign - 1 bit
+- exponent - 8 bits
+- mantissa - 23 bits
 
-You can note two little differences here:
+The sign bit provides information about the `sign` of the number. If this bit is set to `0` - the number is positive, and negative otherwise. While what is `sign` could be clear, on what is `exponent` and `mantissa` we need to stop and consider them in a more detailed way. To understand how floating-point numbers are presented in memory, we need to know how to convert the floating-point number from the [decimal](https://en.wikipedia.org/wiki/Decimal) to [binary](https://en.wikipedia.org/wiki/Binary_number) representation.
 
-* Section definition starts with . symbol
-* Main routine defines with .globl instead global as we do it in nasm
+Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation we need to split our number on integral and fractional parts. In our case it is `2` and `625`. To convert the integral part of our number to binary representation, we need to divide our number by `2` repeatably while the result will not be zero. Let's take a look:
 
-Also gas uses another directives for data defintion:
+| Division | Quotient | Remainder |
+|----------|----------|-----------|
+| 5 % 2    |        2 |         1 |
+| 2 % 2    |        1 |         0 |
+| 1 % 2    |        0 |         1 |
 
-```assembly
-.section .data
-    // 1 byte
-    var1: .byte 10
-    // 2 byte
-    var2: .word 10
-    // 4 byte
-    var3: .int 10
-    // 8 byte
-    var4: .quad 10
-    // 16 byte
-    var5: .octa 10
+To get the binary representation, we just need to write down remainders. So `5` in binary is `101`.
 
-    // assembles each string (with no automatic trailing zero byte) into consecutive addresses
-    str1: .asci "Hello world"
-    // just like .ascii, but each string is followed by a zero byte
-    str2: .asciz "Hello world"
-    // Copy the characters in str to the object file
-    str3: .string "Hello world"
-```
+To convert fractional part of our floating-point number, we need multiple our number by `2` while the integral part will not be equal to one. Let's try to convert the fractional part of our number:
 
-Operands order
-When we write assembler program with nasm, we have following general syntax for data manipulation:
+| Multiplication | Result | Integral part | Fractional part |
+|----------------|--------|---------------|-----------------|
+|      0.625 * 2 |   1.25 |             1 |            0.25 |
+|       0.25 * 2 |    0.5 |             0 |             0.5 |
+|        0.5 * 2 |      1 |             1 |               0 |
 
-```assembly
-mov destination, source
-```
+To get the binary representation, we just need to write down integral parts that we got during calculations. So `0.625` in binary is `0.101`. As the result - our floating point number represented in binary form is `5.625 = 101.101`.
 
-With GNU assembler we have back order i.e.:
+If you will start to train to convert decimal floating-point numbers to binary system, you may note one interesting pattern very soon. Not all the fractional parts can be converted to binary. For example, let's take a look at the binary representation of the fractional part of the number `5.575`:
 
-```assembly
-mov source, destination
-```
+| Multiplication | Result | Integral part | Fractional part |
+|----------------|--------|---------------|-----------------|
+|      0.575 * 2 |   1.15 |             1 |            0.15 |
+|       0.15 * 2 |   0.30 |             0 |            0.30 |
+|       0.30 * 2 |   0.60 |             0 |            0.60 |
+|       0.60.* 2 |   1.20 |             1 |            0.20 |
+|       0.20 * 2 |   0.40 |             0 |            0.40 |
+|       0.40 * 2 |   0.80 |             0 |            0.80 |
+|       0.80 * 2 |   1.60 |             1 |            0.60 |
+|       0.60 * 2 |   1.20 |             1 |            0.20 |
+|       0.20 * 2 |   0.40 |             0 |            0.40 |
+|       0.40 * 2 |   0.80 |             0 |            0.80 |
+|       0.80 * 2 |   1.60 |             1 |            0.60 |
+|       0.60 * 2 |   1.20 |             1 |            0.20 |
 
-For example:
-
-```assembly
-;;
-;; nasm syntax
-;;
-mov rax, rcx
-
-//
-// gas syntax
-//
-mov %rcx, %rax
-```
-
-Also you can not here that registers starts with % symbol. If you're using direct operands, need to use `$` symbol:
-
-```assembly
-movb $10, %rax
-```
-
-### Size of operands and operation syntax
-
-Sometimes when we need to get part of memory, for example first byte of 64 register, we used following syntax:
-
-```assembly
-mov ax, word [rsi]
-```
-
-There is another way for such operations in gas. We don't define size in operands but in instruction:
-
-```assembly
-movw (%rsi), %ax
-```
-
-GNU assembler has 6 postfixes for operations:
-
-* `b` - 1 byte operands
-* `w` - 2 bytes operands
-* `l` - 4 bytes operands
-* `q` - 8 bytes operands
-* `t` - 10 bytes operands
-* `o` - 16 bytes operands
-
-This rule is not only mov instruction, but also for all another like addl, xorb, cmpw and etc...
-
-### Memory access
-
-You can note that we used () brackets in previous example instead [] in nasm example. To dereference values in parentheses are used GAS: (%rax), for example:
-
-```assembly
-movq -8(%rbp),%rdi
-movq 8(%rbp),%rdi
-```
-
-### Jumps
-
-GNU assembler supports following operators for far functions call and jumps:
-
-```assembly
-lcall $section, $offset
-```
-
-Far jump - a jump to an instruction located in a different segment than the current code segment but at the same privilege level, sometimes referred to as an intersegment jump.
-
-### Comments
-
-GNU assembler supports 3 types of comments:
+We may see that starting from the step `5` (or first four bits `1001`), the pattern `0011` repeats forever. Such repeatable part we will write down in brackets. So for example, the number `5.575` we will write in binary form as `101.1001(0011)`. The interesting fact - if we will try to convert this binary number back to decimal representation, we will end up with slight different number than our original number. That's why every floating-point number in a computer is just an approximation of the original value. Because of this you may now understand the well known example - let's try to ask [Python](https://www.python.org/) to do the simple compilation:
 
 ```
-    # - single line comments
-    // - single line comments
-    /* */ - for multiline comments
+>>> 0.1 + 0.2
+0.30000000000000004
+
+# Or
+
+>>> 0.2 + 0.4
+0.6000000000000001
 ```
+
+After we converted both integral and fractional parts of our number to binary representation, we can go to the next step. We need to convert to [scientific notation](https://en.wikipedia.org/wiki/Scientific_notation).
