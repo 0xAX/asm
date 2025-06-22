@@ -18,7 +18,7 @@ jobs:
       - name: "Checkout repository"
         uses: "actions/checkout@v4"
       - name: Link Checker
-        uses: lycheeverse/lychee-action@v1.7.0
+        uses: lycheeverse/lychee-action@v2.4.1
         with:
           args: --verbose --user-agent "Mozilla 5.0" --no-progress --config=./lychee.toml "**/*.md"
           format: markdown
