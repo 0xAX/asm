@@ -34,7 +34,7 @@ section .data
         ERROR_MSG_LEN equ 59
 
         ;; Format string for the result
-        FMT:    db "Dot product = %f", 0xA, 0
+        FMT: db "Dot product = %f", 0xA, 0
 
 ;; Definition of the .bss section
 section .bss
@@ -197,7 +197,7 @@ _parse_second_float_vector:
         mov rax, [rel end_buffer_2]
         ;; Check is it the end of the input string.
         cmp rax, rdi
-        ;; Calculate dot-product after we have both vectors.
+        ;; Calculate the dot product after we have both vectors.
         je _calculate_dot_product
         
         ;; Store the reference to the beginning of the buffer where we will store
@@ -221,7 +221,7 @@ _parse_second_float_vector:
         ;; Continue to parse floating-point values from the input string.
         jmp     _parse_second_float_vector
 
-;; Prepare to calculate dot-product of the two vectors.
+;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
         ;; Check if the number of items in our vectors is not equal.
         test r14, r15
@@ -234,7 +234,7 @@ _calculate_dot_product:
         lea rsi, [rel vector_2]
         ;; Set the number of values within the vectors to the rdx register.
         mov rdx, r14
-        ;; Calculate dot-product of the two vectors.
+        ;; Calculate the dot product of the two vectors.
         call _dot_product
 
         ;; Specify reference to the format string for the printf(3) in the rdi register.
@@ -249,7 +249,7 @@ _calculate_dot_product:
         ;; Exit from the program.
         jmp _exit
 
-;; Calculate dot-product of the two vectors.
+;; Calculate the dot product of the two vectors.
 _dot_product:
         ;; Reset the value of the rax register to 0.
         xor     rax, rax
@@ -258,7 +258,7 @@ _dot_product:
         ;; Current rdx contains the number of floating-point values within the vectors.
         ;; Multiple it by 8 to get the number of bytes occupied by these values.
         sal     rdx, 3
-;; Calculate the dot-product in the loop.
+;; Calculate the the dot product in the loop.
 _loop:
         ;; Move the floating-point value from the first vector to xmm0 register.
         movsd   xmm0, [rdi + rax]

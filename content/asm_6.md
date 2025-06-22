@@ -170,9 +170,234 @@ The general instruction to compare floating-point numbers is `cmpss`.
 
 ## Example
 
-After we got familiar with some basics of the new topic - time to write some code.
+After we got familiar with some basics of the new topic - time to write some code. This time we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors.
 
-TODO
+If you forgot what is dot product - it is an operation on two vectors $$a = [a_{1}, a_{2}, \cdots, a_{n}]$$ and $$b = [b_{1}, b_{2}, \cdots, b_{n}]$$ which produces a single value, defined as the sum of the products of corresponding entries from the two vectors:
+
+$$
+a \times b = \sum_{i = 1}^{n} a_{i} \times b_{i} = a_{1} \times b_{1} + a_{2} \times b_{2} + \cdots + a_{n} \times b_{n}
+$$
+
+The values of the both vectors we will take from the user input. Our program will ask user to specify components of the first vector represented by the floating-point numbers split by spaces and after that components of the second vector in the same format. After we will calculate the dot product of the given vectors and print the result.
+
+Let's start.
+
+### Definition of constants and variables
+
+First of all, we will start as usual - from the definition of data that we will use during our program lifetime. Let's take a look:
+
+```asm
+;; Definition of the .data section
+section .data
+        ;; Number of the `sys_read` system call.
+        SYS_READ equ 0
+        ;; Number of the `sys_write` system call.
+        SYS_WRITE equ 1
+        ;; Number of the `sys_exit` system call.
+        SYS_EXIT equ 60
+        ;; Number of the standard input file descriptor.
+        STD_IN equ 0
+        ;; Number of the standard output file descriptor.
+        STD_OUT equ 1
+        ;; Exit code from the program. The 0 status code is a success.
+        EXIT_CODE equ 0
+        ;; Maximum number of elements in a vector
+        MAX_ELEMS  equ  100
+        ;; Size of buffer that we will use to read vectors
+        BUFFER_SIZE equ 1024
+        ;; Prompt for the first vector
+        FIRST_INPUT_MSG:  db "Input first vector: "
+        ;; Length of the prompt for the first vector
+        FIRST_INPUT_MSG_LEN equ 20
+        ;; Prompt for the second vector
+        SECOND_INPUT_MSG: db "Input second vector: "
+        ;; Length of the prompt for the second vector
+        SECOND_INPUT_MSG_LEN equ 21
+        ;; Error message that we will print if the number of items in the vectors is not the same..
+        ERROR_MSG: db "Error: the number of values in vectors should be the same", 0xA, 0
+        ;; Length of the error message.
+        ERROR_MSG_LEN equ 59
+        ;; Format string for the result
+        FMT: db "Dot product = %f", 0xA, 0
+```
+
+This should be quite similar to what we defined in our previous programs but with some exceptions. The first difference that we may see is that we are going to use not only the [sys_write](https://man7.org/linux/man-pages/man2/write.2.html) and [sys_exit](https://man7.org/linux/man-pages/man2/_exit.2.html) system calls in our program but in addition - [sys_read](https://man7.org/linux/man-pages/man2/read.2.html). The main reason for this should be obvious - as we are going to read user input to build our vectors. Besides the system call identifiers, we may see: 
+
+- The prompt messages that we will use when we ask a user to input data for vectors
+- The error message which will be printed
+- Parameters of the buffer which will be used to store the user input
+
+After the definition data that we may initialize, we need to define uninitialized variables:
+
+```asm
+;; Definition of the .bss section
+section .bss
+        ;; Buffer to store double values of the first vector
+        vector_1: resq MAX_ELEMS
+        ;; Buffer to store double values of the second vector
+        vector_2: resq MAX_ELEMS
+
+        ;; Buffer to store input for the first vector
+        buffer_1: resq BUFFER_SIZE
+        ;; Pointer within the `buffer_1` which points to the current position
+        ;; that we use to parse floats
+        end_buffer_1: resq 1
+
+        ;; Buffer to store input for the second vector
+        buffer_2: resq BUFFER_SIZE
+        ;; Pointer within the `buffer_2` which points to the current position
+        ;; that we use to parse floats
+        end_buffer_2: resq 1
+```
+
+In the `.bss` section we define:
+
+- Two buffers for the vectors
+- Two buffers for the user input
+- Two pointers to the current position within the buffers with the user-input
+
+The last parameter here is the most interesting. To simplify our job, we will use the functions from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library). One of such function is [strtod](https://man7.org/linux/man-pages/man3/strtod.3.html). This function converts the given string to a floating-point number. It takes two parameters:
+
+- Input string which should be converted to the floating point number
+- The pointer which will point to the first character after the parsed number within the string specified by the parameter above
+
+The `end_buffer_1` and `end_buffer_2` are such pointers that will be uesd in the `strtod`.
+
+### Printing user prompt and reading the user data
+
+After we defined the data needed to build our program, we can start with the definition of the `.text` section which will store the code of our program:
+
+```asm
+;; Definition of the .text section
+section .text
+        ;; Reference to the C stdlib functions that we will use
+        extern strtod, printf
+        ;; Reference to the entry point of our program.
+        global _start
+
+;; Entry point of the program.
+_start:
+        ;; Read the first input string with floating-point values
+        jmp _read_first_float_vector
+```
+
+The definition of the `.text` section starts from the referencing the external functions: `strtod` and `printf`. As I mentioned above, these functions are from the C standard library and we are going to use them to simplify our program. After the traditional definition of the entry point of our program we just immediately jump to the `_read_first_float_vector` label. This is where our code starts.
+
+Our main goal now is to print the prompt which will invite a user to type some floating point values, convert these values from the string to the floating-point numbers and store them in the buffer which will represent our first vector. Let's take a look at the code:
+
+```asm
+;; Read the first input string with floating-point values
+_read_first_float_vector:
+        ;; Set the length of the prompt string to print.
+        mov rdx, FIRST_INPUT_MSG_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the prompt string to print.
+        mov rsi, FIRST_INPUT_MSG
+        ;; Call the `sys_write` system call.
+        syscall
+
+        ;; Set the length of string we want to read from the standard input.
+        mov rdx, BUFFER_SIZE
+        ;; Specify the system call number (0 is `sys_read`)
+        mov rdi, SYS_READ
+        ;; Set the first argument of `sys_read` to 0 (`stdin`)
+        mov rax, STD_IN
+        ;; Set the second argument of `sys_read` to the reference of the buffer where we will
+        ;; read the data for the vector.
+        lea rsi, [rel buffer_1]
+        ;; Call the `sys_read` system call.
+        syscall
+
+        ;; Save the number of bytes we have read from the standard input in the rcx register.
+        mov rcx, rax
+        ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
+        lea rdx, [rel buffer_1]
+        ;; Move pointer within the buffer to the end of input.
+        add rdx, rcx
+        ;; Fill the last byte of the input with 0.
+        mov byte [rdx], 0
+```
+
+The code starts from the already familiar to us call of the `sys_write` system call. We use it to write a prompt string `Input first vector: ` to the terminal. After this line is printed, we execute the `sys_read` system call to read the user input. If we will take a look at the definition of this system call, we will see that it expects to get three parameters:
+
+```C
+ssize_t read(int fd, void buf[.count], size_t count);
+```
+
+The parameters are:
+
+- A file descriptor which identifies file that we want to read the data from
+- The buffer where the data that we have read will be stored
+- Number of bytes that we want to read
+
+You may see that we specify all of these parameters before calling of the `sys_read` in our code according to the **calling conventions** specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). If you already forgot the details, you can read this document or the [second part](./asm_2.md) of this notes.
+
+After this code will be executed, our buffer specified by the `buffer_1` name, will contain the user input. Now we have the line that a user passed to our program, the next goal is to convert each value represented by the string from the input to the floating-point values and store them in a separate buffer. But before we can do it, we need to do one more action. The user input will contain the `newline` symbol in the end. We don't need it in our input as we can't convert it to a floating point number. To get rid of this symbol - we just replace it with the `0` byte. To do that we need just know the length of the user-input. The good news that we already know it. If you will take a look at the documentation of the `sys_read` system call, you may see:
+
+> On success, the number of bytes read is returned
+
+As you may remember, the return value of a system call is stored in the `rax` register. To write the zero byte into the buffer right after the user input, we just need to take the pointer to the beginning of this buffer, add offset to it equal to the length of the user-input and write `0` byte to this address. All of these you may see in the last four lines of code above.
+
+Now we have buffer with the string values and this means that we can start to convert them to the floating point numbers. We will see how to do it in the next section!
+
+### Conversion of a string to a floating-point value
+
+At this point we have the memory buffer `buffer_1` which contains the uesr input. The user input should repreesnt a string with the floating-point values separated by spaces. We need to take each value from our buffer, convert it to the floating-point number and store it in the buffer that will represent our vector. Let's take a look at the code:
+
+```asm
+        ;; Reset the value of the r14 register to store the number of floating-point numbers
+        ;; from the first vector.
+        xor r14, r14
+        ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
+        lea rdi, [rel buffer_1]
+;; Parse the floating-point values from the input buffer.
+_parse_first_float_vector:
+        ;; Initialize the rsi register with the pointer which will point to the place where
+        ;; the strtod(3) will finish its work.
+        lea rsi, [rel end_buffer_1]
+        ;; Call the strtod(3) to conver floating-point value from the input buffer to double.
+        call strtod
+        ;; Preserve the pointer to the next floating-point value from the input buffer
+        ;; in the rax register.
+        mov rax, [rel end_buffer_1]
+        ;; Check is it the end of the input string.
+        cmp rax, rdi
+        ;; Proceed with the second vector if we reached the end of the first.
+        je _read_second_float_vector
+        ;; Store the reference to the beginning of the buffer where we will store
+        ;; our double values to the rdx register.
+        lea rdx, [rel vector_1]
+        ;; Store the number of floating-point values we already have read in the rcx register.
+        mov rcx, r14
+        ;; Multiple the number of floating-point values by 8.
+        shl rcx, 3
+        ;; Move the pointer from the beginning of the buffer with floating-point values that
+        ;; we have parsed from the input string to the next value.
+        add rdx, rcx
+        ;; Store the next floating-point value in the buffer.
+        movq [rdx], xmm0
+        ;; Increase the number of floating-point value that we already have parsed.
+        inc r14
+        ;; Move the pointer within the input buffer to the next floating-point value.
+        mov rdi, rax
+        ;; Continue to parse floating-point values from the input string.
+        jmp _parse_first_float_vector
+```
+
+The code starts from the setting the `r14` register to `0`. This register will contain the number of floating-point values within the given user input. After this we put the address of the user input buffer to the `rdi` register. This will be the first argument of the `strtod` function that will convert the first floating-point value from the given buffer. Now we need to prepare the second argument of the `strtod` function. As you may read in the section above, it has to be a pointer which will point to the first character after the parsed number. We store this pointer in the `rsi` register. Since we prepared both parameters of the `strtod` function we can call it.
+
+After this function is executed we need to check - did we reach the end of the string or not. We can do it by comparing the both pointers that we passed to the `strtod` function. If they are equal - it means we reached the end of string and we can move to the parsing of the data for the second vector. If not, we need to put the parsed floating-point number to the vector buffer.
+
+To do this, we store the address of the next location within the vector buffer where we need to store just parsed floating-point value in the `rdx` register. As we got this address, we can write the floating-point value into this address. The value is stored in the `xmm0` register because the `strtod` function returns the double value and according to the calling conventions it will be returned in this register.
+
+After we wrote our floating-point number to the vector buffer, we need to repeat all the operations again while we will not reach the end of the user input string.
+
+As soon as we will finish to parse the floating-point values for the first vector we need to repeat it for the second. I will not put code here responsible for it as it is almost the copy of the code that we have seen above, with the single difference - it will use own `buffer_2`, `end_buffer_2`, and `vector_2` buffers. If you feel not self-sure, you can find the whole code [here](https://github.com/0xAX/asm/blob/master/float/dot_product.asm).
+
+### Calculation of the dot product
 
 ## Conclusion
 
