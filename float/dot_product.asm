@@ -34,7 +34,7 @@ section .data
         ERROR_MSG_LEN equ 59
 
         ;; Format string for the result
-        FMT: db "Dot product = %f", 0xA, 0
+        PRINTF_FORMAT: db "Dot product = %f", 0xA, 0
 
 ;; Definition of the .bss section
 section .bss
@@ -88,14 +88,14 @@ _read_first_float_vector:
         mov rax, STD_IN
         ;; Set the second argument of `sys_read` to the reference of the buffer where we will
         ;; read the data for the vector.
-        lea rsi, [rel buffer_1]
+        mov rsi, buffer_1
         ;; Call the `sys_read` system call.
         syscall
 
         ;; Save the number of bytes we have read from the standard input in the rcx register.
         mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
-        lea rdx, [rel buffer_1]
+        mov rdx, buffer_1
         ;; Move pointer within the buffer to the end of input.
         add rdx, rcx
         ;; Fill the last byte of the input with 0.
@@ -105,19 +105,19 @@ _read_first_float_vector:
         ;; from the first vector.
         xor r14, r14
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
-        lea rdi, [rel buffer_1]
+        mov rdi, buffer_1
 
 ;; Parse the floating-point values from the input buffer.
 _parse_first_float_vector:
         ;; Initialize the rsi register with the pointer which will point to the place where
         ;; the strtod(3) will finish its work.
-        lea rsi, [rel end_buffer_1]
+        mov rsi, end_buffer_1
         ;; Call the strtod(3) to conver floating-point value from the input buffer to double.
         call strtod
 
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
-        mov rax, [rel end_buffer_1]
+        mov rax, [end_buffer_1]
         ;; Check is it the end of the input string.
         cmp rax, rdi
         ;; Proceed with the second vector if we reached the end of the first.
@@ -125,7 +125,7 @@ _parse_first_float_vector:
 
         ;; Store the reference to the beginning of the buffer where we will store
         ;; our double values to the rdx register.
-        lea rdx, [rel vector_1]
+        mov rdx, vector_1
         ;; Store the number of floating-point values we already have read in the rcx register.
         mov rcx, r14
         ;; Multiple the number of floating-point values by 8.
@@ -165,14 +165,14 @@ _read_second_float_vector:
         mov rax, STD_IN
         ;; Set the second argument of `sys_read` to the reference of the buffer where we will
         ;; read the data for the vector.
-        lea rsi, [rel buffer_2]
+        mov rsi, buffer_2
         ;; Call the `sys_read` system call.
         syscall
 
         ;; Save the number of bytes we have read from the standard input in the rcx register.
         mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
-        lea rdx, [rel buffer_2]
+        mov rdx, buffer_2
         ;; Move pointer within the buffer to the end of input.
         add rdx, rcx
         ;; Fill the last byte of the input with 0.
@@ -182,19 +182,19 @@ _read_second_float_vector:
         ;; from the second vector.
         xor r15, r15
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
-        lea rdi, [rel buffer_2]
+        mov rdi, buffer_2
 
 ;; Parse the floating-point values from the input buffer.
 _parse_second_float_vector:
         ;; Initialize the rsi register with the pointer which will point to the place where
         ;; the strtod(3) will finish its work.
-        lea rsi, [rel end_buffer_2]
+        mov rsi, end_buffer_2
         ;; Call the strtod(3)
         call strtod
 
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
-        mov rax, [rel end_buffer_2]
+        mov rax, [end_buffer_2]
         ;; Check is it the end of the input string.
         cmp rax, rdi
         ;; Calculate the dot product after we have both vectors.
@@ -202,7 +202,7 @@ _parse_second_float_vector:
         
         ;; Store the reference to the beginning of the buffer where we will store
         ;; our double values to the rdx register.
-        lea rdx, [rel vector_2]
+        mov rdx, vector_2
         ;; Store the number of floating-point values we already have read in the rcx register.
         mov rcx, r15
         ;; Multiple the number of floating-point values by 8.
@@ -229,16 +229,16 @@ _calculate_dot_product:
         jle _error
 
         ;; Set address of the first vector to the rdi register.
-        lea rdi, [rel vector_1]
+        mov rdi, vector_1
         ;; Set address of the second vector to the rdi register.
-        lea rsi, [rel vector_2]
+        mov rsi, vector_2
         ;; Set the number of values within the vectors to the rdx register.
         mov rdx, r14
         ;; Calculate the dot product of the two vectors.
         call _dot_product
 
         ;; Specify reference to the format string for the printf(3) in the rdi register.
-        lea rdi, [rel FMT]
+        mov rdi, PRINTF_FORMAT
         ;; Number of arguments of the floating-point registers passed as arguments
         ;; to printf(3). We specify - `1` because we need to pass only `xmm0` with
         ;; the result of the program.
