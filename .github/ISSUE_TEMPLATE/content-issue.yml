@@ -1,10 +1,10 @@
-name: 📖 Documentation issue
-description: Report an issue with documentation
+name: 📖 Content issue
+description: Report an issue with the content
 body:
   - type: markdown
     attributes:
       value: |
-        Use this form to report an issue with documentation.
+        Use this form to report an issue with the content.
 
         When contributing, make sure to follow Contributing guidelines and Code of Conduct.
         Thank you for your contribution!

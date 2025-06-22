@@ -38,20 +38,6 @@ body:
     validations:
       required: true
 
-  - type: input
-    attributes:
-      label: Environment?????
-      description: ????
-    validations:
-      required: false
-
-  - type: input
-    attributes:
-      label: Version??????
-      description: ????
-    validations:
-      required: false
-
   - type: textarea
     attributes:
       label: Suggested improvements
