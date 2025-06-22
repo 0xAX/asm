@@ -1,8 +1,6 @@
-build:
-	gcc  -g -c circle_fpu_87c.c -o c.o
-	nasm -f elf64 circle_fpu_87.asm -o circle_fpu_87.o
-	ld   -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc circle_fpu_87.o  c.o -o testFloat1
+all:
+	nasm -g -f elf64 -o dot_product.o dot_product.asm
+	ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc dot_product.o -o dot_product
 
 clean:
-	rm -rf *.o
-	rm -rf testFloat1
+	rm dot_product dot_product.o
