@@ -14,12 +14,12 @@ section .data
         EXIT_CODE equ 0
 
         ;; Maximum number of elements in a vector
-        MAX_ELEMS  equ  100
+        MAX_ELEMS equ 100
         ;; Size of buffer that we will use to read vectors
         BUFFER_SIZE equ 1024
 
         ;; Prompt for the first vector
-        FIRST_INPUT_MSG:  db "Input first vector: "
+        FIRST_INPUT_MSG: db "Input first vector: "
         ;; Length of the prompt for the first vector
         FIRST_INPUT_MSG_LEN equ 20
 
@@ -158,25 +158,25 @@ _read_second_float_vector:
         syscall
 
         ;;; Set the length of string we want to read from the standard input.
-        mov     rdx, BUFFER_SIZE
+        mov rdx, BUFFER_SIZE
         ;; Specify the system call number (0 is `sys_read`).
-        mov     rdi, SYS_READ
+        mov rdi, SYS_READ
         ;; Set the first argument of `sys_read` to 0 (`stdin`).
-        mov     rax, STD_IN
+        mov rax, STD_IN
         ;; Set the second argument of `sys_read` to the reference of the buffer where we will
         ;; read the data for the vector.
-        lea     rsi, [rel buffer_2]
+        lea rsi, [rel buffer_2]
         ;; Call the `sys_read` system call.
         syscall
 
         ;; Save the number of bytes we have read from the standard input in the rcx register.
-        mov    rcx, rax
+        mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
-        lea    rdx, [rel buffer_2]
+        lea rdx, [rel buffer_2]
         ;; Move pointer within the buffer to the end of input.
-        add    rdx, rcx
+        add rdx, rcx
         ;; Fill the last byte of the input with 0.
-        mov    byte [rdx], 0
+        mov byte [rdx], 0
 
         ;; Reset the value of the r15 register to store the number of floating-point numbers
         ;; from the second vector.
@@ -202,24 +202,24 @@ _parse_second_float_vector:
         
         ;; Store the reference to the beginning of the buffer where we will store
         ;; our double values to the rdx register.
-        lea     rdx, [rel vector_2]
+        lea rdx, [rel vector_2]
         ;; Store the number of floating-point values we already have read in the rcx register.
-        mov     rcx, r15
+        mov rcx, r15
         ;; Multiple the number of floating-point values by 8.
-        shl     rcx, 3        
+        shl rcx, 3        
         ;; Move the pointer from the beginning of the buffer with floating-point values that
         ;; we have parsed from the input string to the next value.
-        add     rdx, rcx
+        add rdx, rcx
         ;; Store the next floating-point value in the buffer.
-        movq    [rdx], xmm0
+        movq [rdx], xmm0
 
         ;; Increase the number of floating-point value that we already have parsed.
-        inc     r15
+        inc r15
 
         ;; Move the pointer within the input buffer to the next floating-point value.
-        mov     rdi, rax
+        mov rdi, rax
         ;; Continue to parse floating-point values from the input string.
-        jmp     _parse_second_float_vector
+        jmp _parse_second_float_vector
 
 ;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
@@ -238,13 +238,13 @@ _calculate_dot_product:
         call _dot_product
 
         ;; Specify reference to the format string for the printf(3) in the rdi register.
-        lea     rdi, [rel FMT]
+        lea rdi, [rel FMT]
         ;; Number of arguments of the floating-point registers passed as arguments
         ;; to printf(3). We specify - `1` because we need to pass only `xmm0` with
         ;; the result of the program.
-        mov     rax, 1
+        mov rax, 1
         ;; Call the printf(3) function that will print the result.
-        call    printf
+        call printf
 
         ;; Exit from the program.
         jmp _exit
@@ -252,30 +252,30 @@ _calculate_dot_product:
 ;; Calculate the dot product of the two vectors.
 _dot_product:
         ;; Reset the value of the rax register to 0.
-        xor     rax, rax
+        xor rax, rax
         ;; Reset the value of the xmm1 register to 0.
-        pxor    xmm1, xmm1
+        pxor xmm1, xmm1
         ;; Current rdx contains the number of floating-point values within the vectors.
         ;; Multiple it by 8 to get the number of bytes occupied by these values.
-        sal     rdx, 3
+        sal rdx, 3
 ;; Calculate the the dot product in the loop.
 _loop:
         ;; Move the floating-point value from the first vector to xmm0 register.
-        movsd   xmm0, [rdi + rax]
+        movsd xmm0, [rdi + rax]
         ;; Multiple the floating-point from the second vector to the value from the first vector
         ;; and store the result in the xmm0 register.
-        mulsd   xmm0, [rsi + rax]
+        mulsd xmm0, [rsi + rax]
         ;; Move to the next floating-point values in the vector buffers.
-        add     rax, 8
+        add rax, 8
         ;; Add the result of multiplication of floating-point values from the vectors in the
         ;; xmm1 register.
-        addsd   xmm1, xmm0
+        addsd xmm1, xmm0
         ;; Check did we go through the all the floating-point values in the vector buffers.
-        cmp     rax, rdx
+        cmp rax, rdx
         ;; If not yet - repeat the loop.
-        jne     _loop
+        jne _loop
         ;; Move the result to the xmm0 register.
-        movapd  xmm0, xmm1
+        movapd xmm0, xmm1
         ;; Return from the _dot_product back to the `_calculate_dot_product`.
         ret
 
@@ -297,8 +297,8 @@ _error:
 ;; Exit from the program.
 _exit:  
     ;; Specify the number of the system call (60 is `sys_exit`).
-    mov    rax, SYS_EXIT
+    mov rax, SYS_EXIT
     ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
-    mov    rdi, EXIT_CODE
+    mov rdi, EXIT_CODE
     ;; Call the `sys_exit` system call.
     syscall

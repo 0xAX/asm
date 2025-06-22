@@ -186,7 +186,7 @@ Let's start.
 
 First of all, we will start as usual - from the definition of data that we will use during our program lifetime. Let's take a look:
 
-```asm
+```assembly
 ;; Definition of the .data section
 section .data
         ;; Number of the `sys_read` system call.
@@ -202,11 +202,11 @@ section .data
         ;; Exit code from the program. The 0 status code is a success.
         EXIT_CODE equ 0
         ;; Maximum number of elements in a vector
-        MAX_ELEMS  equ  100
+        MAX_ELEMS equ 100
         ;; Size of buffer that we will use to read vectors
         BUFFER_SIZE equ 1024
         ;; Prompt for the first vector
-        FIRST_INPUT_MSG:  db "Input first vector: "
+        FIRST_INPUT_MSG: db "Input first vector: "
         ;; Length of the prompt for the first vector
         FIRST_INPUT_MSG_LEN equ 20
         ;; Prompt for the second vector
@@ -229,7 +229,7 @@ This should be quite similar to what we defined in our previous programs but wit
 
 After the definition data that we may initialize, we need to define uninitialized variables:
 
-```asm
+```assembly
 ;; Definition of the .bss section
 section .bss
         ;; Buffer to store double values of the first vector
@@ -261,13 +261,13 @@ The last parameter here is the most interesting. To simplify our job, we will us
 - Input string which should be converted to the floating point number
 - The pointer which will point to the first character after the parsed number within the string specified by the parameter above
 
-The `end_buffer_1` and `end_buffer_2` are such pointers that will be uesd in the `strtod`.
+The `end_buffer_1` and `end_buffer_2` are such pointers that will be used in the `strtod`.
 
 ### Printing user prompt and reading the user data
 
 After we defined the data needed to build our program, we can start with the definition of the `.text` section which will store the code of our program:
 
-```asm
+```assembly
 ;; Definition of the .text section
 section .text
         ;; Reference to the C stdlib functions that we will use
@@ -285,7 +285,7 @@ The definition of the `.text` section starts from the referencing the external f
 
 Our main goal now is to print the prompt which will invite a user to type some floating point values, convert these values from the string to the floating-point numbers and store them in the buffer which will represent our first vector. Let's take a look at the code:
 
-```asm
+```assembly
 ;; Read the first input string with floating-point values
 _read_first_float_vector:
         ;; Set the length of the prompt string to print.
@@ -345,9 +345,9 @@ Now we have buffer with the string values and this means that we can start to co
 
 ### Conversion of a string to a floating-point value
 
-At this point we have the memory buffer `buffer_1` which contains the uesr input. The user input should repreesnt a string with the floating-point values separated by spaces. We need to take each value from our buffer, convert it to the floating-point number and store it in the buffer that will represent our vector. Let's take a look at the code:
+At this point we have the memory buffer `buffer_1` which contains the user input. The user input should represent a string with the floating-point values separated by spaces. We need to take each value from our buffer, convert it to the floating-point number and store it in the buffer that will represent our vector. Let's take a look at the code:
 
-```asm
+```assembly
         ;; Reset the value of the r14 register to store the number of floating-point numbers
         ;; from the first vector.
         xor r14, r14
@@ -395,9 +395,138 @@ To do this, we store the address of the next location within the vector buffer w
 
 After we wrote our floating-point number to the vector buffer, we need to repeat all the operations again while we will not reach the end of the user input string.
 
-As soon as we will finish to parse the floating-point values for the first vector we need to repeat it for the second. I will not put code here responsible for it as it is almost the copy of the code that we have seen above, with the single difference - it will use own `buffer_2`, `end_buffer_2`, and `vector_2` buffers. If you feel not self-sure, you can find the whole code [here](https://github.com/0xAX/asm/blob/master/float/dot_product.asm).
+As soon as we will finish to parse the floating-point values for the first vector we need to repeat it for the second. I will not put code here responsible for it as it is almost the copy of the code that we have seen above, with only two differences:
+
+1. To parse data for the second vector we will use separate buffers - `buffer_2`, `end_buffer_2`, and `vector_2`. 
+2. To store the number of values within the second vector, we will use the `r15` register instead of `r14`.
+
+If you feel not self-sure, you can find the whole code [here](https://github.com/0xAX/asm/blob/master/float/dot_product.asm).
 
 ### Calculation of the dot product
+
+We have two buffers with floating-point numbers - `vector_1` and `vector_2`. This is all the data that we need to calculate the dot product of two vectors. Let's do it!
+
+```assembly
+;; Prepare to calculate the dot product of the two vectors.
+_calculate_dot_product:
+        ;; Check if the number of items in our vectors is not equal.
+        test r14, r15
+        ;; Print error and exit if not.
+        jle _error
+
+        ;; Set address of the first vector to the rdi register.
+        lea rdi, [rel vector_1]
+        ;; Set address of the second vector to the rdi register.
+        lea rsi, [rel vector_2]
+        ;; Set the number of values within the vectors to the rdx register.
+        mov rdx, r14
+        ;; Calculate the dot product of the two vectors.
+        call _dot_product
+```
+
+Before the calculation of the dot product of two vectors we must be sure that both vectors have the same number of components. The number of components of the first vector we stored in the `r14` register and the number of components of the second vector we stored in the `r15` register. Let's' compare them and if they are not equal, let's print error and exit. The error printing and the exit from the program should be already familiar to you:
+
+```assembly
+;; Print error and exit.
+_error:
+        ;; Set the length of the prompt string to print.
+        mov rdx, ERROR_MSG_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the prompt string to print.
+        mov rsi, ERROR_MSG
+        ;; Call the `sys_write` system call.
+        syscall
+        ;; Exit from the program
+        jmp _exit
+
+;; Exit from the program.
+_exit:  
+    ;; Specify the number of the system call (60 is `sys_exit`).
+    mov rax, SYS_EXIT
+    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+    mov rdi, EXIT_CODE
+    ;; Call the `sys_exit` system call.
+    syscall
+```
+
+If our data is good, we can proceed to calculation. To do that we store the address of both our vectors in the `rdi` and `rsi` registers, and put the number of components within the vectors into the `rdx` register. The `_dot_product` function does the main job. Let's take a look at the code of this function:
+
+```assembly
+;; Calculate the dot product of the two vectors.
+_dot_product:
+        ;; Reset the value of the rax register to 0.
+        xor rax, rax
+        ;; Reset the value of the xmm1 register to 0.
+        pxor xmm1, xmm1
+        ;; Current rdx contains the number of floating-point values within the vectors.
+        ;; Multiple it by 8 to get the number of bytes occupied by these values.
+        sal rdx, 3
+;; Calculate the the dot product in the loop.
+_loop:
+        ;; Move the floating-point value from the first vector to xmm0 register.
+        movsd xmm0, [rdi + rax]
+        ;; Multiple the floating-point from the second vector to the value from the first vector
+        ;; and store the result in the xmm0 register.
+        mulsd xmm0, [rsi + rax]
+        ;; Move to the next floating-point values in the vector buffers.
+        add rax, 8
+        ;; Add the result of multiplication of floating-point values from the vectors in the
+        ;; xmm1 register.
+        addsd xmm1, xmm0
+        ;; Check did we go through the all the floating-point values in the vector buffers.
+        cmp rax, rdx
+        ;; If not yet - repeat the loop.
+        jne _loop
+        ;; Move the result to the xmm0 register.
+        movapd xmm0, xmm1
+        ;; Return from the _dot_product back to the `_calculate_dot_product`.
+        ret
+```
+
+In the beginning of the function we prepare the `rax` and `xmm1` registers by resetting them to zero. The `rax` register will contain the offset within the vector buffers and the `xmm1` will be accumulator which will accumulates result of our program.
+
+All the calculation of the dot products of our two vectors happens within the loop identified by the `_loop` label. In the first instruction after this label, we store the current value from the first vector in the register `xmm0`. After this we multiple this value by the current value from the second vector. Remember that both vectors are pointed by the `rdi` and `rsi` register and the `rax` register stores the offset within this buffers that pointer to the current value we need to process. As we did the first multiplication, we increase the value of the `rax` to eight bytes to move to the next values within the vector buffers. In the same time we update our accumulator with the intermediate result of the dot product.
+
+At this point, the `xmm1` register will have the result of multiplication of the fist components of our vectors. At the next step we check that - did we reach the end of vectors and if not we repeat the loop for the second components, third, and so on.
+
+As soon as we reached the end of the vectors, we store the result in the `xmm0` register and return from the `_dot_product` function.
+
+Our result is ready 🎉 🎉 🎉 The last remaining thing to do - is to print the result. We will do using the [printf](https://man7.org/linux/man-pages/man3/printf.3.html) function to simplify our program:
+
+```assembly
+        ;; Specify reference to the format string for the printf(3) in the rdi register.
+        lea rdi, [rel FMT]
+        ;; Number of arguments of the floating-point registers passed as arguments
+        ;; to printf(3). We specify - `1` because we need to pass only `xmm0` with
+        ;; the result of the program.
+        mov rax, 1
+        ;; Call the printf(3) function that will print the result.
+        call printf
+
+        ;; Exit from the program.
+        jmp _exit
+```
+
+Now, let's build our program with the usual commands:
+
+```bash
+$ nasm -g -f elf64 -o dot_product.o dot_product.asm
+$ ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc dot_product.o -o dot_product
+```
+
+Then, try to run it:
+
+```
+$ ./dot_product 
+Input first vector: 2.5 3.17
+Input second vector: 4.22 100.1
+Dot product = 327.867000
+```
+
+Works as expected 🎉🎉🎉
 
 ## Conclusion
 
