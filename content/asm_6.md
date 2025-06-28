@@ -36,7 +36,10 @@ Let's take a random floating-point number, for example - `5.625`. To convert a f
 | $\frac{5}{2}$ |        1 |         0 |
 | $\frac{1}{2}  |        0 |         1 |
 
-To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. Note that we will use the prefix `0b` for all binary numbers to not mix them with the decimal numbers.
+To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. 
+
+> [!NOTE]
+> We will use the prefix `0b` for all binary numbers to not mix them with the decimal numbers.
 
 To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part is not equal to one. Let's try to convert the fractional part of our number:
 
@@ -46,7 +49,7 @@ To convert the fractional part of our floating-point number, we need to multiply
 |       0.25 * 2 |    0.5 |             0 |             0.5 |
 |        0.5 * 2 |      1 |             1 |               0 |
 
-To get the binary representation, we just write down all the integral parts that we got during the calculations. Integral parts for `0.625` are `1`, `0`, and `1`, which gives us `0.101` in binary. As a result, a binary representation of our floating point number `5.625` is `0b101.101`.
+To get the binary representation, we just write down all the integral parts that we got during the calculations. Integral parts for `0.625` are `1`, `0`, and `1`, which gives us `0b0.101` in binary. As a result, a binary representation of our floating point number `5.625` is `0b101.101`.
 
 As you practice converting decimal floating-point numbers to binary, you'll soon notice an interesting pattern: not all fractional parts can be represented in binary. For example, let's take a look at the binary representation of the fractional part of the number `5.575`:
 
@@ -65,7 +68,7 @@ As you practice converting decimal floating-point numbers to binary, you'll soon
 |       0.80 * 2 |   1.60 |             1 |            0.60 |
 |       0.60 * 2 |   1.20 |             1 |            0.20 |
 
-We can see that starting from step 5 (after the first four bits `1001`), the pattern `0011` repeats forever. Such repeatable parts are written down in brackets. For example, the number `5.575` in a binary form is `101.1001(0011)`. 
+We can see that starting from step 5 (after the first four bits `1001`), the pattern `0011` repeats forever. Such repeatable parts are written down in brackets. For example, the number `5.575` in a binary form is `0b101.1001(0011)`. 
 
 Here’s an interesting fact: if you convert a binary floating-point number back to decimal, you might not get exactly the same number you started with. That’s because floating-point numbers in a computer are only approximations of real values. This helps to understand a well-known example - let's try to ask [Python](https://www.python.org/) to do the simple computation:
 
