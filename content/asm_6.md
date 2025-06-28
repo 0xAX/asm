@@ -1,44 +1,44 @@
 # Floating-point arithmetic
 
-In the previous chapters, we have written a simple assembly programs which were operating with numeric and string-like data. All the numeric data that we have used was only integer numbers. This is not always practical and map the reality. Integer numbers does not allow us to represent fractional number values. In this chapter we will look how to operate with the  [floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic) in our programs.
+In the previous chapters, we wrote simple assembly programs operating with numeric and string-like data. All the numeric data that we used were only integer numbers. This is not always practical and does not always map reality, as integer numbers do not allow us to represent fractional number values. In this chapter, we will learn how to operate with the [floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic) in our programs.
 
 ## Floating-point representation
 
-First of all, let's take a look how floating-point numbers are represented in memory. There are three floating point data types:
+First of all, let's take a look at how floating-point numbers are represented in memory. There are three floating-point data types:
 
-- single-precision
-- double-precision
-- double-extended precision
+- Single-precision
+- Double-precision
+- Double-extended precision
 
 The Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) says:
 
 > The data formats for these data types correspond directly to formats specified in the IEEE Standard 754 for Binary Floating-Point Arithmetic.
 
-To get all the possible details about representation of the floating-point numbers in computer memory, you should take a look at this standard.
+To get all the possible details about the representation of the floating-point numbers in computer memory, you should take a look at this standard.
 
 All of these formats differ in accuracy. The single-precision and double-precision formats correspond to the [C's](https://en.wikipedia.org/wiki/C_(programming_language)) [float and double](https://cppreference.com/w/c/language/arithmetic_types.html) data types. The double-extended precision format corresponds to the C's `long double` data type.  Let's take a look at each of them.
 
 ### Single-precision format
 
-To represent a floating-point number using the single-precision format, the number is split on the three parts:
+The single-precision value occupies `32-bits` of memory with the following structure:
 
-- sign - 1 bit
-- exponent - 8 bits
-- mantissa - 23 bits
+- Sign - 1 bit
+- Exponent - 8 bits
+- Mantissa - 23 bits
 
-The sign bit provides information about the `sign` of the number. If this bit is set to `0` - the number is positive, and negative otherwise. While what is `sign` could be clear, on what is `exponent` and `mantissa` we need to stop and consider them in a more detailed way. To understand how floating-point numbers are presented in memory, we need to know how to convert the floating-point number from the [decimal](https://en.wikipedia.org/wiki/Decimal) to [binary](https://en.wikipedia.org/wiki/Binary_number) representation.
+The sign bit indicates whether the number is positive or negative. If the bit is set to `0`, the number is positive; if it’s `1`, the number is negative. While the idea of a sign is rather straightforward, the exponent and mantissa require a bit more explanation. To understand how floating-point numbers are represented in memory, we need to know how to convert the floating-point number from [decimal](https://en.wikipedia.org/wiki/Decimal) to [binary](https://en.wikipedia.org/wiki/Binary_number) representation.
 
-Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation we need to split our number on integral and fractional parts. In our case it is `2` and `625`. To convert the integral part of our number to binary representation, we need to divide our number by `2` repeatably while the result will not be zero. Let's take a look:
+Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation, we need to split the number into integral and fractional parts. In our case, it is `5` and `625`. To convert the integral part of our number to binary representation, we need to divide our number by `2` repeatedly until the result is not zero. Let's take a look:
 
-| Division | Quotient | Remainder |
-|----------|----------|-----------|
-| 5 % 2    |        2 |         1 |
-| 2 % 2    |        1 |         0 |
-| 1 % 2    |        0 |         1 |
+| Division      | Quotient | Remainder |
+|:-------------:|----------|-----------|
+| $\frac{5}{2}$ |        2 |         1 |
+| $\frac{5}{2}$ |        1 |         0 |
+| $\frac{1}{2}  |        0 |         1 |
 
-To get the binary representation, we just need to write down remainders. So `5` in binary is `101`.
+To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. Note that we will use the prefix `0b` for all binary numbers to not mix them with the decimal numbers.
 
-To convert fractional part of our floating-point number, we need multiple our number by `2` while the integral part will not be equal to one. Let's try to convert the fractional part of our number:
+To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part is not equal to one. Let's try to convert the fractional part of our number:
 
 | Multiplication | Result | Integral part | Fractional part |
 |----------------|--------|---------------|-----------------|
@@ -46,9 +46,9 @@ To convert fractional part of our floating-point number, we need multiple our nu
 |       0.25 * 2 |    0.5 |             0 |             0.5 |
 |        0.5 * 2 |      1 |             1 |               0 |
 
-To get the binary representation, we just need to write down integral parts that we got during calculations. So `0.625` in binary is `0.101`. As the result - our floating point number represented in binary form is `5.625 = 101.101`.
+To get the binary representation, we just write down all the integral parts that we got during the calculations. Integral parts for `0.625` are `1`, `0`, and `1`, which gives us `0.101` in binary. As a result, a binary representation of our floating point number `5.625` is `0b101.101`.
 
-If you will start to train to convert decimal floating-point numbers to binary system, you may note one interesting pattern very soon. Not all the fractional parts can be converted to binary. For example, let's take a look at the binary representation of the fractional part of the number `5.575`:
+As you practice converting decimal floating-point numbers to binary, you'll soon notice an interesting pattern: not all fractional parts can be represented in binary. For example, let's take a look at the binary representation of the fractional part of the number `5.575`:
 
 | Multiplication | Result | Integral part | Fractional part |
 |----------------|--------|---------------|-----------------|
@@ -65,7 +65,9 @@ If you will start to train to convert decimal floating-point numbers to binary s
 |       0.80 * 2 |   1.60 |             1 |            0.60 |
 |       0.60 * 2 |   1.20 |             1 |            0.20 |
 
-We may see that starting from the step `5` (or first four bits `1001`), the pattern `0011` repeats forever. Such repeatable part we will write down in brackets. So for example, the number `5.575` we will write in binary form as `101.1001(0011)`. The interesting fact - if we will try to convert this binary number back to decimal representation, we will end up with slight different number than our original number. That's why every floating-point number in a computer is just an approximation of the original value. Because of this you may now understand the well known example - let's try to ask [Python](https://www.python.org/) to do the simple compilation:
+We can see that starting from step 5 (after the first four bits `1001`), the pattern `0011` repeats forever. Such repeatable parts are written down in brackets. For example, the number `5.575` in a binary form is `101.1001(0011)`. 
+
+Here’s an interesting fact: if you convert a binary floating-point number back to decimal, you might not get exactly the same number you started with. That’s because floating-point numbers in a computer are only approximations of real values. This helps to understand a well-known example - let's try to ask [Python](https://www.python.org/) to do the simple computation:
 
 ```
 >>> 0.1 + 0.2
@@ -77,9 +79,13 @@ We may see that starting from the step `5` (or first four bits `1001`), the patt
 0.6000000000000001
 ```
 
-After we converted both integral and fractional parts of our number to binary representation, we can go to the next step. We need to convert to [scientific notation](https://en.wikipedia.org/wiki/Scientific_notation). The first part we need to [shift right](https://en.wikipedia.org/wiki/Logical_shift) the integral part of our number so that only `1` will remain. In a case of our number `101` - we need to shift right the number 2 times. As the result our initial number `101.101` started to be represented as `1.01101 * 2^2`. After this we need to add the number of shifts we done to the special number called - `bias`. For single-precision floating-point numbers it is equal to `127`. So we will get - `2 + 127 = 129` or `0b10000001`. This will be our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the number of the fractional parts to the 23 `mantissa` bits.
+After we convert both integral and fractional parts of our number to binary representation, we can move a step forward and convert it to [scientific notation](https://en.wikipedia.org/wiki/Scientific_notation). 
 
-If we will combine all together, we may see how our number `5.625` will be represented in a computer memory:
+As a first step, we need to shift right the integral part of our number so that only one digit remains before the point. In the case of `0b101`, we need to shift right two digits. Basically when we are doing each shift - we divide our number by `2`. This is done because our number has base `2`. Shifting the number twice, we divide our number by $$2^{2}$$. To keep the original value unchanged, we multiple it by $$2^{2}$$. As a result, our initial number `0b101.101` is now represented as `0b1.01101 * 2^2`.
+
+After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits.
+
+If we combine all together, we can see how our number `5.625` is represented in a computer memory:
 
 | Sign | Exponent | Mantissa                |
 |------|----------|-------------------------|
@@ -91,25 +97,25 @@ If the fractional part of the number is periodic as we have seen with the exampl
 |------|----------|-------------------------|
 |     0| 10000001 | 01100100110011001100110 |
 
-Now we know how computer represents a floating point number with a single-precision 🎉 
+Now we know how a computer represents a floating point number with a single-precision 🎉
 
 ### Double and double-extended precision formats
 
-As you may guess, the representation of the floating-point numbers using the double-precision and double-extended precision formats is similar to the single-precision format and the difference is only accuracy.
+As you may guess, the representation of floating-point numbers using the double-precision and double-extended precision formats is similar to the single-precision format, and the only difference is accuracy.
 
-The double-precision format is `64-bits` of memory with the following structure:
+The double-precision value occupies `64-bits` of memory with the following structure:
 
-- sign - 1 bit
-- exponent - 11 bit
-- mantissa - 52 bit
+- Sign - 1 bit
+- Exponent - 11 bits
+- Mantissa - 52 bits
 
-The extended-double precision format is `80-bits` of memory with the following structure:
+The extended-double precision value occupies `80-bits` of memory with the following structure:
 
-- sign - 1 bit
-- exponent - 15 bit
-- mantissa - 112 bit
+- Sign - 1 bit
+- Exponent - 15 bits
+- Mantissa - 64 bits
 
-The `bias` for the double-precision format is `1023`. The `bias` for the extended-double precision is `16383`.
+The `bias` for the double-precision format is `1023`. The `bias` for the extended-double precision format is `16383`.
 
 ## Floating-point instructions
 
@@ -170,7 +176,7 @@ The general instruction to compare floating-point numbers is `cmpss`.
 
 ## Example
 
-After we got familiar with some basics of the new topic - time to write some code. This time we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors.
+After we got familiar with some basics of the new topic - time to write some code. This time we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors. This operation is widely used in machine learning. It will be interesting to try to implement it using the assembly programming language.
 
 If you forgot what is dot product - it is an operation on two vectors $$a = [a_{1}, a_{2}, \cdots, a_{n}]$$ and $$b = [b_{1}, b_{2}, \cdots, b_{n}]$$ which produces a single value, defined as the sum of the products of corresponding entries from the two vectors:
 
