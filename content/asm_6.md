@@ -28,20 +28,20 @@ The single-precision value occupies `32-bits` of memory with the following struc
 
 The sign bit indicates whether the number is positive or negative. If the bit is set to `0`, the number is positive; if it’s `1`, the number is negative. While the idea of a sign is rather straightforward, the exponent and mantissa require a bit more explanation. To understand how floating-point numbers are represented in memory, we need to know how to convert the floating-point number from [decimal](https://en.wikipedia.org/wiki/Decimal) to [binary](https://en.wikipedia.org/wiki/Binary_number) representation.
 
-Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation, we need to split the number into integral and fractional parts. In our case, it is `5` and `625`. To convert the integral part of our number to binary representation, we need to divide our number by `2` repeatedly until the result is not zero. Let's take a look:
+Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation, we need to split the number into integral and fractional parts. In our case, it is `5` and `625`. To convert the integer part of a number to its binary representation, divide it by `2` repeatedly, noting down the remainders, until the quotient becomes zero. Let's take a look:
 
 | Division      | Quotient | Remainder |
 |:-------------:|----------|-----------|
 | $\frac{5}{2}$ |        2 |         1 |
 | $\frac{5}{2}$ |        1 |         0 |
-| $\frac{1}{2}  |        0 |         1 |
+| $\frac{1}{2}$ |        0 |         1 |
 
 To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. 
 
 > [!NOTE]
 > We will use the prefix `0b` for all binary numbers to not mix them with the decimal numbers.
 
-To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part is not equal to one. Let's try to convert the fractional part of our number:
+To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part equals 1. Let's try to convert the fractional part of our number:
 
 | Multiplication | Result | Integral part | Fractional part |
 |----------------|--------|---------------|-----------------|
@@ -86,7 +86,7 @@ After we convert both integral and fractional parts of our number to binary repr
 
 As a first step, we need to shift right the integral part of our number so that only one digit remains before the point. In the case of `0b101`, we need to shift right two digits. Basically when we are doing each shift - we divide our number by `2`. This is done because our number has base `2`. Shifting the number twice, we divide our number by $$2^{2}$$. To keep the original value unchanged, we multiple it by $$2^{2}$$. As a result, our initial number `0b101.101` is now represented as `0b1.01101 * 2^2`.
 
-After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits.
+After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits and rest filled with zeros.
 
 If we combine all together, we can see how our number `5.625` is represented in a computer memory:
 
@@ -94,7 +94,7 @@ If we combine all together, we can see how our number `5.625` is represented in 
 |------|----------|-------------------------|
 |     0| 10000001 | 01101000000000000000000 |
 
-If the fractional part of the number is periodic as we have seen with the example of the number `5.575` - we will fill the `mantissa` bits while it is possible. So the number `5.575` will be represented in a computer memory as:
+If the fractional part of the number is periodic, as in the example of the number `5.575`, we fill the `mantissa` bits while it is possible. So the number `5.575` is represented in a computer memory as:
 
 | Sign | Exponent | Mantissa                |
 |------|----------|-------------------------|
@@ -122,60 +122,77 @@ The `bias` for the double-precision format is `1023`. The `bias` for the extende
 
 ## Floating-point instructions
 
-As I mentioned in the beginning of this chapter, before this point we were writing our assembly programs which were operating only with integer numbers. We have used the `general-purpose` registers to store them and instructions like `add`, `sub`, `mul`, and so on to do basic arithmetic on them. We can not use these registers and instructions to operate with the floating-point numbers. Happily, `x86_64` CPU provides special registers and instructions to operate with such numbers. The name of these registers is `XMM` registers.
+As mentioned at the beginning of this chapter, before this point, we wrote assembly programs that operated only with integer numbers. We used the general-purpose registers to store them, and instructions like `add`, `sub`, `mul`, and others to perform basic arithmetic. However, we cannot use these registers and instructions to operate on floating-point numbers. Fortunately, `x86_64` CPUs provide special registers and instructions for handling such numbers. These registers are called `XMM` registers.
 
-There are 16 `XMM` registers named `xmm0` through `xmm15`. These registers are `128-bits`. At this point, the question might raised in your head - if we have `32-bits` and `64-bits` floating point numbers why we have `128-bit` registers? The answer is that these registers were introduced as part of the [SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) extensions instructions set. These instructions set allows to operate on `packed` data. This allows you to execute a single instruction on four `32-bits` floating point numbers for example.
+There are 16 `XMM` registers named from `xmm0` through `xmm15`. These registers occupy `128 bits` of memory. At this point, the question might arise in your mind - if we have `32-bit` and `64-bit` floating point numbers, why do we have `128-bit` registers? The answer is that these registers were introduced as part of the [SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) extension instruction set. This instruction set allows for operating on `packed` data. It enables you to execute a single instruction on four `32-bit` floating point numbers, for example.
 
-In addition to the sixteen `xmm` register, each `x86_64` CPU includes a "legacy" floating-point unit named [x87 FPU](https://en.wikipedia.org/wiki/X87). It is built as an eight-deep register stack. Each of those stack slots may hold an `80-bits` extended-precision number.
+In addition to the sixteen `XMM` registers, each `x86_64` CPU includes a "legacy" floating-point unit named [x87 FPU](https://en.wikipedia.org/wiki/X87). It is built as an eight-deep register stack. Each of those stack slots may hold an `80-bit` extended-precision number.
 
-Besides the storage for data, the CPU obviously provides instructions to operate on this data. The instructions set have the same purpose as instructions for integer data:
+Besides the data storage, the CPU provides instructions to operate on this data. This instruction set has the same purpose as instructions for integer data, including:
 
 - Data transfer instructions
 - Logical instructions
 - Comparison instructions
 - And others, like transcendental instructions, integer/floating-point conversion instructions, and so on
 
-In the next sections we will take a look at some of these instructions. Of course, we will not cover all the instructions supported by the modern CPUs. For more information, read the Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
+In the next sections, we will take a look at some of these instructions. Of course, we will not cover all the instructions supported by the modern CPUs. For more information, read the Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
 
-The calling conventions for floating-point numbers is different. If a function parameter is a floating-point number - it will be passed in one of `XMM` registers - the first argument will be passed in the `xmm0` register, the second argument will be passed in `xmm1` register and so on up till `xmm7`. The rest of arguments after eights argument are passed on the [stack](./asm_3.md). The value of the functions that return a floating-point value is stored in the `xmm0` register.
+The calling convention for floating-point numbers is different. If a function parameter is a floating-point number, it is passed in one of the `XMM` registers - the first argument is passed in the `xmm0` register, the second argument in the `xmm1` register, and so on up to `xmm7`. The rest of the arguments are passed on the [stack](./asm_3.md). The value of the functions that return a floating-point value is stored in the `xmm0` register.
 
 ### Data transfer instructions
 
-As we know from the [4th part](./asm_4.md) - data transfer instructions are used to move data between different locations. `x86_64` CPU provides special set of instructions for transfer of floating point data. If you are going to use the `x87 FPU` unit, one of the most common data transfer instructions are:
+As we know from the [Data manipulation](./asm_4.md) chapter, data transfer instructions are used to move data between different locations. The `x86_64` CPU provides a special set of instructions to transfer floating-point data. If you are going to use the `x87 FPU` unit, the most common data transfer instructions are:
 
-- `fld` - Load floating point value.
-- `fst` - Store floating point value.
+- `fld` - Loads a floating point value.
+- `fst` - Stores a floating point value.
 
 These instructions are used by the `x87 FPU` unit to store and load the floating-point numbers at/from the stack.
 
-To work with `XMM` registers, the following data transfer instructions are supported by an `x86_64` CPU:
+To work with the `XMM` registers, the `x86_64` CPU supports, among others, the following data transfer instructions:
 
-- `movss` - Move single-precision floating-point value between the `XMM` registers or between an `XMM` register and memory,
-- `movsd` - Move double-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
-- `movhlps` - Move two packed single-precision floating-point values from the high quadword of an `XMM` register to the low quadword of another `XMM` register.
-- `movlhps` - Move two packed single-precision floating-point values from the low quadword of an `XMM` register to the high quadword of another `XMM` register.
-- And others.
+- `movss` - Moves a single-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
+- `movsd` - Moves double-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
+- `movhlps` - Moves two-packed single-precision floating-point values from the high quadword of an `XMM` register to the low quadword of another `XMM` register.
+- `movlhps` - Moves two-packed single-precision floating-point values from the low quadword of an `XMM` register to the high quadword of another `XMM` register.
 
 ### Floating-point arithmetic instructions
 
-The floating-point arithmetic instructions perform arithmetic operations such as add, subtract, multiplication, and division on single or double precision floating-point values. The following floating-point arithmetic instructions exist:
+The floating-point arithmetic instructions perform arithmetic operations, such as addition, subtraction, multiplication, and division, on single or double-precision floating-point values. The following floating-point arithmetic instructions exist:
 
-- `addss` - Add single-precision floating-point values.
-- `addsd` - Add dobule-precision floating point values.
-- `subss` - Subtract single-precision floating-point values.
-- `subsd` - Subtract double-precision floating-point values.
-- `mulss` - Multiply single-precision floating-point values.
-- `mulsd` - Multiply double-precision floating-point values.
-- `divss` - Divide single-precision floating-point values. 
-- `divsd` - Divide double-precision floating-point values.
+- `addss` - Adds a single-precision floating-point values.
+- `addsd` - Adds a double-precision floating point values.
+- `subss` - Subtracts a single-precision floating-point values.
+- `subsd` - Subtracts a double-precision floating-point values.
+- `mulss` - Multiplies a single-precision floating-point values.
+- `mulsd` - Multiplies a double-precision floating-point values.
+- `divss` - Divides a single-precision floating-point values. 
+- `divsd` - Divides a double-precision floating-point values.
 
-All of these instructions expects two operands to execute the given operation of addition, subtraction, multiplication, or division. After the operation will be executed, the result will be stored in the first operand.
+All of these instructions expect two operands to execute the given operation of addition, subtraction, multiplication, or division. After the operation is executed, the result is stored in the first operand.
 
-### Floating-Point control instructions
+### Floating-point control instructions
 
-As we already know, the main goal of this type of instructions is to manage the control flow of our programs. For the integer comparison we have seen the `cmp` instruction. But this instruction will not work with floating-point values. Although, the result of the comparison is controlled by the same `rflags` registers that we have seen in the [4th part](./asm_4.md#Control transfer instructions).
+As we already know, the main goal of these instructions is to manage the control flow of our programs. For integer comparisons, we used the `cmp` instruction. But this instruction does not work with floating-point values, even though the result of the comparison is controlled by the same `rflags` registers that we saw in the [Data manipulation](./asm_4.md#Control transfer instructions) chapter. The general instruction to compare floating-point numbers is `cmpss`. Instead of setting the value of the flag based on the result comparison, the instruction stores the result of the comparison in the destination register. 
 
-The general instruction to compare floating-point numbers is `cmpss`.
+For example:
+
+```assembly
+;; Compare xmm0 < xmm1 and store the result in the xmm0
+cmpss xmm0, xmm1, 0x1
+```
+
+The third operand of the instruction, identifies the operator:
+
+| 3rd operand value | Meaning                                                                |
+|-------------------|------------------------------------------------------------------------|
+|                 0 | ==                                                                     |
+|                 1 | <                                                                      |
+|                 2 | <=                                                                     |
+|                 3 | Check that one of operands is [Nan](https://en.wikipedia.org/wiki/NaN) |
+|                 4 | !=                                                                     |
+|                 5 | >=                                                                     |
+|                 6 | >                                                                      |
+|                 7 | Checks that both operands are [Nan](https://en.wikipedia.org/wiki/NaN) |
 
 ## Example
 
