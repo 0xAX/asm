@@ -212,7 +212,7 @@ section .data
         EXIT_CODE equ 0
         ;; Maximum number of elements in a vector
         MAX_ELEMS equ 100
-        ;; Size of buffer that we will use to read vectors
+        ;; Size of the buffer that we will use to read vectors
         BUFFER_SIZE equ 1024
         ;; Prompt for the first vector
         FIRST_INPUT_MSG: db "Input first vector: "
@@ -286,7 +286,7 @@ section .text
 
 ;; Entry point of the program.
 _start:
-        ;; Read the first input string with floating-point values
+        ;; Jump to the _read_first_float_vector label
         jmp _read_first_float_vector
 ```
 
@@ -372,7 +372,7 @@ _parse_first_float_vector:
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
         mov rax, [end_buffer_1]
-        ;; Check is it the end of the input string.
+        ;; Check whether it is the end of the input string.
         cmp rax, rdi
         ;; Proceed with the second vector if we reached the end of the first.
         je _read_second_float_vector
@@ -381,7 +381,7 @@ _parse_first_float_vector:
         mov rdx, vector_1
         ;; Store the number of floating-point values we already have read in the rcx register.
         mov rcx, r14
-        ;; Multiple the number of floating-point values by 8.
+        ;; Multiply the number of floating-point values by 8.
         shl rcx, 3
         ;; Move the pointer from the beginning of the buffer with floating-point values that
         ;; we have parsed from the input string to the next value.
@@ -420,7 +420,7 @@ We have two buffers with floating-point numbers - `vector_1` and `vector_2`. Thi
 _calculate_dot_product:
         ;; Check if the number of items in our vectors is not equal.
         test r14, r15
-        ;; Print error and exit if not.
+        ;; Print an error and exit if not.
         jle _error
 
         ;; Set address of the first vector to the rdi register.
@@ -436,7 +436,7 @@ _calculate_dot_product:
 Before the calculation of the dot product of two vectors we must be sure that both vectors have the same number of components. The number of components of the first vector we stored in the `r14` register and the number of components of the second vector we stored in the `r15` register. Let's' compare them and if they are not equal, let's print error and exit. The error printing and the exit from the program should be already familiar to you:
 
 ```assembly
-;; Print error and exit.
+;; Print an error and exit.
 _error:
         ;; Set the length of the prompt string to print.
         mov rdx, ERROR_MSG_LEN
@@ -471,13 +471,13 @@ _dot_product:
         ;; Reset the value of the xmm1 register to 0.
         pxor xmm1, xmm1
         ;; Current rdx contains the number of floating-point values within the vectors.
-        ;; Multiple it by 8 to get the number of bytes occupied by these values.
+        ;; Multiply it by 8 to get the number of bytes occupied by these values.
         sal rdx, 3
 ;; Calculate the the dot product in the loop.
 _loop:
-        ;; Move the floating-point value from the first vector to xmm0 register.
+        ;; Move the floating-point value from the first vector to the xmm0 register.
         movsd xmm0, [rdi + rax]
-        ;; Multiple the floating-point from the second vector to the value from the first vector
+        ;; Multiply the floating-point from the second vector to the value from the first vector
         ;; and store the result in the xmm0 register.
         mulsd xmm0, [rsi + rax]
         ;; Move to the next floating-point values in the vector buffers.
@@ -485,7 +485,7 @@ _loop:
         ;; Add the result of multiplication of floating-point values from the vectors in the
         ;; xmm1 register.
         addsd xmm1, xmm0
-        ;; Check did we go through the all the floating-point values in the vector buffers.
+        ;; Check if we went through all the floating-point values in the vector buffers.
         cmp rax, rdx
         ;; If not yet - repeat the loop.
         jne _loop

@@ -1,6 +1,6 @@
 # Dot product
 
-This is a simple program that read two double vectors and calculates [dot product](https://en.wikipedia.org/wiki/Dot_product) of their values.
+This is a simple program that reads two double vectors and calculates the [dot product](https://en.wikipedia.org/wiki/Dot_product) of their values.
 
 To build the program, run:
 
