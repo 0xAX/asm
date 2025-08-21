@@ -15,20 +15,20 @@ section .data
 
         ;; Maximum number of elements in a vector
         MAX_ELEMS equ 100
-        ;; Size of the buffer that we will use to read vectors
+        ;; Buffer size that we will use to read vectors.
         BUFFER_SIZE equ 1024
 
         ;; Prompt for the first vector
-        FIRST_INPUT_MSG: db "Input first vector: "
+        FIRST_INPUT_MSG: db "Input the first vector: "
         ;; Length of the prompt for the first vector
-        FIRST_INPUT_MSG_LEN equ 20
+        FIRST_INPUT_MSG_LEN equ 24
 
         ;; Prompt for the second vector
-        SECOND_INPUT_MSG: db "Input second vector: "
+        SECOND_INPUT_MSG: db "Input the second vector: "
         ;; Length of the prompt for the second vector
-        SECOND_INPUT_MSG_LEN equ 21
+        SECOND_INPUT_MSG_LEN equ 25
 
-        ;; Error message that we will print if the number of items in the vectors is not the same..
+        ;; Error message to print if the number of items in the vectors is not the same.
         ERROR_MSG: db "Error: the number of values in vectors should be the same", 0xA, 0
         ;; Length of the error message.
         ERROR_MSG_LEN equ 59
@@ -46,13 +46,13 @@ section .bss
         ;; Buffer to store input for the first vector
         buffer_1: resq BUFFER_SIZE
         ;; Pointer within the `buffer_1` which points to the current position
-        ;; that we use to parse floats
+        ;; that we use to parse floating point numbers
         end_buffer_1: resq 1
 
         ;; Buffer to store input for the second vector
         buffer_2: resq BUFFER_SIZE
         ;; Pointer within the `buffer_2` which points to the current position
-        ;; that we use to parse floats
+        ;; that we use to parse floating point numbers
         end_buffer_2: resq 1
 
 ;; Definition of the .text section
@@ -69,7 +69,7 @@ _start:
 
 ;; Read the first input string with floating-point values
 _read_first_float_vector:
-        ;; Set the length of the prompt string to print.
+        ;; Set the length the of the prompt string to print.
         mov rdx, FIRST_INPUT_MSG_LEN
         ;; Specify the system call number (1 is `sys_write`).
         mov rax, SYS_WRITE
@@ -80,7 +80,7 @@ _read_first_float_vector:
         ;; Call the `sys_write` system call.
         syscall
 
-        ;; Set the length of string we want to read from the standard input.
+        ;; Set the length of the string we want to read from the standard input.
         mov rdx, BUFFER_SIZE
         ;; Specify the system call number (0 is `sys_read`)
         mov rdi, SYS_READ
@@ -96,7 +96,7 @@ _read_first_float_vector:
         mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
         mov rdx, buffer_1
-        ;; Move pointer within the buffer to the end of input.
+        ;; Move the pointer within the buffer to the end of input.
         add rdx, rcx
         ;; Fill the last byte of the input with 0.
         mov byte [rdx], 0
@@ -157,7 +157,7 @@ _read_second_float_vector:
         ;; Call the `sys_write` system call.
         syscall
 
-        ;;; Set the length of string we want to read from the standard input.
+        ;; Set the length of the string we want to read from the standard input.
         mov rdx, BUFFER_SIZE
         ;; Specify the system call number (0 is `sys_read`).
         mov rdi, SYS_READ
@@ -173,7 +173,7 @@ _read_second_float_vector:
         mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
         mov rdx, buffer_2
-        ;; Move pointer within the buffer to the end of input.
+        ;; Move the pointer within the buffer to the end of input.
         add rdx, rcx
         ;; Fill the last byte of the input with 0.
         mov byte [rdx], 0

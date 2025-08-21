@@ -28,20 +28,20 @@ The single-precision value occupies `32-bits` of memory with the following struc
 
 The sign bit indicates whether the number is positive or negative. If the bit is set to `0`, the number is positive; if it’s `1`, the number is negative. While the idea of a sign is rather straightforward, the exponent and mantissa require a bit more explanation. To understand how floating-point numbers are represented in memory, we need to know how to convert the floating-point number from [decimal](https://en.wikipedia.org/wiki/Decimal) to [binary](https://en.wikipedia.org/wiki/Binary_number) representation.
 
-Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation, we need to split the number into integral and fractional parts. In our case, it is `5` and `625`. To convert the integral part of our number to binary representation, we need to divide our number by `2` repeatedly until the result is not zero. Let's take a look:
+Let's take a random floating-point number, for example - `5.625`. To convert a floating-point number to a binary representation, we need to split the number into integral and fractional parts. In our case, it is `5` and `625`. To convert the integer part of a number to its binary representation, divide it by `2` repeatedly, noting down the remainders, until the quotient becomes zero. Let's take a look:
 
 | Division      | Quotient | Remainder |
 |:-------------:|----------|-----------|
 | $\frac{5}{2}$ |        2 |         1 |
 | $\frac{5}{2}$ |        1 |         0 |
-| $\frac{1}{2}  |        0 |         1 |
+| $\frac{1}{2}$ |        0 |         1 |
 
 To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. 
 
 > [!NOTE]
 > We will use the prefix `0b` for all binary numbers to not mix them with the decimal numbers.
 
-To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part is not equal to one. Let's try to convert the fractional part of our number:
+To convert the fractional part of our floating-point number, we need to multiply our number by `2` until the integral part equals 1. Let's try to convert the fractional part of our number:
 
 | Multiplication | Result | Integral part | Fractional part |
 |----------------|--------|---------------|-----------------|
@@ -86,7 +86,7 @@ After we convert both integral and fractional parts of our number to binary repr
 
 As a first step, we need to shift right the integral part of our number so that only one digit remains before the point. In the case of `0b101`, we need to shift right two digits. Basically when we are doing each shift - we divide our number by `2`. This is done because our number has base `2`. Shifting the number twice, we divide our number by $$2^{2}$$. To keep the original value unchanged, we multiple it by $$2^{2}$$. As a result, our initial number `0b101.101` is now represented as `0b1.01101 * 2^2`.
 
-After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits.
+After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits and rest filled with zeros.
 
 If we combine all together, we can see how our number `5.625` is represented in a computer memory:
 
@@ -94,7 +94,7 @@ If we combine all together, we can see how our number `5.625` is represented in 
 |------|----------|-------------------------|
 |     0| 10000001 | 01101000000000000000000 |
 
-If the fractional part of the number is periodic as we have seen with the example of the number `5.575` - we will fill the `mantissa` bits while it is possible. So the number `5.575` will be represented in a computer memory as:
+If the fractional part of the number is periodic, as in the example of the number `5.575`, we fill the `mantissa` bits while it is possible. So the number `5.575` is represented in a computer memory as:
 
 | Sign | Exponent | Mantissa                |
 |------|----------|-------------------------|
@@ -122,72 +122,89 @@ The `bias` for the double-precision format is `1023`. The `bias` for the extende
 
 ## Floating-point instructions
 
-As I mentioned in the beginning of this chapter, before this point we were writing our assembly programs which were operating only with integer numbers. We have used the `general-purpose` registers to store them and instructions like `add`, `sub`, `mul`, and so on to do basic arithmetic on them. We can not use these registers and instructions to operate with the floating-point numbers. Happily, `x86_64` CPU provides special registers and instructions to operate with such numbers. The name of these registers is `XMM` registers.
+As mentioned at the beginning of this chapter, before this point, we wrote assembly programs that operated only with integer numbers. We used the general-purpose registers to store them, and instructions like `add`, `sub`, `mul`, and others to perform basic arithmetic. However, we cannot use these registers and instructions to operate on floating-point numbers. Fortunately, `x86_64` CPUs provide special registers and instructions for handling such numbers. These registers are called `XMM` registers.
 
-There are 16 `XMM` registers named `xmm0` through `xmm15`. These registers are `128-bits`. At this point, the question might raised in your head - if we have `32-bits` and `64-bits` floating point numbers why we have `128-bit` registers? The answer is that these registers were introduced as part of the [SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) extensions instructions set. These instructions set allows to operate on `packed` data. This allows you to execute a single instruction on four `32-bits` floating point numbers for example.
+There are 16 `XMM` registers named from `xmm0` through `xmm15`. These registers occupy `128 bits` of memory. At this point, the question might arise in your mind - if we have `32-bit` and `64-bit` floating point numbers, why do we have `128-bit` registers? The answer is that these registers were introduced as part of the [SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) extension instruction set. This instruction set allows for operating on `packed` data. It enables you to execute a single instruction on four `32-bit` floating point numbers, for example.
 
-In addition to the sixteen `xmm` register, each `x86_64` CPU includes a "legacy" floating-point unit named [x87 FPU](https://en.wikipedia.org/wiki/X87). It is built as an eight-deep register stack. Each of those stack slots may hold an `80-bits` extended-precision number.
+In addition to the sixteen `XMM` registers, each `x86_64` CPU includes a "legacy" floating-point unit named [x87 FPU](https://en.wikipedia.org/wiki/X87). It is built as an eight-deep register stack. Each of those stack slots may hold an `80-bit` extended-precision number.
 
-Besides the storage for data, the CPU obviously provides instructions to operate on this data. The instructions set have the same purpose as instructions for integer data:
+Besides the data storage, the CPU provides instructions to operate on this data. This instruction set has the same purpose as instructions for integer data, including:
 
 - Data transfer instructions
 - Logical instructions
 - Comparison instructions
 - And others, like transcendental instructions, integer/floating-point conversion instructions, and so on
 
-In the next sections we will take a look at some of these instructions. Of course, we will not cover all the instructions supported by the modern CPUs. For more information, read the Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
+In the next sections, we will take a look at some of these instructions. Of course, we will not cover all the instructions supported by the modern CPUs. For more information, read the Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
 
-The calling conventions for floating-point numbers is different. If a function parameter is a floating-point number - it will be passed in one of `XMM` registers - the first argument will be passed in the `xmm0` register, the second argument will be passed in `xmm1` register and so on up till `xmm7`. The rest of arguments after eights argument are passed on the [stack](./asm_3.md). The value of the functions that return a floating-point value is stored in the `xmm0` register.
+The calling convention for floating-point numbers is different. If a function parameter is a floating-point number, it is passed in one of the `XMM` registers - the first argument is passed in the `xmm0` register, the second argument in the `xmm1` register, and so on up to `xmm7`. The rest of the arguments are passed on the [stack](./asm_3.md). The value of the functions that return a floating-point value is stored in the `xmm0` register.
 
 ### Data transfer instructions
 
-As we know from the [4th part](./asm_4.md) - data transfer instructions are used to move data between different locations. `x86_64` CPU provides special set of instructions for transfer of floating point data. If you are going to use the `x87 FPU` unit, one of the most common data transfer instructions are:
+As we know from the [Data manipulation](./asm_4.md) chapter, data transfer instructions are used to move data between different locations. The `x86_64` CPU provides a special set of instructions to transfer floating-point data. If you are going to use the `x87 FPU` unit, the most common data transfer instructions are:
 
-- `fld` - Load floating point value.
-- `fst` - Store floating point value.
+- `fld` - Loads a floating point value.
+- `fst` - Stores a floating point value.
 
 These instructions are used by the `x87 FPU` unit to store and load the floating-point numbers at/from the stack.
 
-To work with `XMM` registers, the following data transfer instructions are supported by an `x86_64` CPU:
+To work with the `XMM` registers, the `x86_64` CPU supports, among others, the following data transfer instructions:
 
-- `movss` - Move single-precision floating-point value between the `XMM` registers or between an `XMM` register and memory,
-- `movsd` - Move double-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
-- `movhlps` - Move two packed single-precision floating-point values from the high quadword of an `XMM` register to the low quadword of another `XMM` register.
-- `movlhps` - Move two packed single-precision floating-point values from the low quadword of an `XMM` register to the high quadword of another `XMM` register.
-- And others.
+- `movss` - Moves a single-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
+- `movsd` - Moves double-precision floating-point value between the `XMM` registers or between an `XMM` register and memory.
+- `movhlps` - Moves two-packed single-precision floating-point values from the high quadword of an `XMM` register to the low quadword of another `XMM` register.
+- `movlhps` - Moves two-packed single-precision floating-point values from the low quadword of an `XMM` register to the high quadword of another `XMM` register.
 
 ### Floating-point arithmetic instructions
 
-The floating-point arithmetic instructions perform arithmetic operations such as add, subtract, multiplication, and division on single or double precision floating-point values. The following floating-point arithmetic instructions exist:
+The floating-point arithmetic instructions perform arithmetic operations, such as addition, subtraction, multiplication, and division, on single or double-precision floating-point values. The following floating-point arithmetic instructions exist:
 
-- `addss` - Add single-precision floating-point values.
-- `addsd` - Add dobule-precision floating point values.
-- `subss` - Subtract single-precision floating-point values.
-- `subsd` - Subtract double-precision floating-point values.
-- `mulss` - Multiply single-precision floating-point values.
-- `mulsd` - Multiply double-precision floating-point values.
-- `divss` - Divide single-precision floating-point values. 
-- `divsd` - Divide double-precision floating-point values.
+- `addss` - Adds a single-precision floating-point values.
+- `addsd` - Adds a double-precision floating point values.
+- `subss` - Subtracts a single-precision floating-point values.
+- `subsd` - Subtracts a double-precision floating-point values.
+- `mulss` - Multiplies a single-precision floating-point values.
+- `mulsd` - Multiplies a double-precision floating-point values.
+- `divss` - Divides a single-precision floating-point values.
+- `divsd` - Divides a double-precision floating-point values.
 
-All of these instructions expects two operands to execute the given operation of addition, subtraction, multiplication, or division. After the operation will be executed, the result will be stored in the first operand.
+All of these instructions expect two operands to execute the given operation of addition, subtraction, multiplication, or division. After the operation is executed, the result is stored in the first operand.
 
 ### Floating-Point control instructions
 
-As we already know, the main goal of this type of instructions is to manage the control flow of our programs. For the integer comparison we have seen the `cmp` instruction. But this instruction will not work with floating-point values. Although, the result of the comparison is controlled by the same `rflags` registers that we have seen in the [4th part](./asm_4.md#Control transfer instructions).
+As we already know, the main goal of these instructions is to manage the control flow of our programs. For integer comparisons, we used the `cmp` instruction. But this instruction does not work with floating-point values, even though the result of the comparison is controlled by the same `rflags` registers that we saw in the [Data manipulation](./asm_4.md#control-transfer-instructions) chapter. The general instruction to compare floating-point numbers is `cmpss`. Instead of setting the value of the flag based on the result comparison, the instruction stores the result of the comparison in the destination register.
 
-The general instruction to compare floating-point numbers is `cmpss`.
+For example:
+
+```assembly
+;; Compare xmm0 < xmm1 and store the result in the xmm0
+cmpss xmm0, xmm1, 0x1
+```
+
+The third operand of the instruction, identifies the operator:
+
+| 3rd operand value | Meaning                                                                |
+|-------------------|------------------------------------------------------------------------|
+|                 0 | ==                                                                     |
+|                 1 | <                                                                      |
+|                 2 | <=                                                                     |
+|                 3 | Check that one of operands is [Nan](https://en.wikipedia.org/wiki/NaN) |
+|                 4 | !=                                                                     |
+|                 5 | >=                                                                     |
+|                 6 | >                                                                      |
+|                 7 | Checks that both operands are [Nan](https://en.wikipedia.org/wiki/NaN) |
 
 ## Example
 
-After we got familiar with some basics of the new topic - time to write some code. This time we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors. This operation is widely used in machine learning. It will be interesting to try to implement it using the assembly programming language.
+After we got familiar with the basics of the new topic, it's time to write some code. This time, we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates the [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors. This operation is widely used in machine learning. It will be interesting to try to implement it using the assembly programming language.
 
-If you forgot what is dot product - it is an operation on two vectors $$a = [a_{1}, a_{2}, \cdots, a_{n}]$$ and $$b = [b_{1}, b_{2}, \cdots, b_{n}]$$ which produces a single value, defined as the sum of the products of corresponding entries from the two vectors:
+As a reminder – a dot product is an operation on two vectors (with $$a = [a_{1}, a_{2}, \cdots, a_{n}]$$ and $$b = [b_{1}, b_{2}, \cdots, b_{n}]$$), which produces a single value defined as the sum of the products of corresponding entries from the two vectors:
 
 $$
 a \times b = \sum_{i = 1}^{n} a_{i} \times b_{i} = a_{1} \times b_{1} + a_{2} \times b_{2} + \cdots + a_{n} \times b_{n}
 $$
 
-The values of the both vectors we will take from the user input. Our program will ask user to specify components of the first vector represented by the floating-point numbers split by spaces and after that components of the second vector in the same format. After we will calculate the dot product of the given vectors and print the result.
+The values of both vectors are taken from the user input. Our program will ask the user to specify the components of the first vector represented by floating-point numbers split by spaces. After that, the program will ask to specify components of the second vector in the same format. Finally, we will calculate the dot product of the given vectors and print the result.
 
 Let's start.
 
@@ -212,17 +229,17 @@ section .data
         EXIT_CODE equ 0
         ;; Maximum number of elements in a vector
         MAX_ELEMS equ 100
-        ;; Size of the buffer that we will use to read vectors
+        ;; Buffer size that we will use to read vectors.
         BUFFER_SIZE equ 1024
         ;; Prompt for the first vector
-        FIRST_INPUT_MSG: db "Input first vector: "
+        FIRST_INPUT_MSG: db "Input the first vector: "
         ;; Length of the prompt for the first vector
-        FIRST_INPUT_MSG_LEN equ 20
+        FIRST_INPUT_MSG_LEN equ 24
         ;; Prompt for the second vector
-        SECOND_INPUT_MSG: db "Input second vector: "
+        SECOND_INPUT_MSG: db "Input the second vector: "
         ;; Length of the prompt for the second vector
-        SECOND_INPUT_MSG_LEN equ 21
-        ;; Error message that we will print if the number of items in the vectors is not the same..
+        SECOND_INPUT_MSG_LEN equ 25
+        ;; Error message to print if the number of items in the vectors is not the same.
         ERROR_MSG: db "Error: the number of values in vectors should be the same", 0xA, 0
         ;; Length of the error message.
         ERROR_MSG_LEN equ 59
@@ -230,13 +247,13 @@ section .data
         PRINTF_FORMAT: db "Dot product = %f", 0xA, 0
 ```
 
-This should be quite similar to what we defined in our previous programs but with some exceptions. The first difference that we may see is that we are going to use not only the [sys_write](https://man7.org/linux/man-pages/man2/write.2.html) and [sys_exit](https://man7.org/linux/man-pages/man2/_exit.2.html) system calls in our program but in addition - [sys_read](https://man7.org/linux/man-pages/man2/read.2.html). The main reason for this should be obvious - as we are going to read user input to build our vectors. Besides the system call identifiers, we may see: 
+This is similar to what we defined in our previous programs, but with some differences. First, we will use not only the [sys_write](https://man7.org/linux/man-pages/man2/write.2.html) and [sys_exit](https://man7.org/linux/man-pages/man2/_exit.2.html) system calls, but also [sys_read](https://man7.org/linux/man-pages/man2/read.2.html). We do this because we are going to read user input to build our vectors. Besides the system call identifiers, in the `.data` section definition, we can also see:
 
-- The prompt messages that we will use when we ask a user to input data for vectors
-- The error message which will be printed
-- Parameters of the buffer which will be used to store the user input
+- The prompt messages used when asking a user to input data for vectors
+- The error message to print
+- Parameters of the buffer used to store the user input
 
-After the definition data that we may initialize, we need to define uninitialized variables:
+After defining the data that we may initialize, we need to define uninitialized variables:
 
 ```assembly
 ;; Definition of the .bss section
@@ -249,30 +266,30 @@ section .bss
         ;; Buffer to store input for the first vector
         buffer_1: resq BUFFER_SIZE
         ;; Pointer within the `buffer_1` which points to the current position
-        ;; that we use to parse floats
+        ;; that we use to parse floating point numbers
         end_buffer_1: resq 1
 
         ;; Buffer to store input for the second vector
         buffer_2: resq BUFFER_SIZE
         ;; Pointer within the `buffer_2` which points to the current position
-        ;; that we use to parse floats
+        ;; that we use to parse floating point numbers
         end_buffer_2: resq 1
 ```
 
-In the `.bss` section we define:
+In the `.bss` section, we define:
 
 - Two buffers for the vectors
 - Two buffers for the user input
-- Two pointers to the current position within the buffers with the user-input
+- Two pointers to the current position within the buffers with the user input
 
-The last parameter here is the most interesting. To simplify our job, we will use the functions from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library). One of such function is [strtod](https://man7.org/linux/man-pages/man3/strtod.3.html). This function converts the given string to a floating-point number. It takes two parameters:
+The last parameter here is the most interesting. To simplify our job, we will use the functions from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library). One of such functions is [strtod](https://man7.org/linux/man-pages/man3/strtod.3.html), which converts the given string to a floating point number. It takes two parameters:
 
-- Input string which should be converted to the floating point number
-- The pointer which will point to the first character after the parsed number within the string specified by the parameter above
+- Input string which should be converted to a floating point number
+- The pointer that will point to the first character after the parsed number within the string specified by the parameter above
 
 The `end_buffer_1` and `end_buffer_2` are such pointers that will be used in the `strtod`.
 
-### Printing user prompt and reading the user data
+### Printing a user prompt and reading the user data
 
 After we defined the data needed to build our program, we can start with the definition of the `.text` section which will store the code of our program:
 
@@ -290,9 +307,9 @@ _start:
         jmp _read_first_float_vector
 ```
 
-The definition of the `.text` section starts from the referencing the external functions: `strtod` and `printf`. As I mentioned above, these functions are from the C standard library and we are going to use them to simplify our program. After the traditional definition of the entry point of our program we just immediately jump to the `_read_first_float_vector` label. This is where our code starts.
+The definition of the `.text` section starts from referencing the external functions: `strtod` and `printf`. As mentioned above, these functions are part of the C standard library, and we will use them to simplify our program. After defining the entry point, we immediately jump to the `_read_first_float_vector` label. This is where our code starts.
 
-Our main goal now is to print the prompt which will invite a user to type some floating point values, convert these values from the string to the floating-point numbers and store them in the buffer which will represent our first vector. Let's take a look at the code:
+Our main goal now is to print the prompt, which will ask a user to type some floating-point values. We will then convert these values from strings to floating-point numbers and store them in a buffer representing our first vector. Let's take a look at the code:
 
 ```assembly
 ;; Read the first input string with floating-point values
@@ -308,7 +325,7 @@ _read_first_float_vector:
         ;; Call the `sys_write` system call.
         syscall
 
-        ;; Set the length of string we want to read from the standard input.
+        ;; Set the length of the string we want to read from the standard input.
         mov rdx, BUFFER_SIZE
         ;; Specify the system call number (0 is `sys_read`)
         mov rdi, SYS_READ
@@ -324,13 +341,13 @@ _read_first_float_vector:
         mov rcx, rax
         ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
         mov rdx, buffer_1
-        ;; Move pointer within the buffer to the end of input.
+        ;; Move the pointer within the buffer to the end of input.
         add rdx, rcx
         ;; Fill the last byte of the input with 0.
         mov byte [rdx], 0
 ```
 
-The code starts from the already familiar to us call of the `sys_write` system call. We use it to write a prompt string `Input first vector: ` to the terminal. After this line is printed, we execute the `sys_read` system call to read the user input. If we will take a look at the definition of this system call, we will see that it expects to get three parameters:
+As usual, the code starts from the `sys_write` system call. We use it to write a prompt string `Input the first vector: ` to the terminal. After this line is printed, we execute the `sys_read` system call to read the user input. If we take a look at the definition of this system call, we will see that it expects three arguments:
 
 ```C
 ssize_t read(int fd, void buf[.count], size_t count);
@@ -338,19 +355,21 @@ ssize_t read(int fd, void buf[.count], size_t count);
 
 The parameters are:
 
-- A file descriptor which identifies file that we want to read the data from
+- A file descriptor that identifies the file from which we want to read the data
 - The buffer where the data that we have read will be stored
 - Number of bytes that we want to read
 
-You may see that we specify all of these parameters before calling of the `sys_read` in our code according to the **calling conventions** specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). If you already forgot the details, you can read this document or the [second part](./asm_2.md) of this notes.
+As you can see, we specify all these parameters before calling `sys_read` according to the **calling conventions** specified in the [System V Application Binary Interface](https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf). If this sounds unfamiliar, read the linked document or go back to the [second chapter](./asm_2.md) of this assembler course.
 
-After this code will be executed, our buffer specified by the `buffer_1` name, will contain the user input. Now we have the line that a user passed to our program, the next goal is to convert each value represented by the string from the input to the floating-point values and store them in a separate buffer. But before we can do it, we need to do one more action. The user input will contain the `newline` symbol in the end. We don't need it in our input as we can't convert it to a floating point number. To get rid of this symbol - we just replace it with the `0` byte. To do that we need just know the length of the user-input. The good news that we already know it. If you will take a look at the documentation of the `sys_read` system call, you may see:
+After executing the code, the buffer specified by the `buffer_1` name will contain the user input. The next goal is to convert each value represented by the string from the input to floating-point values and store them in a separate buffer. But before, we need to do one more thing.
+
+The user input contains the `newline` symbol at the end. We don't need it in our input, as we can't convert it to a floating-point number. To get rid of this symbol, we replace it with the `0` byte. To do that, we need to know the length of the user input. The good news is that we already know it. Take a look at the documentation of the `sys_read` system call:
 
 > On success, the number of bytes read is returned
 
-As you may remember, the return value of a system call is stored in the `rax` register. To write the zero byte into the buffer right after the user input, we just need to take the pointer to the beginning of this buffer, add offset to it equal to the length of the user-input and write `0` byte to this address. All of these you may see in the last four lines of code above.
+As you may remember, the return value of a system call is stored in the `rax` register. To write the zero byte into the buffer right after the user input, we just need to take the pointer to the beginning of this buffer, add an offset to it (which is equal to the length of the user input), and add the `0` byte to this address. All of these you can see in the last four lines of the code above.
 
-Now we have buffer with the string values and this means that we can start to convert them to the floating point numbers. We will see how to do it in the next section!
+Now we have a buffer with the string values suitable for converting them into floating point numbers. We will see how to do it in the next section!
 
 ### Conversion of a string to a floating-point value
 
@@ -530,8 +549,8 @@ Then, try to run it:
 
 ```
 $ ./dot_product 
-Input first vector: 2.5 3.17
-Input second vector: 4.22 100.1
+Input the first vector: 2.5 3.17
+Input the second vector: 4.22 100.1
 Dot product = 327.867000
 ```
 
@@ -539,6 +558,6 @@ Works as expected 🎉🎉🎉
 
 ## Conclusion
 
-In this chapter, we have seen how to work with a floating-point data and got familiar with more assembly instructions. Of course, this small post didn't cover all the details related to this big topic.
+In this chapter, we have seen how to work with floating-point data and got familiar with more assembly instructions. Of course, this post didn't cover all the details related to this topic.
 
 For more information about floating-point representation and operations on such data, go to the [Intel manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html).
