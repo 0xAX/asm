@@ -373,7 +373,7 @@ Now we have a buffer with the string values suitable for converting them into fl
 
 ### Conversion of a string to a floating-point value
 
-At this point we have the memory buffer `buffer_1` which contains the user input. The user input should represent a string with the floating-point values separated by spaces. We need to take each value from our buffer, convert it to the floating-point number and store it in the buffer that will represent our vector. Let's take a look at the code:
+At this point, we have the memory buffer `buffer_1` which contains the user input. The user input represents a string with the floating-point values separated by spaces. Now we need to take each value from the buffer, convert it to a floating-point number, and store it in the buffer that represents our vector. Let's take a look at the code:
 
 ```assembly
         ;; Reset the value of the r14 register to store the number of floating-point numbers
@@ -383,17 +383,17 @@ At this point we have the memory buffer `buffer_1` which contains the user input
         mov rdi, buffer_1
 ;; Parse the floating-point values from the input buffer.
 _parse_first_float_vector:
-        ;; Initialize the rsi register with the pointer which will point to the place where
+        ;; Initialize the rsi register with the pointer which points to the place where
         ;; the strtod(3) will finish its work.
         mov rsi, end_buffer_1
-        ;; Call the strtod(3) to conver floating-point value from the input buffer to double.
+        ;; Call the strtod(3) to convert a floating-point value from the input buffer to double representation.
         call strtod
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
         mov rax, [end_buffer_1]
         ;; Check whether it is the end of the input string.
         cmp rax, rdi
-        ;; Proceed with the second vector if we reached the end of the first.
+        ;; Proceed with the second vector if we reached the end of the first vector.
         je _read_second_float_vector
         ;; Store the reference to the beginning of the buffer where we will store
         ;; our double values to the rdx register.
@@ -403,11 +403,11 @@ _parse_first_float_vector:
         ;; Multiply the number of floating-point values by 8.
         shl rcx, 3
         ;; Move the pointer from the beginning of the buffer with floating-point values that
-        ;; we have parsed from the input string to the next value.
+        ;; we parsed from the input string to the next value.
         add rdx, rcx
         ;; Store the next floating-point value in the buffer.
         movq [rdx], xmm0
-        ;; Increase the number of floating-point value that we already have parsed.
+        ;; Increase the number of floating-point values that we already parsed.
         inc r14
         ;; Move the pointer within the input buffer to the next floating-point value.
         mov rdi, rax
@@ -415,36 +415,37 @@ _parse_first_float_vector:
         jmp _parse_first_float_vector
 ```
 
-The code starts from the setting the `r14` register to `0`. This register will contain the number of floating-point values within the given user input. After this we put the address of the user input buffer to the `rdi` register. This will be the first argument of the `strtod` function that will convert the first floating-point value from the given buffer. Now we need to prepare the second argument of the `strtod` function. As you may read in the section above, it has to be a pointer which will point to the first character after the parsed number. We store this pointer in the `rsi` register. Since we prepared both parameters of the `strtod` function we can call it.
+The code starts by setting the `r14` register to `0`. This register contains the initial number of floating-point values from the user input. Then, we put the address of the user input buffer into the `rdi` register. This will be the first argument of the `strtod` function that will convert the first floating-point value from the buffer. Next, we prepare the second argument of the `strtod` function by storing a pointer to the first character after the parsed number in the `rsi` register. With both parameters of the `strtod` function ready, we can now call it.
 
-After this function is executed we need to check - did we reach the end of the string or not. We can do it by comparing the both pointers that we passed to the `strtod` function. If they are equal - it means we reached the end of string and we can move to the parsing of the data for the second vector. If not, we need to put the parsed floating-point number to the vector buffer.
+After this function is executed, we need to check if we reached the end of the string. We can do it by comparing both pointers that we passed to the `strtod` function. If they are equal, we reached the end of the string, and we can move to parsing the data for the second vector. If not, we need to put the parsed floating-point number into the vector buffer.
 
-To do this, we store the address of the next location within the vector buffer where we need to store just parsed floating-point value in the `rdx` register. As we got this address, we can write the floating-point value into this address. The value is stored in the `xmm0` register because the `strtod` function returns the double value and according to the calling conventions it will be returned in this register.
+To do this, we store in the `rdx` register the address of the next location within the vector buffer where the parsed floating-point value should be placed. Once we have this address, we can write the floating-point value into this location. The value is stored in the `xmm0` register because the `strtod` function returns the double value, and according to the calling conventions, return values of this type are placed in this register.
 
-After we wrote our floating-point number to the vector buffer, we need to repeat all the operations again while we will not reach the end of the user input string.
+After writing the floating-point number to the vector buffer, we need to repeat this operation until we reach the end of the user input string.
 
-As soon as we will finish to parse the floating-point values for the first vector we need to repeat it for the second. I will not put code here responsible for it as it is almost the copy of the code that we have seen above, with only two differences:
+As soon as we finish parsing the floating-point values for the first vector, we need to repeat it for the second. I will not include the code here, as it is almost identical to the snippet above, with only two differences:
 
-1. To parse data for the second vector we will use separate buffers - `buffer_2`, `end_buffer_2`, and `vector_2`. 
-2. To store the number of values within the second vector, we will use the `r15` register instead of `r14`.
+- To parse data for the second vector, we will use separate buffers - `buffer_2`, `end_buffer_2`, and `vector_2`. 
+- To store the number of values within the second vector, we will use the `r15` register instead of `r14`.
 
-If you feel not self-sure, you can find the whole code [here](https://github.com/0xAX/asm/blob/master/float/dot_product.asm).
+> [!TIP]
+> For reference, you can find the whole code [here](https://github.com/0xAX/asm/blob/master/float/dot_product.asm).
 
 ### Calculation of the dot product
 
-We have two buffers with floating-point numbers - `vector_1` and `vector_2`. This is all the data that we need to calculate the dot product of two vectors. Let's do it!
+Now we have two buffers with floating-point numbers - `vector_1` and `vector_2`. This is all we need to calculate the dot product of two vectors. Let's do it!
 
 ```assembly
 ;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
-        ;; Check if the number of items in our vectors is not equal.
+        ;; Check if the number of items in our vectors is equal.
         test r14, r15
         ;; Print an error and exit if not.
         jle _error
 
-        ;; Set address of the first vector to the rdi register.
+        ;; Set the address of the first vector to the rdi register.
         mov rdi, vector_1
-        ;; Set address of the second vector to the rdi register.
+        ;; Set the address of the second vector to the rsi register.
         mov rsi, vector_2
         ;; Set the number of values within the vectors to the rdx register.
         mov rdx, r14
@@ -452,7 +453,7 @@ _calculate_dot_product:
         call _dot_product
 ```
 
-Before the calculation of the dot product of two vectors we must be sure that both vectors have the same number of components. The number of components of the first vector we stored in the `r14` register and the number of components of the second vector we stored in the `r15` register. Let's' compare them and if they are not equal, let's print error and exit. The error printing and the exit from the program should be already familiar to you:
+Before calculating the dot product of two vectors, we must be sure that both vectors have the same number of components. The number of components of the first vector is stored in the `r14` register, and the number of components of the second vector is stored in the `r15` register. Let’s check if these values are equal; if not, we will print an error message and exit the program. The error-printing and program exit process should already be familiar to you:
 
 ```assembly
 ;; Print an error and exit.
@@ -471,7 +472,7 @@ _error:
         jmp _exit
 
 ;; Exit from the program.
-_exit:  
+_exit:
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov rax, SYS_EXIT
     ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
@@ -480,7 +481,7 @@ _exit:
     syscall
 ```
 
-If our data is good, we can proceed to calculation. To do that we store the address of both our vectors in the `rdi` and `rsi` registers, and put the number of components within the vectors into the `rdx` register. The `_dot_product` function does the main job. Let's take a look at the code of this function:
+If both vectors have the same number of components, we can proceed to the calculation. To do that, we store the addresses of both vectors in the `rdi` and `rsi` registers, and put the number of components within the vectors into the `rdx` register. The `_dot_product` function does the main job. Let's take a look at the code of this function:
 
 ```assembly
 ;; Calculate the dot product of the two vectors.
@@ -490,46 +491,43 @@ _dot_product:
         ;; Reset the value of the xmm1 register to 0.
         pxor xmm1, xmm1
         ;; Current rdx contains the number of floating-point values within the vectors.
-        ;; Multiply it by 8 to get the number of bytes occupied by these values.
+        ;; Multiply it by 8 using shift left operation to get the number of bytes 
+        ;; occupied by these values.
         sal rdx, 3
 ;; Calculate the the dot product in the loop.
 _loop:
         ;; Move the floating-point value from the first vector to the xmm0 register.
         movsd xmm0, [rdi + rax]
-        ;; Multiply the floating-point from the second vector to the value from the first vector
+        ;; Multiply the floating-point value from the second vector by the value from the first vector
         ;; and store the result in the xmm0 register.
         mulsd xmm0, [rsi + rax]
         ;; Move to the next floating-point values in the vector buffers.
         add rax, 8
-        ;; Add the result of multiplication of floating-point values from the vectors in the
-        ;; xmm1 register.
+        ;; Add the result of multiplying the floating-point values from the two vectors into the xmm1 register.
         addsd xmm1, xmm0
         ;; Check if we went through all the floating-point values in the vector buffers.
         cmp rax, rdx
-        ;; If not yet - repeat the loop.
+        ;; If not, repeat the loop.
         jne _loop
         ;; Move the result to the xmm0 register.
         movapd xmm0, xmm1
-        ;; Return from the _dot_product back to the `_calculate_dot_product`.
+        ;; Return from the `_dot_product` back to the `_calculate_dot_product`.
         ret
 ```
 
-In the beginning of the function we prepare the `rax` and `xmm1` registers by resetting them to zero. The `rax` register will contain the offset within the vector buffers and the `xmm1` will be accumulator which will accumulates result of our program.
+At the beginning of the function, we prepare the `rax` and `xmm1` registers by resetting them to zero. The `rax` register will contain the offset within the vector buffers, and the `xmm1` register will accumulate the result of our program. The number of floating-point values within the vectors is stored in the `rdx` register. Since we will move the pointer within the buffers, we need to know how many bytes occupied by these values. To do this we multiple the value of the `rdx` register by `8`. To do this we use the `sal` instruction which executes [arithmetic left shift](https://en.wikipedia.org/wiki/Arithmetic_shift) on the given operand.
 
-All the calculation of the dot products of our two vectors happens within the loop identified by the `_loop` label. In the first instruction after this label, we store the current value from the first vector in the register `xmm0`. After this we multiple this value by the current value from the second vector. Remember that both vectors are pointed by the `rdi` and `rsi` register and the `rax` register stores the offset within this buffers that pointer to the current value we need to process. As we did the first multiplication, we increase the value of the `rax` to eight bytes to move to the next values within the vector buffers. In the same time we update our accumulator with the intermediate result of the dot product.
+The dot product calculation takes place inside the loop labeled `_loop`. In the first instruction of this label, we put the current value from the first vector into the `xmm0` register. Next, we multiply this value by the current value from the second vector. The two vectors are pointed by the `rdi` and `rsi` registers, and the `rax` register stores the offset within these buffers that points to the current value we need to process. After performing the multiplication, we increase the value of the `rax` to eight bytes to move to the next values within the vector buffers. At the same time, we update our accumulator with the intermediate result of the dot product.
 
-At this point, the `xmm1` register will have the result of multiplication of the fist components of our vectors. At the next step we check that - did we reach the end of vectors and if not we repeat the loop for the second components, third, and so on.
+At this point, the `xmm1` register stores the multiplication result of the first components of our vectors. Now we must check if we reached the end of vectors; if not, we repeat the loop for the second component, third, and so on. As soon as we reach the end of the vectors, we put the result into the `xmm0` register and return from the `_dot_product` function.
 
-As soon as we reached the end of the vectors, we store the result in the `xmm0` register and return from the `_dot_product` function.
-
-Our result is ready 🎉 🎉 🎉 The last remaining thing to do - is to print the result. We will do using the [printf](https://man7.org/linux/man-pages/man3/printf.3.html) function to simplify our program:
+Our result is ready 🎉 🎉 🎉 The last thing to do is to print it. We will do it using the [printf](https://man7.org/linux/man-pages/man3/printf.3.html) function to simplify our program:
 
 ```assembly
-        ;; Specify reference to the format string for the printf(3) in the rdi register.
+        ;; Specify a reference to the format string for the printf(3) in the rdi register.
         mov rdi, PRINTF_FORMAT
-        ;; Number of arguments of the floating-point registers passed as arguments
-        ;; to printf(3). We specify - `1` because we need to pass only `xmm0` with
-        ;; the result of the program.
+        ;; Number of the floating-point registers passed to printf(3). 
+        ;; We specify `1` because we need to pass only `xmm0` with the result of the program.
         mov rax, 1
         ;; Call the printf(3) function that will print the result.
         call printf
@@ -545,7 +543,7 @@ $ nasm -g -f elf64 -o dot_product.o dot_product.asm
 $ ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc dot_product.o -o dot_product
 ```
 
-Then, try to run it:
+Then, let's run it:
 
 ```
 $ ./dot_product 

@@ -109,10 +109,10 @@ _read_first_float_vector:
 
 ;; Parse the floating-point values from the input buffer.
 _parse_first_float_vector:
-        ;; Initialize the rsi register with the pointer which will point to the place where
+        ;; Initialize the rsi register with the pointer which points to the place where
         ;; the strtod(3) will finish its work.
         mov rsi, end_buffer_1
-        ;; Call the strtod(3) to conver floating-point value from the input buffer to double.
+        ;; Call the strtod(3) to convert a floating-point value from the input buffer to double representation.
         call strtod
 
         ;; Preserve the pointer to the next floating-point value from the input buffer
@@ -120,7 +120,7 @@ _parse_first_float_vector:
         mov rax, [end_buffer_1]
         ;; Check whether it is the end of the input string.
         cmp rax, rdi
-        ;; Proceed with the second vector if we reached the end of the first.
+        ;; Proceed with the second vector if we reached the end of the first vector.
         je _read_second_float_vector
 
         ;; Store the reference to the beginning of the buffer where we will store
@@ -131,12 +131,12 @@ _parse_first_float_vector:
         ;; Multiply the number of floating-point values by 8.
         shl rcx, 3
         ;; Move the pointer from the beginning of the buffer with floating-point values that
-        ;; we have parsed from the input string to the next value.
+        ;; we parsed from the input string to the next value.
         add rdx, rcx
         ;; Store the next floating-point value in the buffer.
         movq [rdx], xmm0
 
-        ;; Increase the number of floating-point value that we already have parsed.
+        ;; Increase the number of floating-point values that we already parsed.
         inc r14
 
         ;; Move the pointer within the input buffer to the next floating-point value.
@@ -223,25 +223,24 @@ _parse_second_float_vector:
 
 ;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
-        ;; Check if the number of items in our vectors is not equal.
+        ;; Check if the number of items in our vectors is equal.
         test r14, r15
         ;; Print an error and exit if not.
         jle _error
 
-        ;; Set address of the first vector to the rdi register.
+        ;; Set the address of the first vector to the rdi register.
         mov rdi, vector_1
-        ;; Set address of the second vector to the rdi register.
+        ;; Set the address of the second vector to the rsi register.
         mov rsi, vector_2
         ;; Set the number of values within the vectors to the rdx register.
         mov rdx, r14
         ;; Calculate the dot product of the two vectors.
         call _dot_product
 
-        ;; Specify reference to the format string for the printf(3) in the rdi register.
+        ;; Specify a reference to the format string for the printf(3) in the rdi register.
         mov rdi, PRINTF_FORMAT
-        ;; Number of arguments of the floating-point registers passed as arguments
-        ;; to printf(3). We specify - `1` because we need to pass only `xmm0` with
-        ;; the result of the program.
+        ;; Number of the floating-point registers passed to printf(3). 
+        ;; We specify `1` because we need to pass only `xmm0` with the result of the program.
         mov rax, 1
         ;; Call the printf(3) function that will print the result.
         call printf
@@ -256,27 +255,27 @@ _dot_product:
         ;; Reset the value of the xmm1 register to 0.
         pxor xmm1, xmm1
         ;; Current rdx contains the number of floating-point values within the vectors.
-        ;; Multiply it by 8 to get the number of bytes occupied by these values.
+        ;; Multiply it by 8 using shift left operation to get the number of bytes 
+        ;; occupied by these values.
         sal rdx, 3
 ;; Calculate the the dot product in the loop.
 _loop:
         ;; Move the floating-point value from the first vector to the xmm0 register.
         movsd xmm0, [rdi + rax]
-        ;; Multiply the floating-point from the second vector to the value from the first vector
+        ;; Multiply the floating-point value from the second vector by the value from the first vector
         ;; and store the result in the xmm0 register.
         mulsd xmm0, [rsi + rax]
         ;; Move to the next floating-point values in the vector buffers.
         add rax, 8
-        ;; Add the result of multiplication of floating-point values from the vectors in the
-        ;; xmm1 register.
+        ;; Add the result of multiplying the floating-point values from the two vectors into the xmm1 register.
         addsd xmm1, xmm0
         ;; Check if we went through all the floating-point values in the vector buffers.
         cmp rax, rdx
-        ;; If not yet - repeat the loop.
+        ;; If not, repeat the loop.
         jne _loop
         ;; Move the result to the xmm0 register.
         movapd xmm0, xmm1
-        ;; Return from the _dot_product back to the `_calculate_dot_product`.
+        ;; Return from the `_dot_product` back to the `_calculate_dot_product`.
         ret
 
 ;; Print an error and exit.
