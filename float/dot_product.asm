@@ -104,12 +104,12 @@ _read_first_float_vector:
         ;; Reset the value of the r14 register to store the number of floating-point numbers
         ;; from the first vector.
         xor r14, r14
-        ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
+        ;; Set the pointer to the beginning of the buffer with the input data to the rdi register.
         mov rdi, buffer_1
 
 ;; Parse the floating-point values from the input buffer.
 _parse_first_float_vector:
-        ;; Initialize the rsi register with the pointer which points to the place where
+        ;; Initialize the rsi register with the pointer to the place where
         ;; the strtod(3) will finish its work.
         mov rsi, end_buffer_1
         ;; Call the strtod(3) to convert a floating-point value from the input buffer to double representation.
@@ -181,12 +181,12 @@ _read_second_float_vector:
         ;; Reset the value of the r15 register to store the number of floating-point numbers
         ;; from the second vector.
         xor r15, r15
-        ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
+        ;; Set the pointer to the beginning of the buffer with the input data to the rdi register.
         mov rdi, buffer_2
 
 ;; Parse the floating-point values from the input buffer.
 _parse_second_float_vector:
-        ;; Initialize the rsi register with the pointer which will point to the place where
+        ;; Initialize the rsi register with the pointer which to the place where
         ;; the strtod(3) will finish its work.
         mov rsi, end_buffer_2
         ;; Call the strtod(3)

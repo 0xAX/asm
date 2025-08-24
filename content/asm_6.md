@@ -33,7 +33,7 @@ Let's take a random floating-point number, for example - `5.625`. To convert a f
 | Division      | Quotient | Remainder |
 |:-------------:|----------|-----------|
 | $\frac{5}{2}$ |        2 |         1 |
-| $\frac{5}{2}$ |        1 |         0 |
+| $\frac{2}{2}$ |        1 |         0 |
 | $\frac{1}{2}$ |        0 |         1 |
 
 To get the binary representation, we simply write down all the remainders we got during the division process. For the number `5`, the remainders are `1`, `0`, and `1`, which gives us `101` in binary (as shown in the "Remainder" column). So, the binary representation of `5` is `0b101`. 
@@ -58,7 +58,7 @@ As you practice converting decimal floating-point numbers to binary, you'll soon
 |      0.575 * 2 |   1.15 |             1 |            0.15 |
 |       0.15 * 2 |   0.30 |             0 |            0.30 |
 |       0.30 * 2 |   0.60 |             0 |            0.60 |
-|       0.60.* 2 |   1.20 |             1 |            0.20 |
+|       0.60 * 2 |   1.20 |             1 |            0.20 |
 |       0.20 * 2 |   0.40 |             0 |            0.40 |
 |       0.40 * 2 |   0.80 |             0 |            0.80 |
 |       0.80 * 2 |   1.60 |             1 |            0.60 |
@@ -86,7 +86,7 @@ After we convert both integral and fractional parts of our number to binary repr
 
 As a first step, we need to shift right the integral part of our number so that only one digit remains before the point. In the case of `0b101`, we need to shift right two digits. Basically when we are doing each shift - we divide our number by `2`. This is done because our number has base `2`. Shifting the number twice, we divide our number by $$2^{2}$$. To keep the original value unchanged, we multiple it by $$2^{2}$$. As a result, our initial number `0b101.101` is now represented as `0b1.01101 * 2^2`.
 
-After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get - `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits and rest filled with zeros.
+After this, we need to add the number of shifts to the special number called `bias`. For single-precision floating-point numbers, it is equal to `127`. So we get `2 + 127 = 129` or `0b10000001`. This is our `exponent`. The `mantissa` is just the fractional part of the number that we got after shifting it. We just put all the numbers of the fractional parts to the 23 `mantissa` bits and fill the rest with zeros.
 
 If we combine all together, we can see how our number `5.625` is represented in a computer memory:
 
@@ -94,7 +94,7 @@ If we combine all together, we can see how our number `5.625` is represented in 
 |------|----------|-------------------------|
 |     0| 10000001 | 01101000000000000000000 |
 
-If the fractional part of the number is periodic, as in the example of the number `5.575`, we fill the `mantissa` bits while it is possible. So the number `5.575` is represented in a computer memory as:
+If the fractional part of the number is periodic, as in the example of the number `5.575`, we fill the `mantissa` bits until it is possible. So the number `5.575` is represented in a computer memory as:
 
 | Sign | Exponent | Mantissa                |
 |------|----------|-------------------------|
@@ -159,29 +159,29 @@ To work with the `XMM` registers, the `x86_64` CPU supports, among others, the f
 
 The floating-point arithmetic instructions perform arithmetic operations, such as addition, subtraction, multiplication, and division, on single or double-precision floating-point values. The following floating-point arithmetic instructions exist:
 
-- `addss` - Adds a single-precision floating-point values.
-- `addsd` - Adds a double-precision floating point values.
-- `subss` - Subtracts a single-precision floating-point values.
-- `subsd` - Subtracts a double-precision floating-point values.
-- `mulss` - Multiplies a single-precision floating-point values.
-- `mulsd` - Multiplies a double-precision floating-point values.
-- `divss` - Divides a single-precision floating-point values.
-- `divsd` - Divides a double-precision floating-point values.
+- `addss` - Adds single-precision floating-point values.
+- `addsd` - Adds double-precision floating point values.
+- `subss` - Subtracts single-precision floating-point values.
+- `subsd` - Subtracts double-precision floating-point values.
+- `mulss` - Multiplies single-precision floating-point values.
+- `mulsd` - Multiplies double-precision floating-point values.
+- `divss` - Divides single-precision floating-point values.
+- `divsd` - Divides double-precision floating-point values.
 
 All of these instructions expect two operands to execute the given operation of addition, subtraction, multiplication, or division. After the operation is executed, the result is stored in the first operand.
 
-### Floating-Point control instructions
+### Floating-point control instructions
 
-As we already know, the main goal of these instructions is to manage the control flow of our programs. For integer comparisons, we used the `cmp` instruction. But this instruction does not work with floating-point values, even though the result of the comparison is controlled by the same `rflags` registers that we saw in the [Data manipulation](./asm_4.md#control-transfer-instructions) chapter. The general instruction to compare floating-point numbers is `cmpss`. Instead of setting the value of the flag based on the result comparison, the instruction stores the result of the comparison in the destination register.
+As we already know, the main goal of these instructions is to manage the control flow of our programs. For integer comparisons, we used the `cmp` instruction. However, this instruction does not work with floating-point values, even though the result of the comparison is controlled by the same `rflags` registers that we saw in the [Data manipulation](./asm_4.md#control-transfer-instructions) chapter. The general instruction to compare floating-point numbers is `cmpss`. Instead of setting the value of the flag based on the result comparison, the instruction stores the result of the comparison in the destination register.
 
 For example:
 
 ```assembly
-;; Compare xmm0 < xmm1 and store the result in the xmm0
+;; Compare if xmm0 < xmm1 and store the result of comparison in xmm0
 cmpss xmm0, xmm1, 0x1
 ```
 
-The third operand of the instruction, identifies the operator:
+The third operand of the instruction identifies the operator:
 
 | 3rd operand value | Meaning                                                                |
 |-------------------|------------------------------------------------------------------------|
@@ -196,7 +196,7 @@ The third operand of the instruction, identifies the operator:
 
 ## Example
 
-After we got familiar with the basics of the new topic, it's time to write some code. This time, we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates the [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors. This operation is widely used in machine learning. It will be interesting to try to implement it using the assembly programming language.
+After we got familiar with the basics of the new topic, it's time to write some code. This time, we will try to write a program which reads the user input, builds two [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)) of floating-point numbers based on it, and calculates the [dot product](https://en.wikipedia.org/wiki/Dot_product) of these two vectors. This operation is widely used in machine learning. It will be interesting to implement it using the assembly programming language.
 
 As a reminder – a dot product is an operation on two vectors (with $$a = [a_{1}, a_{2}, \cdots, a_{n}]$$ and $$b = [b_{1}, b_{2}, \cdots, b_{n}]$$), which produces a single value defined as the sum of the products of corresponding entries from the two vectors:
 
@@ -253,7 +253,7 @@ This is similar to what we defined in our previous programs, but with some diffe
 - The error message to print
 - Parameters of the buffer used to store the user input
 
-After defining the data that we may initialize, we need to define uninitialized variables:
+After defining the data that we can initialize, we need to define uninitialized variables:
 
 ```assembly
 ;; Definition of the .bss section
@@ -285,7 +285,7 @@ In the `.bss` section, we define:
 The last parameter here is the most interesting. To simplify our job, we will use the functions from the [C standard library](https://en.wikipedia.org/wiki/C_standard_library). One of such functions is [strtod](https://man7.org/linux/man-pages/man3/strtod.3.html), which converts the given string to a floating point number. It takes two parameters:
 
 - Input string which should be converted to a floating point number
-- The pointer that will point to the first character after the parsed number within the string specified by the parameter above
+- The pointer to the first character after the parsed number within the string specified by the parameter above
 
 The `end_buffer_1` and `end_buffer_2` are such pointers that will be used in the `strtod`.
 
@@ -379,11 +379,11 @@ At this point, we have the memory buffer `buffer_1` which contains the user inpu
         ;; Reset the value of the r14 register to store the number of floating-point numbers
         ;; from the first vector.
         xor r14, r14
-        ;; Set the pointer to the beginning of the buffer with the input data to the rdx register.
+        ;; Set the pointer to the beginning of the buffer with the input data to the rdi register.
         mov rdi, buffer_1
 ;; Parse the floating-point values from the input buffer.
 _parse_first_float_vector:
-        ;; Initialize the rsi register with the pointer which points to the place where
+        ;; Initialize the rsi register with the pointer to the place where
         ;; the strtod(3) will finish its work.
         mov rsi, end_buffer_1
         ;; Call the strtod(3) to convert a floating-point value from the input buffer to double representation.
@@ -515,7 +515,7 @@ _loop:
         ret
 ```
 
-At the beginning of the function, we prepare the `rax` and `xmm1` registers by resetting them to zero. The `rax` register will contain the offset within the vector buffers, and the `xmm1` register will accumulate the result of our program. The number of floating-point values within the vectors is stored in the `rdx` register. Since we will move the pointer within the buffers, we need to know how many bytes occupied by these values. To do this we multiple the value of the `rdx` register by `8`. To do this we use the `sal` instruction which executes [arithmetic left shift](https://en.wikipedia.org/wiki/Arithmetic_shift) on the given operand.
+At the beginning of the function, we prepare the `rax` and `xmm1` registers by resetting them to zero. The `rax` register will contain the offset within the vector buffers, and the `xmm1` register will accumulate the result of our program. The number of floating-point values within the vectors is stored in the `rdx` register. Since we will move the pointer within the buffers, we need to know how many bytes are occupied by these values. To do this, we multiply the value of the `rdx` register by `8` using the `sal` instruction, which executes [arithmetic left shift](https://en.wikipedia.org/wiki/Arithmetic_shift) on the given operand.
 
 The dot product calculation takes place inside the loop labeled `_loop`. In the first instruction of this label, we put the current value from the first vector into the `xmm0` register. Next, we multiply this value by the current value from the second vector. The two vectors are pointed by the `rdi` and `rsi` registers, and the `rax` register stores the offset within these buffers that points to the current value we need to process. After performing the multiplication, we increase the value of the `rax` to eight bytes to move to the next values within the vector buffers. At the same time, we update our accumulator with the intermediate result of the dot product.
 
