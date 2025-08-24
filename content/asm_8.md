@@ -16,11 +16,7 @@ As Intel's 64-ia-32-architecture-software-developer-vol-1-manual described:
 The data formats for these data types correspond directly to formats specified in the IEEE Standard 754 for Binary Floating-Point Arithmetic.
 ```
 
-Single-precision floating-point float point data presented in memory:
-
-* sign - 1 bit
-* exponent - 8 bits
-* mantissa - 23 bits
+===============================================
 
 So for example if we have following number:
 

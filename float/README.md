@@ -1,7 +1,11 @@
-This is simple application which shows how to work with floating point numbers.
+# Dot product
 
-Build it with: `make`
+This is a simple program that reads two double vectors and calculates the [dot product](https://en.wikipedia.org/wiki/Dot_product) of their values.
 
-More details at - [Say hello to x64 Assembly [part 8]](https://github.com/0xAX/asm/blob/master/content/asm_8.md)
+To build the program, run:
 
-[@0xAX](https://x.com/0xAX)
+```bash
+make
+```
+
+For more details, read [Part 6. Floating-point arithmetic](https://github.com/0xAX/asm/blob/master/content/asm_6.md).
