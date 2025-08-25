@@ -28,7 +28,6 @@ Here are links to each post:
   * [Part 5. Macros](https://github.com/0xAX/asm/blob/master/content/asm_5.md)
   * [Part 6. Floating-point arithmetic](https://github.com/0xAX/asm/blob/master/content/asm_6.md)
   * [Say hello to x86_64 Assembly part 7](https://github.com/0xAX/asm/blob/master/content/asm_7.md)
-  * [Say hello to x86_64 Assembly part 8](https://github.com/0xAX/asm/blob/master/content/asm_8.md)
 
 ## Requirements
 
