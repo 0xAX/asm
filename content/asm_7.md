@@ -12,9 +12,9 @@ During this chapter we will take a look at the examples which show the usage of 
 
 ## Call C routines from assembly code
 
-We will start our journey from the example which shows how we can call a C [function](https://en.wikipedia.org/wiki/Function_(computer_programming)) from an assembly code. This already should be familiar for us, as we have seen examples of using C functions in the [previous chapter](./asm-6.md).
+We will start our journey from the example which shows how we can call a C [function](https://en.wikipedia.org/wiki/Function_(computer_programming)) from an assembly code. This already should be familiar for us, as we have seen examples of using C functions in the [previous chapter](./asm_6.md).
 
-Let's remember the [hello world](./asm-1.md) example from the very first chapter:
+Let's remember the [hello world](./asm_1.md) example from the very first chapter:
 
 ```assembly
 ;; Definition of the `data` section
@@ -100,7 +100,7 @@ The logic of this program should look pretty similar to the example above. The m
 - `r8` - used to pass the fifth argument to a function.
 - `r9` - used to pass the sixth argument to a function.
 
-If there is more parameters than six, the rest of it will be passed on the [stack](./asm.2).
+If there is more parameters than six, the rest of it will be passed on the [stack](./asm_2.md).
 
 You can build the code above using these instructions and make sure that it works as expected:
 
