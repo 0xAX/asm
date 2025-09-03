@@ -47,7 +47,7 @@ In addition to a Linux machine, you’ll need compilers to build the examples we
 - [NASM](https://nasm.us/)
 - [GNU LD](https://sourceware.org/binutils/docs/ld/)
 
-We will use these three tools in most of the examples. If we need additional tools, I’ll mention them in the relevant example descriptions. You can install GNU GCC, NASM, and GNU LD using your Linux distribution’s package manager. For [Debian](https://www.debian.org/) or [Ubuntu](https://ubuntu.com/)-based distributions, use:
+We will use these three tools in most of the examples. If we need additional tools, I’ll mention them in the relevant example descriptions. You can install GNU GCC, NASM, and GNU LD using your Linux distribution’s package manager. For [Debian](https://www.debian.org/)-based distributions, use:
 
 ```bash
 sudo apt-get install gcc nasm binutils
