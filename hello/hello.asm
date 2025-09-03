@@ -16,10 +16,11 @@ _start:
     mov     rdi, 1
     ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
     mov     rsi, msg
-    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
+    ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
     mov     rdx, 13
     ;; Call the `sys_write` system call.
     syscall
+
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov    rax, 60
     ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.

@@ -222,7 +222,7 @@ str_to_int:
 	;; Base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Compare the first element in the given string with the NUL terminator (end of the string).
+	;; Compare the first element in the given string with the `NUL` terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return
@@ -435,7 +435,7 @@ str_to_int:
 	;; Base for multiplication
 	mov rcx,  10
 __repeat:
-	;; Compare the first element in the given string with the NUL terminator (end of the string).
+	;; Compare the first element in the given string with the `NUL` terminator (end of the string).
 	cmp [rsi], byte 0
 	;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
 	je __return

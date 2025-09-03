@@ -39,7 +39,7 @@ _start:
 
 ;; Calculate the length of the input string and prepare to reverse it.
 reverseStringAndPrint:
-        ;; Compare the first element in the given string with the NUL terminator (end of the string).
+        ;; Compare the first element in the given string with the `NUL` terminator (end of the string).
         cmp byte [rsi], 0
         ;; Preserve the length of the reversed string in the rdx register. We will use this value when printing the string.
         mov rdx, rcx

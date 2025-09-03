@@ -1,6 +1,6 @@
 # Reverse string
 
-This is a simple program that reverses a given input string with assembly for Linux x86-64.
+This is a simple program that reverses a given input string with assembly for Linux x86_64.
 
 To build the program, run:
 

@@ -1,12 +1,28 @@
-global _start
+;; Definition of the `data` section
+section .data
+    ;; String `msg` variable with the value `hello world!`
+    msg db "hello, world!"
 
-extern print
+    ;; Reference to the C stdlib functions that we will use
+    extern write, exit
 
+;; Definition of the text section
 section .text
+    ;; Reference to the entry point of our program
+    global _start
 
+;; Entry point
 _start:
-	call	print
+    ;; Set the first argument of `write` function to 1 (`stdout`).
+    mov rdi, 1
+    ;; Set the second argument of `write` function to the reference of the `msg` variable.
+    mov rsi, msg
+    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
+    mov rdx, 13
+    ;; Call the `write` function.
+    call write
 
-	mov	rax, 60
-	mov	rdi, 0
-	syscall
+    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+    mov rdi, 0
+    ;; Call the `exit` function
+    call exit
