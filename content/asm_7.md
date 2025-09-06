@@ -1,8 +1,6 @@
 # Assembly interaction with high-level programming languages
 
-In all the previous chapters, we wrote our programs almost entirely using pure assembly. While this is a great way to learn, it is not how you’ll meet assembly in the real world. Of course, nothing prevents you from writing whole applications in assembly, but in practice, it’s rare. Most often, you will see assembly code inside programs written in higher-level languages such as C or C++. In this chapter, we will explore how to combine assembly with C code on Linux x86_64.
-
-There are three common ways assembler and C are used together:
+In all the previous chapters, we wrote our programs almost entirely using pure assembly. While this is a great way to learn, it is not how you’ll meet assembly in the real world. Of course, nothing prevents you from writing whole applications in assembly, but in practice, it’s rare. Most often, you will see assembly code inside programs written in higher-level languages such as C or C++. There are three common ways assembler and C are used together:
 
 - Call C routines using assembly code
 - Call assembly routines using C code
