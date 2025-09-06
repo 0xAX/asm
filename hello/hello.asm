@@ -1,6 +1,6 @@
 ;; Definition of the `data` section
 section .data
-    ;; String `msg` variable with the value `hello world!`
+    ;; String variable with the value `hello world!`
     msg db      "hello, world!"
 
 ;; Definition of the text section

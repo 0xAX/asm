@@ -1,6 +1,6 @@
 ;; Definition of the `data` section
 section .data
-    ;; String `msg` variable with the value `hello world!`
+    ;; String variable with the value `hello world!`
     msg db "hello, world!"
 
     ;; Reference to the C stdlib functions that we will use
@@ -13,9 +13,9 @@ section .text
 
 ;; Entry point
 _start:
-    ;; Set the first argument of `write` function to 1 (`stdout`).
+    ;; Set the first argument of the `write` function to 1 (`stdout`).
     mov rdi, 1
-    ;; Set the second argument of `write` function to the reference of the `msg` variable.
+    ;; Set the second argument of the `write` function to the reference of the `msg` variable.
     mov rsi, msg
     ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
     mov rdx, 13
