@@ -100,7 +100,7 @@ The logic of this program looks pretty similar to the example above. The main di
 
 If there are more than six parameters, the rest of them are passed on the [stack](./asm_2.md).
 
-You can build the code above using these instructions and make sure that it works as expected:
+You can build the code above using these commands and make sure that it works as expected:
 
 ```bash
 nasm -f elf64 casm.asm -o casm.o
@@ -248,7 +248,7 @@ int main() {
 > [!NOTE]
 > In the example above, we used [GNU `as` assembly](https://sourceware.org/binutils/docs/as.html), which has a slightly different syntax from the [NASM](https://nasm.us/) assembly. The main difference is that the order of operands for the `movq` instruction is reversed, and we move the value of the left operand to the right.
 
-We can build the code above using these instructions:
+We can build the code above using these commands:
 
 ```bash
 gcc casm.c -o casm
