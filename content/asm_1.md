@@ -47,7 +47,7 @@ In addition to a Linux machine, you’ll need compilers to build the examples we
 - [NASM](https://nasm.us/)
 - [GNU LD](https://sourceware.org/binutils/docs/ld/)
 
-We will use these three tools in most of the examples. If we need additional tools, I’ll mention them in the relevant example descriptions. You can install GNU GCC, NASM, and GNU LD using your Linux distribution’s package manager. For [Debian](https://www.debian.org/) or [Ubuntu](https://ubuntu.com/)-based distributions, use:
+We will use these three tools in most of the examples. If we need additional tools, I’ll mention them in the relevant example descriptions. You can install GNU GCC, NASM, and GNU LD using your Linux distribution’s package manager. For [Debian](https://www.debian.org/)-based distributions, use:
 
 ```bash
 sudo apt-get install gcc nasm binutils
@@ -142,7 +142,7 @@ Let's write our first assembly program based on this code sample:
 ```assembly
 ;; Definition of the `data` section
 section .data
-    ;; String `msg` variable with the value `hello world!`
+    ;; String variable with the value `hello world!`
     msg db      "hello, world!"
 
 ;; Definition of the text section
@@ -158,11 +158,11 @@ _start:
     mov     rdi, 1
     ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
     mov     rsi, msg
-    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
+    ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
     mov     rdx, 13
-
     ;; Call the `sys_write` system call.
     syscall
+
     ;; Specify the number of the system call (60 is `sys_exit`).
     mov    rax, 60
     ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.

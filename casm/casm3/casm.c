@@ -1,10 +1,15 @@
-#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-extern void printHelloWorld(char *str, int len);
+extern int my_strlen(const char *str);
 
-int main() {
-	char* str = "Hello World\n";
-	int len = strlen(str);
-	printHelloWorld(str, len);
-	return 0;
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Error: this program must have 1 command line argument\n");
+        return EXIT_FAILURE;
+    }
+
+    printf("The argument length is - %d\n", my_strlen(argv[1]));
+
+    return 0;
 }
