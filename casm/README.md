@@ -1,10 +1,10 @@
 # Assembly interaction with high-level programming languages
 
-These are three simple programs which provides examples of interaction of assembly and C programming languages:
+These are three simple programs that provide examples of the interaction between assembly and the C programming language:
 
-- [casm1](./casm1/) - call C function from asm
-- [casm2](./casm2/) - gcc inline assembly
-- [casm3](./casm3/) - call asm function from C
+- [casm1](./casm1/) - call the C function from asm
+- [casm2](./casm2/) - GCC inline assembly
+- [casm3](./casm3/) - call the asm function from C
 
 To build each program, go to its directory and run:
 
