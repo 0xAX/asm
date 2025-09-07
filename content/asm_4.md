@@ -174,7 +174,7 @@ Next, we define the `.bss` section for our buffer where we will put the reversed
 ;; Definition of the .bss section.
 section .bss
         ;; Output buffer where the reversed string will be stored.
-        OUTPUT  resb 1
+        OUTPUT resb 1
 ```
 
 After we defined the data needed to build our program, we can define the `.text` section:

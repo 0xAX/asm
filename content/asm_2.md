@@ -166,12 +166,12 @@ For example:
 
 ```assembly
 section .data
-    ;; Define a byte with the value 100
-    num1   db 100
-    ;; Define 2 bytes with the value 1024
-    num2   dw 1024
-    ;; Define a set of characters (10 is a new line symbol in ASCII \n)
-    msg    db "Sum is correct", 10
+        ;; Define a byte with the value 100
+        num1 db 100
+        ;; Define 2 bytes with the value 1024
+        num2 dw 1024
+        ;; Define a set of characters (10 is a new line symbol in ASCII \n)
+        msg db "Sum is correct", 10
 ```
 
 There are also alternatives to define uninitialized storage - `RESB`, `RESW`, `RESD`, `RESQ`, `REST`, `RESO`, `RESY`, and `RESZ`. These are used similarly to `DB` - `DZ`, but in this case, we do not provide an initial value for the defined variable.
@@ -180,8 +180,8 @@ For example:
 
 ```assembly
 section .bss
-    ;; Define a buffer with the size 64 bytes
-    buffer resb 64
+        ;; Define a buffer with the size 64 bytes
+        buffer resb 64
 ```
 
 After defining variables, we can start using them in our program's code. To use a variable, we can refer it by name. However, there is a small thing to remember in the NASM assembly syntax: accessing a variable by name gets us its address, not the actual value it stores:
@@ -241,55 +241,55 @@ If we compile it and look at the assembly code, we will see such an output of th
 ```assembly
 bar:
         ;; Preserve the base pointer
-        push    rbp
+        push rbp
         ;; Set the new frame base pointer
-        mov     rbp, rsp
+        mov rbp, rsp
         ;; Push the eight argument on the stack
-        push    8
+        push 8
         ;; Push the seventh argument on the stack
-        push    7
+        push 7
         ;; Push the sixth argument on the stack
-        mov     r9d, 6
+        mov r9d, 6
         ;; Push the fifth argument on the stack
-        mov     r8d, 5
+        mov r8d, 5
         ;; Push the fourth argument on the stack
-        mov     ecx, 4
+        mov ecx, 4
         ;; Push the third argument on the stack
-        mov     edx, 3
+        mov edx, 3
         ;; Push the second argument on the stack
-        mov     esi, 2
+        mov esi, 2
         ;; Push the first argument on the stack
-        mov     edi, 1
+        mov edi, 1
         ;; Call the function `foo`
-        call    foo
+        call foo
         ;; Clean up the stack from the 8th and 7th arguments
-        add     rsp, 16
+        add rsp, 16
         ;; Restore the old rbp
         leave
         ;; Return from the function
         ret
 foo:
         ;; Preserve the base pointer
-        push    rbp
+        push rbp
         ;; Set the new frame base pointer
-        mov     rbp, rsp
+        mov rbp, rsp
         ;; Move 4 bytes value from the edi register to the address stored in the rbp register minus 4 bytes offset
-        mov     DWORD PTR [rbp-4], edi
+        mov DWORD PTR [rbp-4], edi
         ;; Move 4 bytes value from the esi register to the address stored in the rbp register minus 8 bytes offset
-        mov     DWORD PTR [rbp-8], esi
+        mov DWORD PTR [rbp-8], esi
         ;; Move 4 bytes value from the edx register to the address stored in the rbp register minus 12 bytes offset
-        mov     DWORD PTR [rbp-12], edx
+        mov DWORD PTR [rbp-12], edx
         ;; Move 4 bytes value from the ecx register to the address stored in the rbp register minus 16 bytes offset
-        mov     DWORD PTR [rbp-16], ecx
+        mov DWORD PTR [rbp-16], ecx
         ;; Move 4 bytes value from the r8d register to the address stored in the rbp register minus 20 bytes offset
-        mov     DWORD PTR [rbp-20], r8d
+        mov DWORD PTR [rbp-20], r8d
         ;; Move 4 bytes value from the r9d register to the address stored in the rbp register minus 24 bytes offset
-        mov     DWORD PTR [rbp-24], r9d
+        mov DWORD PTR [rbp-24], r9d
         ...
         ... # Skip arithmetic operations for now
         ...
         ;; Restore the old rbp
-        pop     rbp
+        pop rbp
         ;; Return from the function
         ret
 ```
@@ -300,8 +300,8 @@ foo:
 First of all, let's take a look at the first two lines of code in the function `bar`:
 
 ```assembly
-push    rbp
-mov     rbp, rsp
+push rbp
+mov rbp, rsp
 ```
 
 These two instructions at the beginning of each function are called [function prologue](https://en.wikipedia.org/wiki/Function_prologue_and_epilogue#Prologue). Each function usually operates with a part of the stack. Such a part is called a [stack frame](https://en.wikipedia.org/wiki/Call_stack). To manage the stack, the CPU uses these general purpose registers:
@@ -418,57 +418,57 @@ Here is the source code of our example:
 ```assembly
 ;; Definition of the .data section
 section .data
-    ;; The first number
-    num1 dq 0x64
-    ;; The second number
-    num2 dq 0x32
-    ;; The message to print if the sum is correct
-    msg  db "The sum is correct!", 10
+        ;; The first number
+        num1 dq 0x64
+        ;; The second number
+        num2 dq 0x32
+        ;; The message to print if the sum is correct
+        msg db "The sum is correct!", 10
 
 ;; Definition of the .text section
 section .text
-    ;; Reference to the entry point of our program
-    global _start
+        ;; Reference to the entry point of our program
+        global _start
 
 ;; Entry point
 _start:
-    ;; Set the value of num1 to rax
-    mov rax, [num1]
-    ;; Set the value of num2 to rbx
-    mov rbx, [num2]
-    ;; Get the sum of rax and rbx. The result is stored in rax.
-    add rax, rbx
+        ;; Set the value of num1 to rax
+        mov rax, [num1]
+        ;; Set the value of num2 to rbx
+        mov rbx, [num2]
+        ;; Get the sum of rax and rbx. The result is stored in rax.
+        add rax, rbx
 .compare:
-    ;; Compare the rax value with 150
-    cmp rax, 150
-    ;; Go to the .exit label if the rax value is not 150
-    jne .exit
-    ;; Go to the .correctSum label if the rax value is 150
-    jmp .correctSum
+        ;; Compare the rax value with 150
+        cmp rax, 150
+        ;; Go to the .exit label if the rax value is not 150
+        jne .exit
+        ;; Go to the .correctSum label if the rax value is 150
+        jmp .correctSum
 
 ;; Print a message that the sum is correct
 .correctSum:
-    ;; Specify the system call number (1 is `sys_write`).
-    mov rax, 1
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
-    mov rdi, 1
-    ;; Set the second argument of `sys_write` to the reference of the `msg` variable.        
-    mov rsi, msg
-    ;; Set the third argument to the length of the `msg` variable's value (20 bytes).
-    mov rdx, 20
-    ;; Call the `sys_write` system call.
-    syscall
-    ;; Go to the exit of the program.
-    jmp .exit
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, 1
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, 1
+        ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
+        mov rsi, msg
+        ;; Set the third argument to the length of the `msg` variable's value (20 bytes).
+        mov rdx, 20
+        ;; Call the `sys_write` system call.
+        syscall
+        ;; Go to the exit of the program.
+        jmp .exit
 
 ;; Exit procedure
 .exit:
-    ;; Specify the number of the system call (60 is `sys_exit`).
-    mov rax, 60
-    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
-    mov rdi, 0
-    ;; Call the `sys_exit` system call.
-    syscall
+        ;; Specify the number of the system call (60 is `sys_exit`).
+        mov rax, 60
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+        mov rdi, 0
+        ;; Call the `sys_exit` system call.
+        syscall
 ```
 
 First, let's build our program using the commands we learned in the previous chapter to see the result:

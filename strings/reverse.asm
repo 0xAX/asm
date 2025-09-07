@@ -19,12 +19,12 @@ section .data
 ;; Definition of the .bss section.
 section .bss
         ;; Output buffer where the reversed string will be stored.
-        OUTPUT  resb 1
+        OUTPUT resb 1
 
 ;; Definition of the .text section.
 section .text
         ;; Reference to the entry point of our program.
-        global  _start
+        global _start
 
 ;; Entry point of the program.
 _start:

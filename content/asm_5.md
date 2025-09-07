@@ -8,11 +8,11 @@ If you already have some programming experience in other languages, you’ve lik
 
 - Text substitution. These are the macros you may find in C or C++ programming languages. They perform a simple text replacement before code compilation happens. This leads to a situation where the compiler operates with the results of the macros, not the macros themselves. For example:
 
-   ```C
-   #define SQUARE(x) (x * x)
+```C
+#define SQUARE(x) (x * x)
 
-   int x = SQUARE(5); // will be replaced with 5 * 5
-   ```
+int x = SQUARE(5); // will be replaced with 5 * 5
+```
 
 - Macros that operate at the code structure level, such as [lisp](https://lispcookbook.github.io/cl-cookbook/macros.html) or [rust](https://doc.rust-lang.org/book/ch20-05-macros.html) macros. This type of macro generates code by manipulating or expanding parts of the language’s syntax tree.
 
@@ -70,12 +70,13 @@ A definition of a multi-line macro starts with the `%macro` NASM directive and e
 
 ```assembly
 %macro name number_of_parameters
-    instruction
-    instruction
-    instruction
-    ...
-    ...
-    ...
+        instruction1
+        instruction2
+        instruction3
+        ...
+        ...
+        ...
+        instructionN
 %endmacro
 ```
 
@@ -131,11 +132,11 @@ After we have defined our macros, we can use them in our code. For example:
 ;; Definition of the .data section.
 section .data
         ;; The first message to print.
-        msg_1   db      "Message 1"
+        msg_1 db "Message 1"
         ;; The second message to print.
-        msg_2   db      "Message 2"
+        msg_2 db "Message 2"
         ;; ASCII code of the new line symbol ('\n').
-        newline db      0xA
+        newline db 0xA
 
 ;; Definition of the .text section.
 section .text
@@ -174,8 +175,9 @@ Another syntax ability in the multi-line NASM macros is the possibility to defin
         jg %%label
         ret
 %%label:
-        ...
-        ...
+        instruction1
+        instruction2
+        instruction3
         ...
 %endmacro
 ```
@@ -367,10 +369,10 @@ section .data
         newline: db 0xA
         ;; Instance of the person structure.
         p: istruc person
-           ;; Person name
-           at person.name, db "Alex"
-           ;; Person age
-           at person.age,  db 25
+                ;; Person name
+                at person.name, db "Alex"
+                ;; Person age
+                at person.age,  db 25
         iend
 
 ;; Definition of the .text section.
@@ -398,10 +400,10 @@ Let's take a look at the definition of the macro `REPX` defined in the [x86inc.a
 ;; Repeats an instruction/operation for multiple arguments.
 ;; Example usage: "REPX {psrlw x, 8}, m0, m1, m2, m3"
 %macro REPX 2-* ; operation, args
-    %xdefine %%f(x) %1
-    %rep %0 - 1
-        %rotate 1
-        %%f(%1)
+        %xdefine %%f(x) %1
+        %rep %0 - 1
+                %rotate 1
+                %%f(%1)
     %endrep
 %endmacro
 ```
