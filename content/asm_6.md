@@ -473,12 +473,12 @@ _error:
 
 ;; Exit from the program.
 _exit:
-    ;; Specify the number of the system call (60 is `sys_exit`).
-    mov rax, SYS_EXIT
-    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
-    mov rdi, EXIT_CODE
-    ;; Call the `sys_exit` system call.
-    syscall
+        ;; Specify the number of the system call (60 is `sys_exit`).
+        mov rax, SYS_EXIT
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+        mov rdi, EXIT_CODE
+        ;; Call the `sys_exit` system call.
+        syscall
 ```
 
 If both vectors have the same number of components, we can proceed to the calculation. To do that, we store the addresses of both vectors in the `rdi` and `rsi` registers, and put the number of components within the vectors into the `rdx` register. The `_dot_product` function does the main job. Let's take a look at the code of this function:

@@ -17,33 +17,33 @@ Let's go back to the [`hello world`](./asm_1.md) example from the very first cha
 ```assembly
 ;; Definition of the `data` section
 section .data
-    ;; String variable with the value `hello world!`
-    msg db "hello, world!"
+        ;; String variable with the value `hello world!`
+        msg db "hello, world!"
 
 ;; Definition of the text section
 section .text
-    ;; Reference to the entry point of our program
-    global _start
+        ;; Reference to the entry point of our program
+        global _start
 
 ;; Entry point
 _start:
-    ;; Specify the number of the system call (1 is `sys_write`).
-    mov rax, 1
-    ;; Set the first argument of `sys_write` to 1 (`stdout`).
-    mov rdi, 1
-    ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
-    mov rsi, msg
-    ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
-    mov rdx, 13
-    ;; Call the `sys_write` system call.
-    syscall
+        ;; Specify the number of the system call (1 is `sys_write`).
+        mov rax, 1
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, 1
+        ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
+        mov rsi, msg
+        ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
+        mov rdx, 13
+        ;; Call the `sys_write` system call.
+        syscall
 
-    ;; Specify the number of the system call (60 is `sys_exit`).
-    mov rax, 60
-    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
-    mov rdi, 0
-    ;; Call the `sys_exit` system call.
-    syscall
+        ;; Specify the number of the system call (60 is `sys_exit`).
+        mov rax, 60
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+        mov rdi, 0
+        ;; Call the `sys_exit` system call.
+        syscall
 ```
 
 Basically, this example only contains an invocation of two [system calls](https://en.wikipedia.org/wiki/System_call):
@@ -61,32 +61,32 @@ Let's take a look at the implementation:
 ```assembly
 ;; Definition of the `data` section
 section .data
-    ;; String variable with the value `hello world!`
-    msg db "hello, world!"
+        ;; String variable with the value `hello world!`
+        msg db "hello, world!"
 
-    ;; Reference to the C stdlib functions that we will use
-    extern write, exit
+        ;; Reference to the C stdlib functions that we will use
+        extern write, exit
 
 ;; Definition of the text section
 section .text
-    ;; Reference to the entry point of our program
-    global _start
+        ;; Reference to the entry point of our program
+        global _start
 
 ;; Entry point
 _start:
-    ;; Set the first argument of the `write` function to 1 (`stdout`).
-    mov rdi, 1
-    ;; Set the second argument of the `write` function to the reference of the `msg` variable.
-    mov rsi, msg
-    ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
-    mov rdx, 13
-    ;; Call the `write` function.
-    call write
+        ;; Set the first argument of the `write` function to 1 (`stdout`).
+        mov rdi, 1
+        ;; Set the second argument of the `write` function to the reference of the `msg` variable.
+        mov rsi, msg
+        ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
+        mov rdx, 13
+        ;; Call the `write` function.
+        call write
 
-    ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
-    mov rdi, 0
-    ;; Call the `exit` function
-    call exit
+        ;; Set the first argument of `sys_exit` to 0. The 0 status code is success.
+        mov rdi, 0
+        ;; Call the `exit` function
+        call exit
 ```
 
 The logic of this program looks pretty similar to the example above. The main difference is that we use the `call` instruction with the function name instead of the `syscall` instruction. In addition, you may note that since we are using the functions from the standard library, we do not need to specify the number of the system call anymore. The general-purpose registers that we use to pass function parameters also look pretty similar, but there is a difference as well. The following registers are used to pass parameters to the non-system call functions:
