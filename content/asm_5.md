@@ -8,11 +8,11 @@ If you already have some programming experience in other languages, you’ve lik
 
 - Text substitution. These are the macros you may find in C or C++ programming languages. They perform a simple text replacement before code compilation happens. This leads to a situation where the compiler operates with the results of the macros, not the macros themselves. For example:
 
-```C
-#define SQUARE(x) (x * x)
+    ```C
+    #define SQUARE(x) (x * x)
 
-int x = SQUARE(5); // will be replaced with 5 * 5
-```
+    int x = SQUARE(5); // will be replaced with 5 * 5
+    ```
 
 - Macros that operate at the code structure level, such as [lisp](https://lispcookbook.github.io/cl-cookbook/macros.html) or [rust](https://doc.rust-lang.org/book/ch20-05-macros.html) macros. This type of macro generates code by manipulating or expanding parts of the language’s syntax tree.
 
