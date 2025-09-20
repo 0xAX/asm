@@ -13,7 +13,7 @@ If you are a new open source contributor, here are some resources you may find u
 - [GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow)
 - [Collaborating with pull requests](https://docs.github.com/en/github/collaborating-with-pull-requests)
 
-**Working on your first pull request?** You can learn how from this free series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request).
+**Working on your first pull request?** You can learn how from this free series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github?af=5236ad).
 
 ## Create an issue
 
