@@ -328,9 +328,9 @@ _read_first_float_vector:
         ;; Set the length of the string we want to read from the standard input.
         mov rdx, BUFFER_SIZE
         ;; Specify the system call number (0 is `sys_read`)
-        mov rdi, SYS_READ
+        mov rax, SYS_READ
         ;; Set the first argument of `sys_read` to 0 (`stdin`)
-        mov rax, STD_IN
+        mov rdi, STD_IN
         ;; Set the second argument of `sys_read` to the reference of the buffer where we will
         ;; read the data for the vector.
         mov rsi, buffer_1
