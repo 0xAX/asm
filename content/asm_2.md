@@ -248,17 +248,17 @@ bar:
         push 8
         ;; Push the seventh argument on the stack
         push 7
-        ;; Push the sixth argument on the stack
+        ;; Push the sixth argument to the r9d register
         mov r9d, 6
-        ;; Push the fifth argument on the stack
+        ;; Push the fifth argument to the r8d register
         mov r8d, 5
-        ;; Push the fourth argument on the stack
+        ;; Push the fourth argument to the exc register
         mov ecx, 4
-        ;; Push the third argument on the stack
+        ;; Push the third argument to the edx register
         mov edx, 3
-        ;; Push the second argument on the stack
+        ;; Push the second argument to the esi register
         mov esi, 2
-        ;; Push the first argument on the stack
+        ;; Push the first argument to the edi register
         mov edi, 1
         ;; Call the function `foo`
         call foo
