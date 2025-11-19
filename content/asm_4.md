@@ -159,11 +159,14 @@ section .data
         EXIT_CODE equ 0
         ;; Length of the string that contains only the new line symbol.
         NEW_LINE_LEN equ 1
+        ;; Length of the INPUT string
+        INPUT_LEN equ 12
 
         ;; ASCII code of the new line symbol ('\n').
         NEW_LINE db 0xa
         ;; Input string that we are going to reverse
         INPUT db "Hello world!"
+        
 ```
 
 Here we can see constants and variables that we will use in our program instead of [magic numbers](https://en.wikipedia.org/wiki/Magic_number_(programming)). Note that we predefine the input string that we will reverse in our program. In the previous chapter, you saw how to handle command-line arguments. As a self-exercise, you can extend this program to take a string and reverse it as a command-line argument.
@@ -174,7 +177,7 @@ Next, we define the `.bss` section for our buffer where we will put the reversed
 ;; Definition of the .bss section.
 section .bss
         ;; Output buffer where the reversed string will be stored.
-        OUTPUT resb 1
+        OUTPUT resb INPUT_LEN
 ```
 
 After we defined the data needed to build our program, we can define the `.text` section:
