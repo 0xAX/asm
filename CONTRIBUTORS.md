@@ -9,6 +9,5 @@ Special thanks to all the people who helped to develop this project:
 - [JRMcCoy](https://github.com/JRMcCoy)
 - [knoxknox](https://github.com/knoxknox)
 - [tirkarthi](https://github.com/tirkarthi)
-- [maldron0309](https://github.com/maldron0309)
 - [Yimura](https://github.com/Yimura)
 - [30be](https://github.com/30be)
