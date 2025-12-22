@@ -10,6 +10,8 @@ section .data
         EXIT_CODE equ 0
         ;; Length of the string that contains only the new line symbol.
         NEW_LINE_LEN equ 1
+        ;; Length of the INPUT string
+        INPUT_LEN equ 12
 
         ;; ASCII code of the new line symbol ('\n').
         NEW_LINE db 0xa
@@ -19,7 +21,7 @@ section .data
 ;; Definition of the .bss section.
 section .bss
         ;; Output buffer where the reversed string will be stored.
-        OUTPUT resb 1
+        OUTPUT resb INPUT_LEN
 
 ;; Definition of the .text section.
 section .text
