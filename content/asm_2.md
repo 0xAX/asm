@@ -188,7 +188,7 @@ After defining variables, we can start using them in our program's code. To use 
 
 ```assembly
 ;; Move the address of the `num1` variable to the al register
-move al, num1
+mov al, num1
 ```
 
 To get the actual value located in the given address, we need to specify the variable name in square brackets:
