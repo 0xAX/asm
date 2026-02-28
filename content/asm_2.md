@@ -55,7 +55,7 @@ There are different types of registers on the `x86_64` processors:
 
 You can find a detailed description of registers in the [Intel software developer manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html). For now, we will focus only on the **general purpose registers** as we will use them in most examples. If we will use other registers, I will mention it beforehand. We already saw a table with general purpose registers in the [previous chapter](asm_1.md#cpu-registers-and-system-calls):
 
-![registers](/content/assets/registers.png)
+![registers](assets/registers.png)
 
 There are 16 registers of 64 bits size, from `rax` to `r15`. Each register also has smaller parts with their own names. For example, as we may see in the table above, the lower 32 bits of the `rax` register are called `eax`. Similarly, the lower 16 bits of the `eax` register are called `ax`. Finally, the lower 8 bits of the `ax` register are called `al`, while the higher 8 bits are called `ah`. We can visualize this as:
 
