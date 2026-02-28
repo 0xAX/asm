@@ -189,7 +189,7 @@ A CPU executes different operations on data. But where is data stored? While the
 
 Each register has a specific size and purpose. For `x86_64` CPUs, general-purpose registers include:
 
-![registers](/content/assets/registers.png)
+![registers](assets/registers.png)
 
 We can consider each register as a very small memory slot that can store a value with a size specified in the table above. For example, the `rax` register can contain a value of up to `64` bits, the `ax` register may contain a value of up to `16` bits, and so on. In the next posts, we will learn more about `rax`, `rdi`, `rbx`, and other registers. For now, it is enough to consider them just as small memory slots that a CPU can access fast. Despite these registers are called **general-purpose registers**, does it mean that we may use any register for any purpose? The simple answer is yes. We can use them to perform arithmetic, logical, data transfer and other basic operations. However, there are specific cases when you should use these registers as specified in the [Application Binary Interface](https://en.wikipedia.org/wiki/Application_binary_interface) and the [calling conventions](https://en.wikipedia.org/wiki/X86_calling_conventions) documents. Since these posts are focused on assembly for Linux `x86_64`, the registers have the following meanings:
 
