@@ -303,11 +303,13 @@ section .text
 
 ;; Entry point of the program.
 _start:
+        ;; Align stack to 16-byte boundary at start since we are going to call C functions.
+        and rsp, -16
         ;; Jump to the _read_first_float_vector label
         jmp _read_first_float_vector
 ```
 
-The definition of the `.text` section starts from referencing the external functions: `strtod` and `printf`. As mentioned above, these functions are part of the C standard library, and we will use them to simplify our program. After defining the entry point, we immediately jump to the `_read_first_float_vector` label. This is where our code starts.
+The definition of the `.text` section starts from referencing the external functions: `strtod` and `printf`. As mentioned above, these functions are part of the C standard library, and we will use them to simplify our program. After defining the entry point, we align the stack to 16 bytes boundary how System V AMD64 ABI requires before calling C functions and immediately jump to the `_read_first_float_vector` label. This is where our code starts.
 
 Our main goal now is to print the prompt, which will ask a user to type some floating-point values. We will then convert these values from strings to floating-point numbers and store them in a buffer representing our first vector. Let's take a look at the code:
 
@@ -526,7 +528,7 @@ Our result is ready 🎉 🎉 🎉 The last thing to do is to print it. We will 
 ```assembly
         ;; Specify a reference to the format string for the printf(3) in the rdi register.
         mov rdi, PRINTF_FORMAT
-        ;; Number of the floating-point registers passed to printf(3). 
+        ;; Number of the floating-point registers passed to printf(3).
         ;; We specify `1` because we need to pass only `xmm0` with the result of the program.
         mov rax, 1
         ;; Call the printf(3) function that will print the result.

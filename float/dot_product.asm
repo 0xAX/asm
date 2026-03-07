@@ -64,6 +64,9 @@ section .text
 
 ;; Entry point of the program.
 _start:
+        ;; Align stack to 16-byte boundary at start.
+        ;; Mask off lower 4 bits to force alignment.
+        and rsp, -16
         ;; Jump to the _read_first_float_vector label
         jmp _read_first_float_vector
 
@@ -239,7 +242,7 @@ _calculate_dot_product:
 
         ;; Specify a reference to the format string for the printf(3) in the rdi register.
         mov rdi, PRINTF_FORMAT
-        ;; Number of the floating-point registers passed to printf(3). 
+        ;; Number of the floating-point registers passed to printf(3).
         ;; We specify `1` because we need to pass only `xmm0` with the result of the program.
         mov rax, 1
         ;; Call the printf(3) function that will print the result.
