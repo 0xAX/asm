@@ -1,7 +1,8 @@
 ;; Definition of the `data` section
 section .data
-        ;; String variable with the value `hello world!`
-        msg db "hello, world!"
+        ;; String variable with the value `hello world!`. 
+        ;; `10` is the ASCII code for the line feed character (LF), i.e., '\n'.
+        msg db "hello, world!", 10
 
 ;; Definition of the text section
 section .text
@@ -16,8 +17,8 @@ _start:
         mov rdi, 1
         ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
         mov rsi, msg
-        ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
-        mov rdx, 13
+        ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (14 bytes).
+        mov rdx, 14
         ;; Call the `sys_write` system call.
         syscall
 
