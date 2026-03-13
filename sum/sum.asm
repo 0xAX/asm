@@ -15,9 +15,9 @@ section .text
 ;; Entry point
 _start:
         ;; Set the value of num1 to rax
-        mov rax, [num1]
+        mov rax, [rel num1]
         ;; Set the value of num2 to rbx
-        mov rbx, [num2]
+        mov rbx, [rel num2]
         ;; Get the sum of rax and rbx. The result is stored in rax.
         add rax, rbx
 .compare:

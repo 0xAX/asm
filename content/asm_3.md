@@ -156,9 +156,10 @@ section .data
         ;; ASCII code of the new line symbol ('\n')
         NEW_LINE db 0xa
         ;; Error message that is printed in a case of not enough command-line arguments
-        WRONG_ARGC_MSG  db "Error: expected two command-line arguments", 0xa
+        ;; `10` is the ASCII code of the new line symbol.
+        WRONG_ARGC_MSG  db "Error: expected two command-line arguments", 10
         ;; Length of the WRONG_ARGC_MSG message
-        WRONG_ARGC_MSG_LEN equ 42
+        WRONG_ARGC_MSG_LEN equ 43
 
 ;; Definition of the .text section
 section .text
@@ -223,7 +224,7 @@ str_to_int:
         mov rcx, 10
 __repeat:
         ;; Compare the first element in the given string with the `NUL` terminator (end of the string).
-        cmp [rsi], byte 0
+        cmp byte [rsi], 0
         ;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
         je __return
         ;; Move the current character from the command-line argument to the bl register.
@@ -436,7 +437,7 @@ str_to_int:
         mov rcx, 10
 __repeat:
         ;; Compare the first element in the given string with the `NUL` terminator (end of the string).
-        cmp [rsi], byte 0
+        cmp byte [rsi], 0
         ;; If we reached the end of the string, return from the procedure. The result is stored in the rax register.
         je __return
         ;; Move the current character from the command-line argument to the bl register.
