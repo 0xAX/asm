@@ -392,7 +392,7 @@ _parse_first_float_vector:
         call strtod
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
-        mov rax, [end_buffer_1]
+        mov rax, [rel end_buffer_1]
         ;; Check whether it is the end of the input string.
         cmp rax, rdi
         ;; Proceed with the second vector if we reached the end of the first vector.

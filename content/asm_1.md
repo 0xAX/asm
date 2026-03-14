@@ -143,7 +143,7 @@ Let's write our first assembly program based on this code sample:
 ;; Definition of the `data` section
 section .data
         ;; String variable with the value `hello world!`. 
-        ;; `10` is the ASCII code for the line feed character (LF), i.e., '\n'.
+        ;; `10` is the ASCII code of the new line symbol.
         msg db "hello, world!", 10
 
 ;; Definition of the text section

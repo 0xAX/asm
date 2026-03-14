@@ -120,7 +120,7 @@ _parse_first_float_vector:
 
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
-        mov rax, [end_buffer_1]
+        mov rax, [rel end_buffer_1]
         ;; Check whether it is the end of the input string.
         cmp rax, rdi
         ;; Proceed with the second vector if we reached the end of the first vector.
@@ -197,7 +197,7 @@ _parse_second_float_vector:
 
         ;; Preserve the pointer to the next floating-point value from the input buffer
         ;; in the rax register.
-        mov rax, [end_buffer_2]
+        mov rax, [rel end_buffer_2]
         ;; Check whether it is the end of the input string.
         cmp rax, rdi
         ;; Calculate the dot product after we have both vectors.

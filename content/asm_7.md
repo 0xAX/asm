@@ -18,7 +18,8 @@ Let's go back to the [`hello world`](./asm_1.md) example from the very first cha
 ;; Definition of the `data` section
 section .data
         ;; String variable with the value `hello world!`
-        msg db "hello, world!"
+        ;; `10` is the ASCII code of the new line symbol.
+        msg db "hello, world!", 10
 
 ;; Definition of the text section
 section .text
@@ -34,7 +35,7 @@ _start:
         ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
         mov rsi, msg
         ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
-        mov rdx, 13
+        mov rdx, 14
         ;; Call the `sys_write` system call.
         syscall
 
@@ -62,7 +63,8 @@ Let's take a look at the implementation:
 ;; Definition of the `data` section
 section .data
         ;; String variable with the value `hello world!`
-        msg db "hello, world!"
+        ;; `10` is the ASCII code of the new line symbol.
+        msg db "hello, world!", 10
 
         ;; Reference to the C stdlib functions that we will use
         extern write, exit
@@ -78,8 +80,8 @@ _start:
         mov rdi, 1
         ;; Set the second argument of the `write` function to the reference of the `msg` variable.
         mov rsi, msg
-        ;; Set the third argument to the length of the `msg` variable's value (13 bytes).
-        mov rdx, 13
+        ;; Set the third argument to the length of the `msg` variable's value (14 bytes).
+        mov rdx, 14
         ;; Call the `write` function.
         call write
 
