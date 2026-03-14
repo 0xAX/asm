@@ -63,9 +63,18 @@ cmovne rax, rdx
 
 We use the decimal arithmetic instructions to operate with integer numbers. We have already seen these instructions in one of the previous chapters:
 
-- `add`  - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
-- `sub`  - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
-- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand. The value of this operand is divided by the value of the `rax` register. The place where the result is stored depends on the size of the operands. In the case of 8-bit operands, the result is stored in the `al:ah` pair. In the case of 16-bit operands, the result is stored in the `dx:ax` pair. For 32-bit operands, the result is stored in the `edx:eax`, and in the case of 64-bit operands, the result is stored in the `rdx:rax` pair.
+- `add` - Addition. It adds the value of the second operand to the first and stores the result in the first operand.
+- `sub` - Subtraction. It subtracts the value of the second operand from the first and stores the result in the first operand.
+- `mul` and `imul` - Unsigned and signed multiplication. Both instructions take a single operand. It multiplies the value of the single operand by the value stored in the `rax` register or its part. The part where the result is stored depends on the size of the operands.
+  - For 8-bit operands, the value from the `al` register is multiplied by the operand, and the result is stored in the `ax` register. 
+  - For 16-bit operands, the value of the `ax` register is multiplied, and the result is stored in the `dx:ax` register pair. 
+  - For 32-bit operands, the value of the `eax` register is multiplied, and the result is stored in the `edx:eax` register pair. 
+  - For 64-bit operands, the value of the `rax` register is multiplied, and the result is stored in the `rdx:rax` register pair.
+- `div` and `idiv`  - Unsigned and signed division. Both instructions take a single operand.
+- For 8-bit operands,  the value of the `ax` register is divided by the operand, the quotient is stored in the `al` register, and the remainder is stored in the `ah` register. 
+  - For 16-bit operands, the register pair `dx:ax` is divided, the quotient is stored in the `ax` register, and the remainder is stored in the `dx` register. 
+  - For 32-bit operands, the register pair `edx:eax` is divided, the quotient is stored in the `eax` register, and the remainder is stored in the `edx` register. 
+  - For 64-bit operands, the register pair `rdx:rax` is divided, the quotient is stored in the `rax` register, and the remainder is stored in the `rdx` register.
 - `inc`  - Increments the value of the first operand.
 - `dec`  - Decrements the value of the first operand.
 - `neg`  - Negates the value of the first operand.
