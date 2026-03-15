@@ -239,10 +239,19 @@ section .data
         SECOND_INPUT_MSG: db "Input the second vector: "
         ;; Length of the prompt for the second vector
         SECOND_INPUT_MSG_LEN equ 25
+
         ;; Error message to print if the number of items in the vectors is not the same.
-        ERROR_MSG: db "Error: the number of values in vectors should be the same", 0xA, 0
+        ;; `10` is the ASCII code of the new line symbol. `0` is the NUL terminator.
+        ERROR_MSG: db "Error: the number of values in vectors should be the same", 10, 0
         ;; Length of the error message.
         ERROR_MSG_LEN equ 59
+
+        ;; Error messge to print if the given vectors are empty.
+        ;; `10` is the ASCII code of the new line symbol. `0` is the NUL terminator.
+        ERROR_EMPTY_MSG: db "Error: the vectors are empty", 10, 0
+        ;; Length of the error message.
+        ERROR_EMPTY_MSG_LEN equ 30
+
         ;; Format string for the result
         PRINTF_FORMAT: db "Dot product = %f", 0xA, 0
 ```
@@ -250,7 +259,7 @@ section .data
 This is similar to what we defined in our previous programs, but with some differences. First, we will use not only the [sys_write](https://man7.org/linux/man-pages/man2/write.2.html) and [sys_exit](https://man7.org/linux/man-pages/man2/_exit.2.html) system calls, but also [sys_read](https://man7.org/linux/man-pages/man2/read.2.html). We do this because we are going to read user input to build our vectors. Besides the system call identifiers, in the `.data` section definition, we can also see:
 
 - The prompt messages used when asking a user to input data for vectors
-- The error message to print
+- The error messages to print
 - Parameters of the buffer used to store the user input
 
 After defining the data that we can initialize, we need to define uninitialized variables:
@@ -441,9 +450,14 @@ Now we have two buffers with floating-point numbers - `vector_1` and `vector_2`.
 ;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
         ;; Check if the number of items in our vectors is equal.
-        test r14, r15
+        cmp r14, r15
         ;; Print an error and exit if not.
-        jle _error
+        jne _error
+
+        ;; Check if vectors are empty.
+        test r14, r14
+        ;; Print an error and exit if so.
+        jz _error_empty
 
         ;; Set the address of the first vector to the rdi register.
         mov rdi, vector_1
@@ -455,7 +469,7 @@ _calculate_dot_product:
         call _dot_product
 ```
 
-Before calculating the dot product of two vectors, we must be sure that both vectors have the same number of components. The number of components of the first vector is stored in the `r14` register, and the number of components of the second vector is stored in the `r15` register. Let’s check if these values are equal; if not, we will print an error message and exit the program. The error-printing and program exit process should already be familiar to you:
+Before calculating the dot product of two vectors, we must be sure that both vectors have the same number of components and the given vectors are not empty. The number of components of the first vector is stored in the `r14` register, and the number of components of the second vector is stored in the `r15` register. Let’s check if these values are equal; if not, we will print an error message and exit the program. The error-printing and program exit process should already be familiar to you:
 
 ```assembly
 ;; Print an error and exit.
@@ -481,6 +495,25 @@ _exit:
         mov rdi, EXIT_CODE
         ;; Call the `sys_exit` system call.
         syscall
+```
+
+If the given vectors are empty, we print the following error:
+
+```assembly
+;; Print an error and exit.
+_error_empty:
+        ;; Set the length of the prompt string to print.
+        mov rdx, ERROR_EMPTY_MSG_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the prompt string to print.
+        mov rsi, ERROR_EMPTY_MSG
+        ;; Call the `sys_write` system call.
+        syscall
+        ;; Exit from the program
+        jmp _exit
 ```
 
 If both vectors have the same number of components, we can proceed to the calculation. To do that, we store the addresses of both vectors in the `rdi` and `rsi` registers, and put the number of components within the vectors into the `rdx` register. The `_dot_product` function does the main job. Let's take a look at the code of this function:
