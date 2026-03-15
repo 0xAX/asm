@@ -29,9 +29,16 @@ section .data
         SECOND_INPUT_MSG_LEN equ 25
 
         ;; Error message to print if the number of items in the vectors is not the same.
-        ERROR_MSG: db "Error: the number of values in vectors should be the same", 0xA, 0
+        ;; `10` is the ASCII code of the new line symbol. `0` is the NUL terminator.
+        ERROR_MSG: db "Error: the number of values in vectors should be the same", 10, 0
         ;; Length of the error message.
         ERROR_MSG_LEN equ 59
+
+        ;; Error messge to print if the given vectors are empty.
+        ;; `10` is the ASCII code of the new line symbol. `0` is the NUL terminator.
+        ERROR_EMPTY_MSG: db "Error: the vectors are empty", 10, 0
+        ;; Length of the error message.
+        ERROR_EMPTY_MSG_LEN equ 30
 
         ;; Format string for the result
         PRINTF_FORMAT: db "Dot product = %f", 0xA, 0
@@ -227,9 +234,13 @@ _parse_second_float_vector:
 ;; Prepare to calculate the dot product of the two vectors.
 _calculate_dot_product:
         ;; Check if the number of items in our vectors is equal.
-        test r14, r15
+        cmp r14, r15
         ;; Print an error and exit if not.
-        jle _error
+        jne _error
+        ;; Check if vectors are empty.
+        test r14, r14
+        ;; Print an error and exit if so.
+        jz _error_empty
 
         ;; Set the address of the first vector to the rdi register.
         mov rdi, vector_1
@@ -291,6 +302,21 @@ _error:
         mov rdi, STD_OUT
         ;; Set the second argument of `sys_write` to the reference of the prompt string to print.
         mov rsi, ERROR_MSG
+        ;; Call the `sys_write` system call.
+        syscall
+        ;; Exit from the program
+        jmp _exit
+
+;; Print an error and exit.
+_error_empty:
+        ;; Set the length of the prompt string to print.
+        mov rdx, ERROR_EMPTY_MSG_LEN
+        ;; Specify the system call number (1 is `sys_write`).
+        mov rax, SYS_WRITE
+        ;; Set the first argument of `sys_write` to 1 (`stdout`).
+        mov rdi, STD_OUT
+        ;; Set the second argument of `sys_write` to the reference of the prompt string to print.
+        mov rsi, ERROR_EMPTY_MSG
         ;; Call the `sys_write` system call.
         syscall
         ;; Exit from the program
