@@ -251,11 +251,11 @@ int_to_str:
         ;; Set the divisor to 10.
         mov rbx, 10
         ;; Divide the sum stored in `rax`, resulting quotient will be stored in `rax`,
-        ;; and the reminder will be stored in `rdx` register.
+        ;; and the remainder will be stored in `rdx` register.
         div rbx
-        ;; Add 48 to the reminder to get a string ASCII representation of the number value.
+        ;; Add 48 to the remainder to get a string ASCII representation of the number value.
         add rdx, 48
-        ;; Store the reminder on the stack.
+        ;; Store the remainder on the stack.
         push rdx
         ;; Increase the counter.
         inc rcx
@@ -326,9 +326,9 @@ section .data
         ;; ASCII code of the new line symbol ('\n')
         NEW_LINE db 0xa
         ;; Error message that is printed in a case of not enough command-line arguments
-        WRONG_ARGC_MSG  db "Error: expected two command-line argument", 0xa
+        WRONG_ARGC_MSG  db "Error: expected two command-line arguments", 0xa
         ;; Length of the WRONG_ARGC_MSG message
-        WRONG_ARGC_MSG_LEN equ 42
+        WRONG_ARGC_MSG_LEN equ 43
 ```
 
 As we know from the previous posts, the main purpose of the `data` section is to define variables that have initialized values. This example is no exception. Here, we define the system call number variables, string error messages, and more. This code sample contains comments with descriptions, so everything should generally be clear. If something is unclear, it’s a good idea to revisit the previous posts for clarification before you proceed with the rest of the explanation.
@@ -483,16 +483,16 @@ In the previous section, we calculated the sum of two numbers and put the result
 int_to_str:
         ;; High part of the dividend. The low part is in the rax register.
         ;; The div instruction works as div operand => rdx:rax / operand.
-        ;; The reminder is stored in rdx and the quotient in rax.
+        ;; The remainder is stored in rdx and the quotient in rax.
         mov rdx, 0
         ;; Set the divisor to 10.
         mov rbx, 10
         ;; Divide the sum stored in `rax. The resulting quotient will be stored in `rax`,
-        ;; and the reminder will be stored in the `rdx` register.
+        ;; and the remainder will be stored in the `rdx` register.
         div rbx
-        ;; Add 48 to the reminder to get a string ASCII representation of the number value.
+        ;; Add 48 to the remainder to get a string ASCII representation of the number value.
         add rdx, 48
-        ;; Store the reminder on the stack.
+        ;; Store the remainder on the stack.
         push rdx
         ;; Increase the counter.
         inc rcx
@@ -574,9 +574,9 @@ Then, try to run it:
 
 ```bash
 $  ./stack
-Error: expected two command-line argument
+Error: expected two command-line arguments
 $ ./stack 5
-Error: expected two command-line argument
+Error: expected two command-line arguments
 $ ./stack 5 10
 15
 ```
@@ -625,11 +625,11 @@ The reason for this error is that we put on the stack a value bigger than our 8-
 - [Non-executable stack](https://en.wikipedia.org/wiki/Executable-space_protection)
 - And others...
 
-Despite all of these techniques may help you to protect your programs from stack-related errors, you should be careful, especially with the external data that your program receives.
+While all of these techniques may help you to protect your programs from stack-related errors, you should be careful, especially with the external data that your program receives.
 
-The C function example above might seem a bit artificial as unlikely you are going to use the [deprecated](https://man7.org/linux/man-pages/man3/gets.3.html) `gets` function. However, even with such an unrealistic example, real risks still exist — even if you avoid deprecated functions and use all the compiler’s safety features to protect your program.
+The C function example above might seem a bit artificial as it is unlikely that you are going to use the [deprecated](https://man7.org/linux/man-pages/man3/gets.3.html) `gets` function. However, even with such an unrealistic example, real risks still exist — even if you avoid deprecated functions and use all the compiler’s safety features to protect your program.
 
-The real-world case when wrong memory management led to serious consequences is [CVE-2017-1000253](https://access.redhat.com/security/cve/cve-2017-1000253). This vulnerability was found in the Linux kernel and led to the [privilege escalation](https://en.wikipedia.org/wiki/Privilege_escalation). When the kernel runs a process, it needs to perform many different operations, such as loading the program into memory and initializing the stack. After the program is loaded and stack initialized, the program is located below the stack memory, with a 128-megabyte gap between them. However, when a large program is loaded, it can overwrite the stack memory. Under certain conditions, it may lead to privilege escalation. If you are interested in more details, you can read the [report](https://www.qualys.com/2017/09/26/linux-pie-cve-2017-1000253/cve-2017-1000253.txt) and the [fix](https://github.com/torvalds/linux/commit/a87938b2e246b81b4fb713edb371a9fa3c5c3c86).
+A real-world case when wrong memory management led to serious consequences is [CVE-2017-1000253](https://access.redhat.com/security/cve/cve-2017-1000253). This vulnerability was found in the Linux kernel and led to the [privilege escalation](https://en.wikipedia.org/wiki/Privilege_escalation). When the kernel runs a process, it needs to perform many different operations, such as loading the program into memory and initializing the stack. After the program is loaded and stack initialized, the program is located below the stack memory, with a 128-megabyte gap between them. However, when a large program is loaded, it can overwrite the stack memory. Under certain conditions, it may lead to privilege escalation. If you are interested in more details, you can read the [report](https://www.qualys.com/2017/09/26/linux-pie-cve-2017-1000253/cve-2017-1000253.txt) and the [fix](https://github.com/torvalds/linux/commit/a87938b2e246b81b4fb713edb371a9fa3c5c3c86).
 
 As you can see, subtle bugs in stack layout can lead to serious vulnerabilities.
 
