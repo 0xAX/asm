@@ -1,18 +1,18 @@
-;; Definition of the `data` section
+; Definition of the `data` section
 
-;; Run it in UNIX or UNIX-like OS, and clearly don't compile on DOS mode
+; Run it in UNIX or UNIX-like OS, and clearly don't compile on DOS mode
 section .data
-        ;; String variable with the value `hello world!`. 
-        ;; Also, 0ah is the way to make the new line symbol.
+        ; String variable with the value `hello world!`. 
+        ; Also, 0ah is the way to make the new line symbol.
         msg db "hello world!", 0ah ;;0ah is newline in ASM 
-        ;;The size of the string/variable (14 charaters)
+        ;The size of the string/variable (14 charaters)
         .size equ $ - msg
 
-;; Definition of the text section
+; Definition of the text section
 section .text
         ;; Reference to the entry point of our program
         global _start
-;; Entry point
+; Entry point
 _start:
 .syswritefunc:
 ;Specify the number of syscall (sys_write)
