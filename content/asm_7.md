@@ -211,6 +211,8 @@ asm [volatile] ("assembly code"
 The `asm` keyword introduces the inline assembly block. Adding the `volatile` qualifier tells the compiler not to optimize or reorder this code, which is important if the code has side effects that the compiler cannot see. As the [GCC documentation](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) explains:
 
 > The typical use of Extended asm statements is to manipulate input values to produce output values. However, your asm statements may also produce side effects. If so, you may need to use the volatile qualifier to disable certain optimizations.
+>
+> -- *Using the GNU Compiler Collection*, "Extended Asm", the `volatile` qualifier
 
 After defining the assembly code, we can specify input and output operands that describe how C variables should be mapped to registers or memory. Each operand consists of a constraint string followed by the C expression in parentheses. The constraint tells the compiler what kind of location can hold the operand, and ensures that values are moved in and out properly.
 
