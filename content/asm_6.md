@@ -13,6 +13,8 @@ First of all, let's take a look at how floating-point numbers are represented in
 The Intel [Software Developer Manual](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) says:
 
 > The data formats for these data types correspond directly to formats specified in the IEEE Standard 754 for Binary Floating-Point Arithmetic.
+>
+> -- *Intel® 64 and IA-32 Architectures Software Developer's Manual*, vol. 1, section 4.2.2, "Floating-Point Data Types"
 
 To get all the possible details about the representation of the floating-point numbers in computer memory, you should take a look at this standard.
 
@@ -377,6 +379,8 @@ After executing the code, the buffer specified by the `buffer_1` name will conta
 The user input contains the `newline` symbol at the end. We don't need it in our input, as we can't convert it to a floating-point number. To get rid of this symbol, we replace it with the `0` byte. To do that, we need to know the length of the user input. The good news is that we already know it. Take a look at the documentation of the `sys_read` system call:
 
 > On success, the number of bytes read is returned
+>
+> -- *read(2)*, Linux man-pages, "RETURN VALUE"
 
 As you may remember, the return value of a system call is stored in the `rax` register. To write the zero byte into the buffer right after the user input, we just need to take the pointer to the beginning of this buffer, add an offset to it (which is equal to the length of the user input), and add the `0` byte to this address. All of these you can see in the last four lines of the code above.
 

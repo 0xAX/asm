@@ -25,6 +25,8 @@ Now that we've successfully written and run our first assembly program, it's tim
 One of the first concepts we met in the previous post was a **register**. We agreed that we can consider a register as a small memory slot. Following the definition on [Wikipedia](https://en.wikipedia.org/wiki/Processor_register), we can see that it's not so far from truth:
 
 > A processor register is a quickly accessible location available to a computer's processor.
+>
+> -- Wikipedia, "Processor register"
 
 The main goal of a processor is data processing. To process data, a processor must access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is a very slow operation. If we take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we can see the following picture:
 
@@ -215,6 +217,8 @@ The stack grows downwards, from higher memory addresses to lower ones. So, when 
 In the [system call](#system-calls) section, we saw that the first six arguments of a system call are passed in the general purpose registers. According to the calling conventions document:
 
 > System-calls are limited to six arguments, no argument is passed directly on the stack.
+>
+> -- *System V Application Binary Interface, AMD64 Architecture Processor Supplement*, section A.2.1, "Calling Conventions"
 
 So the available number of general purpose registers should be enough to execute any system call. But what about other functions? What if one has more than six arguments? In this case, the first six parameters are also passed in general purpose registers and all the next parameters are passed on the stack. The set of general purpose registers to call a library function is slightly different from the set of registers used for a system call:
 
