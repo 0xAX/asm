@@ -59,9 +59,21 @@ For RPM-based distributions, use:
 sudo dnf install gcc nasm binutils
 ```
 
-For other Linux distributions, refer to their documentation to learn how to install packages.
+For ALPM (Arch Linux package management):
 
-Once you’ve installed and configured these tools, there’s one last thing you’ll need: a text editor to write your assembly code. The choice of editor is entirely up to you. Personally, I use [GNU Emacs](https://www.gnu.org/software/emacs/) with [nasm-mode](https://github.com/skeeto/nasm-mode) for assembly development. However, this is not mandatory — feel free to use any editor you’re comfortable with.
+```bash
+sudo pacman -S gcc nasm binutils
+```
+
+In Gentoo-based distributions, the sys-devel category packages are preinstalled (including gcc and binutils), so you only have to install nasm:
+
+```bash
+sudo emerge -av dev-lang/nasm
+```
+
+For other Linux distributions, check their repositories to find the packages (gcc, nasm, and binutils).
+
+Once you’ve installed and configured these tools, there’s one last thing you’ll need: a text editor to write your assembly code. The choice of editor is entirely up to you. Personally, I use [GNU Emacs](https://www.gnu.org/software/emacs/) with [nasm-mode](https://github.com/skeeto/nasm-mode) for assembly development. However, this is not mandatory — feel free to use any editor you’re comfortable with. 
 
 If you’re using Emacs, you can install `nasm-mode` and configure it with:
 
