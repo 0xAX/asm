@@ -13,3 +13,4 @@ Special thanks to all the people who helped to develop this project:
 - [30be](https://github.com/30be)
 - [awatne](https://github.com/awatne)
 - [rcalixte](https://github.com/rcalixte)
+- [realy8v](https://github.com/realy8v)
