@@ -283,19 +283,30 @@ Using the `%strlen` directive, we can calculate the length of a string. Using `%
 ```assembly
 ;; Definition of the PRINT macro.
 %macro PRINT 1
+section .data
+        ;; Define the string to print with a label local to this macro call.
+        %%msg db %1
+section .text
         ;; Specify the number of the system call (1 is `sys_write`).
-    	mov rax, 1
+        mov rax, 1
         ;; Set the first argument of `sys_write` to 1 (`stdout`).
         mov rdi, 1
         ;; Set the second argument of `sys_write` to the reference of the string to print.
-        ;; The reference will be stored in the first argument of the macro.
-        mov rsi, %1
+        mov rsi, %%msg
         ;; Set the third argument of `sys_write` to the length of the string to print.
         mov rdx, %strlen(%1)
         ;; Call the `sys_write` system call.
         syscall
 %endmacro
 ```
+
+Now we can pass a string directly to the macro:
+
+```assembly
+PRINT "Hello world!"
+```
+
+You might be wondering why we define the string inside the macro instead of passing a label, as we did with the implementation of the `PRINT` macro above. The reason is that `%strlen` is a preprocessor directive. The preprocessor runs before the assembler and knows nothing about labels or the data behind them. It sees only the given text. So if we passed `msg_1` to our macro, `%strlen` would happily return `5`, which is the length of the word `msg_1` itself. As a result, our program would print only the first five characters of the message instead of the whole message.
 
 ### %rotate directive
 
