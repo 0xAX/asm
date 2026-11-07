@@ -42,7 +42,7 @@ These registers are:
 - `rdi` - used to pass the first argument to a function.
 - `rsi` - used to pass the second argument to a function.
 - `rdx` - used to pass the third argument to a function.
-- `r10` - used to pass the fourth argument to a function.
+- `rcx` - used to pass the fourth argument to a function.
 - `r8` - used to pass the fifth argument to a function.
 - `r9` - used to pass the sixth argument to a function.
 
@@ -116,7 +116,7 @@ foo:
 
         ;; Function epilogue
         mov rsp, rbp
-        pop
+        pop rbp
 ```
 
 These two can be replaced with special instructions: `enter N, 0` and `leave`. The `enter` instruction has two operands:

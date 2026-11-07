@@ -14,3 +14,4 @@ Special thanks to all the people who helped to develop this project:
 - [awatne](https://github.com/awatne)
 - [rcalixte](https://github.com/rcalixte)
 - [realy8v](https://github.com/realy8v)
+- [dajiaohuang](https://github.com/dajiaohuang)

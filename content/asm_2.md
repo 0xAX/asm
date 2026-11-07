@@ -257,7 +257,7 @@ bar:
         mov r9d, 6
         ;; Push the fifth argument to the r8d register
         mov r8d, 5
-        ;; Push the fourth argument to the exc register
+        ;; Push the fourth argument to the ecx register
         mov ecx, 4
         ;; Push the third argument to the edx register
         mov edx, 3

@@ -34,7 +34,7 @@ _start:
         mov rdi, 1
         ;; Set the second argument of `sys_write` to the reference of the `msg` variable.
         mov rsi, msg
-        ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (13 bytes).
+        ;; Set the third argument of `sys_write` to the length of the `msg` variable's value (14 bytes).
         mov rdx, 14
         ;; Call the `sys_write` system call.
         syscall

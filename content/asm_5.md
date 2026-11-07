@@ -42,7 +42,7 @@ This is very similar to a usual C-like macro that we can define using the `#defi
 ;; ...
 
 ;; Pointer to the number of command line arguments
-define argc [rsp]
+%define argc [rsp]
 
 ;; Pointer to argv[0] (program name)
 %define argv0 qword [rsp + 8]
@@ -447,10 +447,10 @@ REPX {psrlw x, 8}, m0, m1, m2, m3
 It will be expanded to:
 
 ```assembly
-pmulhuw m0, m7
-pmulhuw m1, m7
-pmulhuw m2, m7
-pmulhuw m3, m7
+psrlw m0, 8
+psrlw m1, 8
+psrlw m2, 8
+psrlw m3, 8
 ```
 
 We’ve just explored a real-world assembly code! 🎉 🎉 🎉 

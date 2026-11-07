@@ -96,9 +96,9 @@ The logical instructions are used to execute [logical operations](https://en.wik
 - `and` - The instruction takes two operands and performs the logical *and* operation on them.
 - `or` - The instruction takes two operands and performs the logical *or* operation on them.
 - `xor` - The instruction takes two operands and performs the logical *xor* operation on them.
-- `not` - The instruction takes two operands and performs the logical *not* operation on them.
+- `not` - The instruction takes one operand and inverts all of its bits.
 
-The result is stored in the first operand.
+The result of the `and`, `or`, and `xor` instructions is stored in the first operand.
 
 For example:
 
@@ -236,7 +236,7 @@ reverseStringAndPrint:
         jmp reverseStringAndPrint
 ```
 
-At the beginning of this procedure, we compare the value pointed to by the `rsi` register with `0`. Here, `0` means the end of the input string, as each string is [NUL-terminated](https://en.wikipedia.org/wiki/Null-terminated_string). If we reach the end of the input string, we jump to the `reverseString` label, which will reverse our string. Otherwise, we take characters one by one from the input string using the `loadsb` instruction and store them on the stack. It is very convenient to store the string's characters on the stack. Since the stack has a [LIFO](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) access pattern, we will pop the characters from the stack in reverse order — from the end to the beginning. This allows us to reverse the string. This procedure is [recursive](https://en.wikipedia.org/wiki/Recursion) and will be called repeatedly until we reach the end of the string.
+At the beginning of this procedure, we compare the value pointed to by the `rsi` register with `0`. Here, `0` means the end of the input string, as each string is [NUL-terminated](https://en.wikipedia.org/wiki/Null-terminated_string). If we reach the end of the input string, we jump to the `reverseString` label, which will reverse our string. Otherwise, we take characters one by one from the input string using the `lodsb` instruction and store them on the stack. It is very convenient to store the string's characters on the stack. Since the stack has a [LIFO](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) access pattern, we will pop the characters from the stack in reverse order — from the end to the beginning. This allows us to reverse the string. This procedure is [recursive](https://en.wikipedia.org/wiki/Recursion) and will be called repeatedly until we reach the end of the string.
 
 After reaching the end of the string, we can reverse it. We will do it using the following code:
 
