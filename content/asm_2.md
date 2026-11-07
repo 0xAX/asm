@@ -28,7 +28,7 @@ One of the first concepts we met in the previous post was a **register**. We agr
 >
 > -- Wikipedia, "Processor register"
 
-The main goal of a processor is data processing. To process data, a processor must access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is a very slow operation. If we take a look at the [Latency Numbers Every Programmer Should Know](https://samwho.dev/numbers), we can see the following picture:
+The main goal of a processor is data processing. To process data, a processor must access this data somewhere. Of course, a processor can get data from [main memory](https://en.wikipedia.org/wiki/Random-access_memory), but it is a very slow operation. If we take a look at the [Latency Numbers Every Programmer Should Know](https://gist.github.com/jboner/2841832), we can see the following picture:
 
 ```
 L1 cache reference = 1ns
